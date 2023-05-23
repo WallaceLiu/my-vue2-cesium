@@ -13,7 +13,9 @@
         <p>{{ bubbleParams.name }}</p>
       </div>
       <div slot="content">
-        <div v-for="(val, key, index) in bubbleParams.info" :key="index">{{ key }}：{{ val }}</div>
+        <div v-for="(val, key, index) in bubbleParams.info" :key="index">
+          {{ key }}：{{ val }}
+        </div>
       </div>
     </bubble>
   </div>
@@ -74,8 +76,7 @@ export default {
         homeButton: false,
         fullscreenButton: false,
         imageryProvider: new Cesium.WebMapTileServiceImageryProvider({
-          url:
-            "http://t0.tianditu.com/img_w/wmts?tk=2a2c5ce64b61343727085b76c46d7ad3&service=wmts&request=GetTile&version=1.0.0&LAYER=img&tileMatrixSet=w&TileMatrix={TileMatrix}&TileRow={TileRow}&TileCol={TileCol}&style=default&format=tiles",
+          url: "http://t0.tianditu.com/img_w/wmts?tk=2a2c5ce64b61343727085b76c46d7ad3&service=wmts&request=GetTile&version=1.0.0&LAYER=img&tileMatrixSet=w&TileMatrix={TileMatrix}&TileRow={TileRow}&TileCol={TileCol}&style=default&format=tiles",
           layer: "img",
           style: "default",
           format: "tiles",
@@ -89,25 +90,26 @@ export default {
         infoBox: false,
       });
       // 初始化vue-cesium插件.
-   var GeoLimitHeight = new Cesium.GeoLimitHeight({
-    viewer:viewer
-});
-//开始分析
-GeoLimitHeight.analysis({
-   targetHeight:targetHeight,
-   labelOption:{
-       labelPosition:Cesium.Cartesian3.fromDegrees(lng,lat,targetHeight),
-       labelText:"海拔高度："+targetHeight+"米",
-       labelShow:true
-   },
-   polygonPlaneOption:{
-       polygonPlaneHierarchy:Cesium.Cartesian3.fromDegreesArray(positionsArray),
-       polygonPlaneShow:true,
-   },
-   polygonFitOption:{
-       polygonFitPositions:positionsArray,
-   }
-  });
+      var GeoLimitHeight = new Cesium.GeoLimitHeight({
+        viewer: viewer,
+      });
+      //开始分析
+      GeoLimitHeight.analysis({
+        targetHeight: targetHeight,
+        labelOption: {
+          labelPosition: Cesium.Cartesian3.fromDegrees(lng, lat, targetHeight),
+          labelText: "海拔高度：" + targetHeight + "米",
+          labelShow: true,
+        },
+        polygonPlaneOption: {
+          polygonPlaneHierarchy:
+            Cesium.Cartesian3.fromDegreesArray(positionsArray),
+          polygonPlaneShow: true,
+        },
+        polygonFitOption: {
+          polygonFitPositions: positionsArray,
+        },
+      });
       // 引入指北针
       viewer.extend(Cesium.viewerCesiumNavigationMixin, {});
 
@@ -139,14 +141,15 @@ GeoLimitHeight.analysis({
       // 加载datasource
       analysisDataSource = new Cesium.CustomDataSource("analysis");
       viewer.dataSources.add(analysisDataSource);
-      
+
       //抗锯齿
       viewer.scene.postProcessStages.fxaa.enabled = true;
       //修改分辨率
-         var supportsImageRenderingPixelated =viewer.cesiumWidget._supportsImageRenderingPixelated;
+      var supportsImageRenderingPixelated =
+        viewer.cesiumWidget._supportsImageRenderingPixelated;
       if (supportsImageRenderingPixelated) {
-              var vtxf_dpr = window.devicePixelRatio;
-              viewer.resolutionScale = vtxf_dpr;
+        var vtxf_dpr = window.devicePixelRatio;
+        viewer.resolutionScale = vtxf_dpr;
       }
     },
     monitor() {

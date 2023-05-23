@@ -5,6 +5,7 @@
 - npm@9.6.6
 - node@16.20.0
 - vue2
+- element ui 2.13.2
 
 ## Project setup
 ```
