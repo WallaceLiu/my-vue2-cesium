@@ -13,9 +13,7 @@
         <p>{{ bubbleParams.name }}</p>
       </div>
       <div slot="content">
-        <div v-for="(val, key, index) in bubbleParams.info" :key="index">
-          {{ key }}：{{ val }}
-        </div>
+        <div v-for="(val, key, index) in bubbleParams.info" :key="index">{{ key }}：{{ val }}</div>
       </div>
     </bubble>
   </div>
@@ -25,8 +23,6 @@ import Bus from "@/utils/Bus.js";
 import URL from "@/utils/Url.config.js";
 // 气泡
 import bubble from "@/components/layout/bubble.vue";
-import GeoJSON from "../../d/shanghai_poi.json";
-import CesiumHeatmap from "../CesiumHeatmap";
 
 var clickSelecting = false;
 var drawClickSelected = null;
@@ -57,180 +53,61 @@ export default {
         name: "",
         info: [],
       },
-      defaultDataValue: [10, 200],
-      defaultOpacityValue: [0, 1],
-      defaultRadius: 20,
-      radius: 20,
-      
-      cesiumHeatmap: null,
     };
   },
   mounted() {
     this.initCesium();
-
-    // this.monitor();
-    // // Cesium鼠标事件
-    // this.mouseEvent();
+    this.monitor();
+    // Cesium鼠标事件
+    this.mouseEvent();
   },
   methods: {
-    setRadius(val) {
-      radius.value = val;
-    },
     initCesium() {
-      /* eslint no-new: */
-      const viewer = new Cesium.Viewer("cesiumContainer", {
+      // 创建viewer实例
+      viewer = new Cesium.Viewer("cesiumContainer", {
+        timeline: false,
         animation: false,
+        navigationHelpButton: false,
+        geocoder: false,
+        SkyAtmosphere: false,
+        sceneModePicker: false,
+        homeButton: false,
+        fullscreenButton: false,
+        imageryProvider: new Cesium.WebMapTileServiceImageryProvider({
+          url:
+            "http://t0.tianditu.com/img_w/wmts?tk=2a2c5ce64b61343727085b76c46d7ad3&service=wmts&request=GetTile&version=1.0.0&LAYER=img&tileMatrixSet=w&TileMatrix={TileMatrix}&TileRow={TileRow}&TileCol={TileCol}&style=default&format=tiles",
+          layer: "img",
+          style: "default",
+          format: "tiles",
+          tileMatrixSetID: "w",
+          credit: new Cesium.Credit("天地图全球影像服务"),
+          maximumLevel: 18,
+          show: false,
+        }),
         baseLayerPicker: false,
-        fullscreenButton: true, // 全屏组件
-        vrButton: false, // VR模式
-        geocoder: false, // 地理编码（搜索）组件
-        homeButton: false, // 首页，点击之后将视图跳转到默认视角
-        infoBox: false, // 信息框
-        sceneModePicker: false, // 场景模式，切换2D、3D 和 Columbus View (CV) 模式。
-        selectionIndicator: false, // 是否显示选取指示器组件
-        timeline: false, // 时间轴
-        navigationHelpButton: false, // 帮助提示，如何操作数字地球。
-        imageryProvider: new Cesium.ArcGisMapServerImageryProvider({
-          url: "https://elevation3d.arcgis.com/arcgis/rest/services/World_Imagery/MapServer",
-        }),
-        terrainProvider: new Cesium.ArcGISTiledElevationTerrainProvider({
-          url: "https://elevation3d.arcgis.com/arcgis/rest/services/WorldElevation3D/Terrain3D/ImageServer",
-        }),
+        selectionIndicator: false, //鼠标点击wms选择框
+        infoBox: false,
       });
-      // 隐藏logo
-      viewer._cesiumWidget._creditContainer.style.display = "none";
-      //
-      const _3DTileset = new Cesium.Cesium3DTileset({
-        url: "http://resource.dvgis.cn/data/3dtiles/ljz/tileset.json",
-      });
-      _3DTileset.readyPromise.then(function (argument) {
-        viewer.scene.primitives.add(_3DTileset);
-        // 贴地显示
-        const height = 40;
-        const cartographic = Cesium.Cartographic.fromCartesian(
-          _3DTileset.boundingSphere.center
-        );
-        const surface = Cesium.Cartesian3.fromRadians(
-          cartographic.longitude,
-          cartographic.latitude,
-          cartographic.height
-        );
-        const offset = Cesium.Cartesian3.fromRadians(
-          cartographic.longitude,
-          cartographic.latitude,
-          cartographic.height + height
-        );
-        const translation = Cesium.Cartesian3.subtract(
-          offset,
-          surface,
-          new Cartesian3()
-        );
-        _3DTileset.modelMatrix = Cesium.Matrix4.fromTranslation(translation);
-        // viewer.flyTo(_3DTileset)
-        const mouseClickHandler = new Cesium.ScreenSpaceEventHandler(
-          viewer.scene.canvas
-        );
-        mouseClickHandler.setInputAction((e) => {
-          const { position } = e;
-          const ray = viewer.camera.getPickRay(position);
-          const cartesian3 = viewer.scene.globe.pick(ray, viewer.scene);
-          const radians =
-            viewer.scene.globe.ellipsoid.cartesianToCartographic(cartesian3);
-          const lat = CesiumMath.toDegrees(radians.latitude); //弧度转度
-          const lng = CesiumMath.toDegrees(radians.longitude);
-          const alt = radians.height;
-          console.log(`longitude:${lng},latitude:${lat},height:${alt}`);
-        }, ScreenSpaceEventType.LEFT_CLICK);
-      });
-      //
-      const points = [];
-
-      if (GeoJSON) {
-        const values = [];
-        //   for (let i = 0; i < 22; i++) {
-        GeoJSON.features.forEach(function (feature) {
-          const lon = feature.geometry.coordinates[0];
-          const lat = feature.geometry.coordinates[1];
-          const _value = 100 * Math.random();
-          values.push(_value);
-          points.push({
-            x: lon,
-            y: lat,
-            value: _value,
-          });
-        });
-      }
-      //
-      let data = [];
-      for (let i = 0; i < 100; i++) {
-        data.push({
-          x: 120 + Math.random() * 2,
-          y: 30 + Math.random() * 2,
-          value: Math.random() * 100,
-        });
-      }
-      let map = CesiumHeatmap.create({
-        viewer: viewer,
-        options: {
-          backgroundColor: "rgba(0,0,0,0)",
-          radius: 100,
-          maxOpacity: 0.5,
-          minOpacity: 0,
-          blur: 0.75,
-        },
-        data: data,
-      });
-      viewer.camera.flyTo({
-        destination: Cesium.Cartesian3.fromDegrees(121, 31, 500000),
-      });
-      // // 创建viewer实例
-      // viewer = new Cesium.Viewer("cesiumContainer", {
-      //   timeline: false,
-      //   animation: false,
-      //   navigationHelpButton: false,
-      //   geocoder: false,
-      //   SkyAtmosphere: false,
-      //   sceneModePicker: false,
-      //   homeButton: false,
-      //   fullscreenButton: false,
-
-      //   imageryProvider: new Cesium.WebMapTileServiceImageryProvider({
-      //     url: "http://t0.tianditu.com/img_w/wmts?tk=2a2c5ce64b61343727085b76c46d7ad3&service=wmts&request=GetTile&version=1.0.0&LAYER=img&tileMatrixSet=w&TileMatrix={TileMatrix}&TileRow={TileRow}&TileCol={TileCol}&style=default&format=tiles",
-      //     layer: "img",
-      //     style: "default",
-      //     format: "tiles",
-      //     tileMatrixSetID: "w",
-      //     credit: new Cesium.Credit("天地图全球影像服务"),
-
-      //     maximumLevel: 18,
-      //     show: false,
-      //   }),
-      //   baseLayerPicker: false,
-      //   selectionIndicator: false, //鼠标点击wms选择框
-      //   infoBox: false,
-      // });
-      // // // 初始化vue-cesium插件.
-      // // var GeoLimitHeight = new Cesium.GeoLimitHeight({
-      // //   viewer: viewer,
-      // // });
-
-      // //开始分析
-      // GeoLimitHeight.analysis({
-      //   targetHeight: targetHeight,
-      //   labelOption: {
-      //     labelPosition: Cesium.Cartesian3.fromDegrees(lng, lat, targetHeight),
-      //     labelText: "海拔高度：" + targetHeight + "米",
-      //     labelShow: true,
-      //   },
-      //   polygonPlaneOption: {
-      //     polygonPlaneHierarchy:
-      //       Cesium.Cartesian3.fromDegreesArray(positionsArray),
-      //     polygonPlaneShow: true,
-      //   },
-      //   polygonFitOption: {
-      //     polygonFitPositions: positionsArray,
-      //   },
-      // });
+      // 初始化vue-cesium插件.
+   var GeoLimitHeight = new Cesium.GeoLimitHeight({
+    viewer:viewer
+});
+//开始分析
+GeoLimitHeight.analysis({
+   targetHeight:targetHeight,
+   labelOption:{
+       labelPosition:Cesium.Cartesian3.fromDegrees(lng,lat,targetHeight),
+       labelText:"海拔高度："+targetHeight+"米",
+       labelShow:true
+   },
+   polygonPlaneOption:{
+       polygonPlaneHierarchy:Cesium.Cartesian3.fromDegreesArray(positionsArray),
+       polygonPlaneShow:true,
+   },
+   polygonFitOption:{
+       polygonFitPositions:positionsArray,
+   }
+  });
       // 引入指北针
       viewer.extend(Cesium.viewerCesiumNavigationMixin, {});
 
@@ -248,43 +125,28 @@ export default {
 
       // 去除版权信息
       viewer._cesiumWidget._creditContainer.style.display = "none";
-      // // 设置延迟时间以显示动画
-      // setTimeout(() => {
-      //   viewer.camera.flyTo({
-      //     destination: Cesium.Cartesian3.fromDegrees(
-      //       115.42510230563575,
-      //       29.38086287024092,
-      //       5500000
-      //     ),
-      //   });
-      // }, 1000);
+      // 设置延迟时间以显示动画
+      setTimeout(() => {
+        viewer.camera.flyTo({
+          destination: Cesium.Cartesian3.fromDegrees(
+            115.42510230563575,
+            29.38086287024092,
+            5500000
+          ),
+        });
+      }, 1000);
 
-      // // 加载datasource
-      // analysisDataSource = new Cesium.CustomDataSource("analysis");
-      // viewer.dataSources.add(analysisDataSource);
-
-      // 修改homeButton的默认位置
-      viewer.homeButton.viewModel.command.beforeExecute.addEventListener(
-        function(e) {
-          e.cancel = true;
-          //你要飞的位置
-          viewer.camera.flyTo({
-            destination: Cesium.Cartesian3.fromDegrees(
-              103.6315352925101,
-              27.28681019277553,
-              21621314.855752839,
-            ),
-          });
-        },
-      );
+      // 加载datasource
+      analysisDataSource = new Cesium.CustomDataSource("analysis");
+      viewer.dataSources.add(analysisDataSource);
+      
       //抗锯齿
       viewer.scene.postProcessStages.fxaa.enabled = true;
       //修改分辨率
-      var supportsImageRenderingPixelated =
-        viewer.cesiumWidget._supportsImageRenderingPixelated;
+         var supportsImageRenderingPixelated =viewer.cesiumWidget._supportsImageRenderingPixelated;
       if (supportsImageRenderingPixelated) {
-        var vtxf_dpr = window.devicePixelRatio;
-        viewer.resolutionScale = vtxf_dpr;
+              var vtxf_dpr = window.devicePixelRatio;
+              viewer.resolutionScale = vtxf_dpr;
       }
     },
     monitor() {
