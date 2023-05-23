@@ -1,7 +1,7 @@
 <template>
   <div style="background: rgba(8, 10, 52, 0.8)">
     <Modal
-      class-name="setting-toolbar"
+      class-name="nucleardensity-toolbar"
       v-model="measureShow"
       draggable
       scrollable
@@ -91,7 +91,7 @@ export default {
   mounted() {
     this.mouseEvent();
 
-    Bus.$on("setting-toolbar", (res) => {
+    Bus.$on("nucleardensity-toolbar", (res) => {
       if (this.measureShow && res) return;
       this.measureShow = res;
     });
@@ -240,34 +240,34 @@ export default {
 };
 </script>
 <style>
-.setting-toolbar {
+.nucleardensity-toolbar {
   right: calc(-100% + 330px) !important;
 }
 
-.setting-toolbar /deep/ .ivu-modal-content {
+.nucleardensity-toolbar /deep/ .ivu-modal-content {
   border-radius: 2px !important;
   background: rgba(8, 10, 52, 0.8);
   /* border: 1px solid #0081cb; */
   box-shadow: inset 0 0 10px #3c6379;
 }
 
-.setting-toolbar /deep/ .ivu-modal-close {
+.nucleardensity-toolbar /deep/ .ivu-modal-close {
   right: 2px !important;
   top: 2px !important;
 }
-.setting-toolbar /deep/ .ivu-modal-header {
+.nucleardensity-toolbar /deep/ .ivu-modal-header {
   padding: 4px 6px;
   background: rgba(34, 47, 113, 1);
 }
-.setting-toolbar /deep/ .ivu-modal-header-inner {
+.nucleardensity-toolbar /deep/ .ivu-modal-header-inner {
   font-size: 14px;
   color: #eee;
 }
-.setting-toolbar /deep/ .ivu-icon-ios-close {
+.nucleardensity-toolbar /deep/ .ivu-icon-ios-close {
   font-size: 24px !important;
   color: #eee !important;
 }
-.setting-toolbar /deep/ .ivu-modal-body {
+.nucleardensity-toolbar /deep/ .ivu-modal-body {
   padding: 3px 6px 6px 6px;
   display: flex;
 }
