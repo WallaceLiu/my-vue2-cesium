@@ -199,7 +199,7 @@ export default {
     Bus.$on("message1", (val) => {
       this.value = val;
       var value1 = 16 - val * 0.16;
-      console.log(value1);
+      // console.log(value1);
       for (const key in tilesetArray) {
         if (Object.hasOwnProperty.call(tilesetArray, key)) {
           const element = tilesetArray[key];
@@ -211,7 +211,7 @@ export default {
     Bus.$on("message2", (val) => {
       this.value = val;
       var value2 = val * 102.4;
-      console.log(value2);
+      // console.log(value2);
       for (const key in tilesetArray) {
         if (Object.hasOwnProperty.call(tilesetArray, key)) {
           const element = tilesetArray[key];
@@ -224,7 +224,7 @@ export default {
     Bus.$on("message3", (val) => {
       this.value = val;
       var value3 = val * 0.005;
-      console.log(value3);
+      // console.log(value3);
       for (const key in tilesetArray) {
         if (Object.hasOwnProperty.call(tilesetArray, key)) {
           const element = tilesetArray[key];
@@ -236,7 +236,7 @@ export default {
     Bus.$on("message9", (val) => {
       this.value = val;
       var value9 = val;
-      console.log(value9);
+      // console.log(value9);
       for (const key in tilesetArray) {
         if (Object.hasOwnProperty.call(tilesetArray, key)) {
           const element = tilesetArray[key];
@@ -248,7 +248,7 @@ export default {
     Bus.$on("message4", (val) => {
       this.value = val;
       var value4 = val;
-      console.log(value4);
+      // console.log(value4);
       for (const key in tilesetArray) {
         if (Object.hasOwnProperty.call(tilesetArray, key)) {
           const element = tilesetArray[key];
@@ -260,7 +260,7 @@ export default {
     Bus.$on("message5", (val) => {
       this.value = val;
       var value5 = val;
-      console.log(value5);
+      // console.log(value5);
       for (const key in tilesetArray) {
         if (Object.hasOwnProperty.call(tilesetArray, key)) {
           const element = tilesetArray[key];
@@ -272,7 +272,7 @@ export default {
     Bus.$on("message6", (val) => {
       this.value = val;
       var value6 = val;
-      console.log(value6);
+      // console.log(value6);
       for (const key in tilesetArray) {
         if (Object.hasOwnProperty.call(tilesetArray, key)) {
           const element = tilesetArray[key];
@@ -284,7 +284,7 @@ export default {
     Bus.$on("message7", (val) => {
       this.value = val;
       var value7 = val;
-      console.log(value7);
+      // console.log(value7);
       for (const key in tilesetArray) {
         if (Object.hasOwnProperty.call(tilesetArray, key)) {
           const element = tilesetArray[key];
@@ -296,7 +296,7 @@ export default {
     Bus.$on("message8", (val) => {
       this.value = val;
       var value8 = val;
-      console.log(value8);
+      // console.log(value8);
       for (const key in tilesetArray) {
         if (Object.hasOwnProperty.call(tilesetArray, key)) {
           const element = tilesetArray[key];

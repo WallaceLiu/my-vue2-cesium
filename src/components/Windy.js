@@ -1,3 +1,4 @@
+// 风场
 import axios from 'axios';
 
 var globe = function(viewer) {

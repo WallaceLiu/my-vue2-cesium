@@ -2,11 +2,11 @@
   <div style="background: rgba(8, 10, 52, 0.8)">
     <Modal
       class-name="nucleardensity-toolbar"
-      v-model="measureShow"
+      v-model="nucleardensityShow"
       draggable
       scrollable
       footer-hide
-      title="模型设置"
+      title="设置"
       width="320"
       :styles="{ top: '85px' }"
       @on-visible-change="visibleChange"
@@ -15,226 +15,72 @@
         <span class="demonstration">更新数据的值域</span>
         <el-slider
           v-model="value1"
-          :step="6.25"
+          :step="1"
           :format-tooltip="formatTooltip0"
         ></el-slider>
       </div>
       <div class="block" style="margin-top: 10px">
-        <span class="demonstration1" style="margin-right: 10px"
-          >透明度
-        </span>
+        <span class="demonstration1" style="margin-right: 10px">透明度 </span>
         <el-slider
-          v-model="value1"
-          :step="6.25"
-          :format-tooltip="formatTooltip0"
+          v-model="value2"
+          :step="1"
+          :format-tooltip="formatTooltip1"
         ></el-slider>
       </div>
       <div class="block" style="margin-top: 10px">
-        <span class="demonstration1" style="margin-right: 10px"
-          >半径
-        </span>
+        <span class="demonstration1" style="margin-right: 10px">半径 </span>
         <el-slider
-          v-model="value1"
-          :step="6.25"
-          :format-tooltip="formatTooltip0"
+          v-model="value3"
+          :step="1"
+          :format-tooltip="formatTooltip2"
         ></el-slider>
       </div>
     </Modal>
-    <tooltip
-      :isShow="toolBarStore.tooltip.length != 0"
-      :style="{
-        top: toolBarStore.tooltipTop + 'px',
-        left: toolBarStore.tooltipLeft + 'px',
-      }"
-    >
-      <div slot="content">
-        <p v-html="toolBarStore.tooltip"></p>
-      </div>
-    </tooltip>
   </div>
 </template>
 <script>
 import Bus from "@/utils/Bus";
-// 导入测距、测面积、测方位角的函数
-import toolBarSpatial from "@/components/func/spatial";
 import tooltip from "@/components/toolbar/tooltip";
 
 export default {
   data() {
     return {
-      value1: 87.5,
-      value2: 40,
+      value1: 100,
+      value2: 0.5,
       value3: 100,
-      value4: true,
-      value5: true,
-      value6: false,
-      value7: true,
-      value8: true,
-      value9: 10,
-      measureShow: false,
+      nucleardensityShow: false,
       statusID: -1, // -1是无功能，1是测距离，2是测面积，3是方位角
-      toolBarStore: {
-        tooltip: "",
-        tooltipTop: 0,
-        tooltipLeft: 0,
-        points: [],
-        tpoints: {},
-        transition: [],
-        entities: [],
-        disLength: 0,
-      },
     };
   },
   components: {
     tooltip,
   },
   mounted() {
-    this.mouseEvent();
-
     Bus.$on("nucleardensity-toolbar", (res) => {
-      if (this.measureShow && res) return;
-      this.measureShow = res;
+      if (this.nucleardensityShow && res) return;
+      this.nucleardensityShow = res;
     });
     //Bus.$emit('message',this.value1);
   },
 
   methods: {
     formatTooltip0(val) {
-      console.log(val);
       Bus.$emit("message1", this.value1);
-      return val * 0.16;
+      return val * 10;
     },
     formatTooltip1(val) {
-      Bus.$emit("message2", this.value2);
-
-      return val * 102.4;
+      Bus.$emit("message1", this.value1);
+      return val * 0.01;
     },
     formatTooltip2(val) {
-      Bus.$emit("message3", this.value3);
-      return val * 0.005;
-    },
-    formatTooltip3(val) {
-      Bus.$emit("message9", this.value9);
-      return val;
-    },
-    changeSwitch4(val) {
-      console.log(val);
-      Bus.$emit("message4", this.value4);
-    },
-    changeSwitch5(val) {
-      console.log(val);
-      Bus.$emit("message5", this.value5);
-    },
-    changeSwitch6(val) {
-      console.log(val);
-      Bus.$emit("message6", this.value6);
-    },
-    changeSwitch7(val) {
-      console.log(val);
-      Bus.$emit("message7", this.value7);
-    },
-    changeSwitch8(val) {
-      console.log(val);
-      Bus.$emit("message8", this.value8);
-    },
-    measureClick(type) {
-      // 123是功能，0是清除，-1是关闭
-      if (type != 0) {
-        this.statusID = type;
-      }
-      if (type == 0 || type == -1) {
-        this.clearMeasureDraw();
-      }
+      Bus.$emit("message1", this.value1);
+      return val * 0.5;
     },
     visibleChange(show) {
       // 模态框关闭时
       if (!show) {
         this.statusID = -1;
-        this.clearMeasureDraw();
       }
-    },
-    mouseEvent() {
-      var scene = viewer.scene;
-      var handler = new Cesium.ScreenSpaceEventHandler(scene.canvas);
-      var _this = this;
-
-      handler.setInputAction(function (movement) {
-        if (_this.statusID == -1) return;
-        var ray = viewer.camera.getPickRay(movement.endPosition);
-        var cartesian = viewer.scene.globe.pick(ray, viewer.scene);
-        if (cartesian) {
-          var cartographic = Cesium.Cartographic.fromCartesian(cartesian);
-          var lng = Cesium.Math.toDegrees(cartographic.longitude);
-          var lat = Cesium.Math.toDegrees(cartographic.latitude);
-          var height = viewer.camera.positionCartographic.height;
-          var pos = { x: lng, y: lat, z: 0 };
-
-          // 工具栏的函数
-          if (_this.statusID == 1) {
-            toolBarSpatial.getDistanceMouseMove(_this, pos);
-          } else if (_this.statusID == 2) {
-            toolBarSpatial.getAreaMouseMove(_this, pos);
-          } else if (_this.statusID == 3) {
-            toolBarSpatial.getAngleMouseMove(_this, pos);
-          }
-
-          // 工具栏的tooltip显示
-          if (_this.toolBarStore.tooltip.length != 0) {
-            _this.toolBarStore.tooltipTop = movement.endPosition.y;
-            _this.toolBarStore.tooltipLeft = movement.endPosition.x + 30;
-          }
-        } else {
-          _this.toolBarStore.tooltip = "";
-        }
-      }, Cesium.ScreenSpaceEventType.MOUSE_MOVE);
-
-      handler.setInputAction(function (movement) {
-        if (_this.statusID == -1) return;
-        var ray = viewer.camera.getPickRay(movement.position);
-        var cartesian = viewer.scene.globe.pick(ray, viewer.scene);
-        if (cartesian) {
-          var cartographic = Cesium.Cartographic.fromCartesian(cartesian);
-          var lng = Cesium.Math.toDegrees(cartographic.longitude);
-          var lat = Cesium.Math.toDegrees(cartographic.latitude);
-          var height = viewer.camera.positionCartographic.height;
-          var pos = { x: lng, y: lat, z: 0 };
-
-          // 工具栏的函数
-          if (_this.statusID == 1) {
-            toolBarSpatial.getDistanceLeftClick(_this, pos);
-          } else if (_this.statusID == 2) {
-            toolBarSpatial.getAreaLeftClick(_this, pos);
-          } else if (_this.statusID == 3) {
-            toolBarSpatial.getAngleLeftClick(_this, pos);
-          }
-        }
-      }, Cesium.ScreenSpaceEventType.LEFT_CLICK);
-
-      handler.setInputAction(function (movement) {
-        if (_this.statusID == -1) return;
-        // 工具栏的函数
-        if (_this.statusID == 1) {
-          toolBarSpatial.getDistanceRightClick(_this);
-        } else if (_this.statusID == 2) {
-          toolBarSpatial.getAreaRightClick(_this);
-        }
-      }, Cesium.ScreenSpaceEventType.RIGHT_CLICK);
-    },
-    clearMeasureDraw() {
-      for (var i = 0; i < this.toolBarStore.entities.length; i++) {
-        viewer.entities.remove(this.toolBarStore.entities[i]);
-      }
-      for (var i = 0; i < this.toolBarStore.transition.length; i++) {
-        viewer.entities.remove(this.toolBarStore.transition[i]);
-      }
-      this.toolBarStore.points = [];
-      this.toolBarStore.tpoints = {};
-      this.toolBarStore.transition = [];
-      this.toolBarStore.entities = [];
-      this.toolBarStore.disLength = 0;
-      this.toolBarStore.tooltip = "";
-      this.toolBarStore.tooltipLeft = 0;
-      this.toolBarStore.tooltipTop = 0;
     },
   },
 };
