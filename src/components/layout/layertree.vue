@@ -92,41 +92,12 @@ export default {
           expand: true,
           disableCheckbox: true,
           children: [
-            // {
-            //   id: "1_1",
-            //   title: "武汉市基础影像",
-            //   isLayer: true,
-            //   checked: true,
-            // },
-            // {
-            //   id: "1_2",
-            //   title: "武汉市行政区划",
-            //   checked: true,
-            //   isLayer: true,
-            // },
-            // {
-            //   id: "1_4",
-            //   title: "武汉市地形",
-            //   checked: false,
-            //   isTerrain: true,
-            // },
             {
               id: "1_3",
               title: "三维建筑白膜",
               checked: false,
               isB3DM: true,
             },
-            // {
-            //   id: '1_5',
-            //   title: '武汉市DEM',
-            //   checked: false,
-            // },
-            // {
-            //   id: "1_6",
-            //   title: "武汉市POI",
-            //   checked: false,
-            //   isPrimitives: true,
-            // },
           ],
         },
         {
@@ -141,51 +112,13 @@ export default {
               checked: false,
               isB3DM: true,
             },
-            // {
-            //   id: "2_2",
-            //   title: "体育馆",
-            //   checked: false,
-            //   isB3DM: true,
-            // },
-            // {
-            //   id: "2_3",
-            //   title: "胜利塔",
-            //   checked: false,
-            //   isB3DM: true,
-            // },
-            // {
-            //   id: "2_4",
-            //   title: "半岛宾馆",
-            //   checked: false,
-            //   isB3DM: true,
-            // },
-            // {
-            //   id: "2_5",
-            //   title: "老城区",
-            //   checked: false,
-            //   isB3DM: true,
-            // },
           ],
         },
-        // {
-        //   id: "3",
-        //   title: "人流热力图",
-        //   expand: false,
-        //   isHeatmap: true,
-        // },
-        // {
-        //   id: "4",
-        //   title: "视频监控点",
-        //   expand: false,
-        //   isGeojson: true,
-        // },
       ],
       defaultProps: {
         children: "children",
         label: "label",
       },
-      filelist: [], // 用户的数据列表
-      sharelist: [], //共享的影像
       alreadylist: [], // 已经处理好的数据
     };
   },
@@ -327,6 +260,7 @@ export default {
     });
   },
   methods: {
+    //
     initChecked() {
       var nodes = this.$refs.tree.getCheckedNodes();
       for (var i = 0; i < nodes.length; i++) {
@@ -337,6 +271,7 @@ export default {
         }
       }
     },
+    //
     async selectChange(tree, selectedItem) {
       selectedItem.selected = !selectedItem.selected;
     },
@@ -446,6 +381,7 @@ export default {
         }
       }
     },
+    //
     addHeatmap(selectedItem) {
       if (selectedItem.title == "人流热力图") {
         axios.get("/data/hotpoint.json").then((res) => {
@@ -638,47 +574,6 @@ export default {
           format: "image/jpeg",
           tileMatrixSetID: "tiandituImgMarker",
           maximumLevel: 16,
-        });
-        layersData[data.title] =
-          viewer.imageryLayers.addImageryProvider(provider);
-      } else if (data.title == "武汉市行政区划") {
-        var provider = new window.Cesium.WebMapServiceImageryProvider({
-          url: URL.geoserver + "/jiujiang/wms",
-          layers: "jiujiang:jiujiang_quhua",
-          parameters: {
-            transparent: true, //是否透明
-            format: "image/png",
-            version: "1.1.0",
-            srs: "EPSG:4326",
-          },
-        });
-        layersData[data.title] =
-          viewer.imageryLayers.addImageryProvider(provider);
-        // viewer.camera.flyTo({
-        //   destination: Cesium.Cartesian3.fromDegrees(
-        //     115.42510230563575,
-        //     29.38086287024092,
-        //     350000,
-        //   ),
-        // });
-      } else if (data.title == "武汉市基础影像") {
-        var provider = new Cesium.UrlTemplateImageryProvider({
-          url: URL.tomcat + "/jiujiangyingxiang/tiles/{z1}/{x}/{reverseY}.png",
-          tilingScheme: new Cesium.GeographicTilingScheme(),
-          minimumLevel: 2,
-          maximumLevel: 18,
-          fileExtension: "png",
-          customTags: {
-            z1: function (imageryProvider, x, y, level) {
-              return level + 1;
-            },
-          },
-          rectangle: new Cesium.Rectangle(
-            Cesium.Math.toRadians(113.936682462226),
-            Cesium.Math.toRadians(28.6884026525604),
-            Cesium.Math.toRadians(116.899083564155),
-            Cesium.Math.toRadians(30.0754823210523)
-          ),
         });
         layersData[data.title] =
           viewer.imageryLayers.addImageryProvider(provider);
