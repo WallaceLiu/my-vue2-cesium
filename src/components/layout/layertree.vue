@@ -95,6 +95,7 @@ export default {
               title: "三维建筑白膜",
               checked: false,
               isB3DM: true,
+              isLayer: true,
             },
           ],
         },
@@ -106,9 +107,15 @@ export default {
           children: [
             {
               id: "2_1",
-              title: "冰川dsm",
+              title: "distributionBox",
               checked: false,
-              isB3DM: true,
+              isGLTF: true,
+            },
+            {
+              id: "2_2",
+              title: "House01",
+              checked: false,
+              isGLTF: true,
             },
           ],
         },
@@ -285,11 +292,57 @@ export default {
           this.removeB3DMData(selectedItem);
         }
       }
-      if (viewer.terrainProvider instanceof Cesium.EllipsoidTerrainProvider) {
-        for (var j = 0; j < entities.length; j++) {
-          var _entity = entities[j];
-          _entity.polygon.extrudedHeight = _entity.properties._Height._value;
-        }
+
+      if ((selectedItem.id = "2_1")) {
+        // var origin = Cesium.Cartesian3.fromDegrees(-120, 44.0, 0);
+        // // 创建一个本地的东北向上坐标系，其原点为经度-120度，纬度44.0度。
+        // // 可以随时更改模型的modelMatrix属性以移动或旋转模型。
+        // var modelMatrix = Cesium.Transforms.eastNorthUpToFixedFrame(origin);
+        // var model = viewer.scene.primitives.add(
+        //   Cesium.Model.fromGltf({
+        //     url: "/simpledata/power/distributionBox.gltf",
+        //     modelMatrix: modelMatrix,
+        //     minimumPixelSize: 128,
+        //     maximumScale: 20000,
+        //   })
+        // );
+        // model.readyPromise.then(function (model) {
+        //   // Play all animations when the model is ready to render
+        //   model.activeAnimations.addAll();
+        //   // model.activeAnimations.addAll({
+        //   //   // type:ModelAnimationLoop
+        //   //   // NONE 只播放一次；REPEAT 从头开始循环播放；MIRRORED_REPEAT 首先，将其向前播放，然后反向播放，然后向前播放
+        //   //   loop: Cesium.ModelAnimationLoop.REPEAT, // 循环播放动画
+        //   // });
+        // });
+
+        // viewer.zoomTo(viewer.entities);
+        const position = Cesium.Cartesian3.fromDegrees(
+          -123.0744619,
+          44.0503706,
+          0
+        );
+        const heading = Cesium.Math.toRadians(135);
+        const pitch = 0;
+        const roll = 0;
+        const hpr = new Cesium.HeadingPitchRoll(heading, pitch, roll);
+        const orientation = Cesium.Transforms.headingPitchRollQuaternion(
+          position,
+          hpr
+        );
+        const url="/simpledata/power/distributionBox.gltf"
+
+        const entity = viewer.entities.add({
+          name: url,
+          position: position,
+          orientation: orientation,
+          model: {
+            uri: url,
+            minimumPixelSize: 128,
+            maximumScale: 20000,
+          },
+        });
+        viewer.trackedEntity = entity;
       }
     },
     //
@@ -318,6 +371,24 @@ export default {
         });
         layersData[data.title] =
           viewer.imageryLayers.addImageryProvider(provider);
+      } else if (data.title == "三维建筑白膜") {
+        // const tileset = new Cesium.Cesium3DTileset({
+        //   url: "/simpledata/3dtiles/qx-dyt/tileset.json", // 带网络属性模板
+        //   maximumScreenSpaceError: 1, // Temporary workaround for low memory mobile devices - Increase maximum error to 8.
+        //   maximumNumberOfLoadedTiles: 1000, // Temporary workaround for low memory mobile devices - Decrease (disable) tile cache.
+        //   position: { alt: 452.9 },
+        //   center: {
+        //     lat: 34.216894,
+        //     lng: 108.959834,
+        //     alt: 591,
+        //     heading: 4,
+        //     pitch: -37,
+        //   },
+        //   show: true,
+        // });
+        // viewer.scene.primitives.add(tileset);
+        // viewer.flyTo(tileset);
+        alert("三维建筑白膜");
       }
     },
     removeLayerData(data) {

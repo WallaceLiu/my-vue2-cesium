@@ -1,1 +1,2727 @@
-define(["./Cartesian2-08065eec","./AxisAlignedBoundingBox-06bbfd79","./Transforms-475655a6","./when-ad3237a0","./Check-be2d5acb","./TerrainEncoding-8815c496","./Math-5ca9b250","./OrientedBoundingBox-4a03a74e","./WebMercatorProjection-2bca7e98","./RuntimeError-767bd866","./createTaskProcessorWorker","./combine-1510933d","./AttributeCompression-9fbb8447","./ComponentDatatype-a867ddaa","./WebGLConstants-1c8239cc","./EllipsoidTangentPlane-797b6936","./IntersectionTests-0e877967","./Plane-e6ee56b8"],function(Ce,Fe,Le,Ne,e,Oe,Re,ze,He,r,t,a,i,n,s,l,o,f){"use strict";var u=Object.freeze({NONE:0,LERC:1}),_e={};_e.DEFAULT_STRUCTURE=Object.freeze({heightScale:1,heightOffset:0,elementsPerHeight:1,stride:1,elementMultiplier:256,isBigEndian:!1});var Ye=new Ce.Cartesian3,We=new Le.Matrix4,Xe=new Ce.Cartesian3,Ze=new Ce.Cartesian3;_e.computeVertices=function(e){var t,a,i,r=Math.cos,n=Math.sin,s=Math.sqrt,l=Math.atan,o=Math.exp,f=Re.CesiumMath.PI_OVER_TWO,u=Re.CesiumMath.toRadians,c=e.heightmap,d=e.width,h=e.height,m=e.skirtHeight,g=0<m,p=Ne.defaultValue(e.isGeographic,!0),x=Ne.defaultValue(e.ellipsoid,Ce.Ellipsoid.WGS84),w=1/x.maximumRadius,k=Ce.Rectangle.clone(e.nativeRectangle),y=Ce.Rectangle.clone(e.rectangle),b=Ne.defined(y)?(t=y.west,a=y.south,i=y.east,y.north):p?(t=u(k.west),a=u(k.south),i=u(k.east),u(k.north)):(t=k.west*w,a=f-2*l(o(-k.south*w)),i=k.east*w,f-2*l(o(-k.north*w))),I=e.relativeToCenter,U=Ne.defined(I),I=U?I:Ce.Cartesian3.ZERO,v=Ne.defaultValue(e.includeWebMercatorT,!1),T=Ne.defaultValue(e.exaggeration,1),M=Ne.defaultValue(e.exaggerationRelativeHeight,0),V=1!==T,e=Ne.defaultValue(e.structure,_e.DEFAULT_STRUCTURE),A=Ne.defaultValue(e.heightScale,_e.DEFAULT_STRUCTURE.heightScale),B=Ne.defaultValue(e.heightOffset,_e.DEFAULT_STRUCTURE.heightOffset),D=Ne.defaultValue(e.elementsPerHeight,_e.DEFAULT_STRUCTURE.elementsPerHeight),S=Ne.defaultValue(e.stride,_e.DEFAULT_STRUCTURE.stride),P=Ne.defaultValue(e.elementMultiplier,_e.DEFAULT_STRUCTURE.elementMultiplier),E=Ne.defaultValue(e.isBigEndian,_e.DEFAULT_STRUCTURE.isBigEndian),C=Ce.Rectangle.computeWidth(k),F=Ce.Rectangle.computeHeight(k),L=C/(d-1),N=F/(h-1);p||(C*=w,F*=w);var O,R,e=x.radiiSquared,z=e.x,H=e.y,_=e.z,Y=65536,W=-65536,e=Le.Transforms.eastNorthUpToFixedFrame(I,x),X=Le.Matrix4.inverseTransformation(e,We);v&&(O=He.WebMercatorProjection.geodeticLatitudeToMercatorAngle(a),R=1/(He.WebMercatorProjection.geodeticLatitudeToMercatorAngle(b)-O));var Z=Xe;Z.x=Number.POSITIVE_INFINITY,Z.y=Number.POSITIVE_INFINITY,Z.z=Number.POSITIVE_INFINITY;var j=Ze;j.x=Number.NEGATIVE_INFINITY,j.y=Number.NEGATIVE_INFINITY,j.z=Number.NEGATIVE_INFINITY;var G=Number.POSITIVE_INFINITY,q=d*h,Q=q+(0<m?2*d+2*h:0),J=new Array(Q),K=new Array(Q),$=new Array(Q),ee=v?new Array(Q):[],te=V?new Array(Q):[],ae=0,ie=h,re=0,ne=d;g&&(--ae,++ie,--re,++ne);for(var se=ae;se<ie;++se){var le=se;h<=(le=le<0?0:le)&&(le=h-1);var oe=k.north-N*le,oe=p?u(oe):f-2*l(o(-oe*w)),fe=Re.CesiumMath.clamp(fe=(oe-a)/(b-a),0,1),ue=se===ae,ce=se===ie-1;0<m&&(ue?oe+=1e-5*F:ce&&(oe-=1e-5*F));var de,he=r(oe),me=n(oe),ge=_*me;v&&(de=(He.WebMercatorProjection.geodeticLatitudeToMercatorAngle(oe)-O)*R);for(var pe=re;pe<ne;++pe){var xe=pe,we=le*(d*S)+(xe=d<=(xe=xe<0?0:xe)?d-1:xe)*S;if(1===D)ye=c[we];else{var ke,ye=0;if(E)for(ke=0;ke<D;++ke)ye=ye*P+c[we+ke];else for(ke=D-1;0<=ke;--ke)ye=ye*P+c[we+ke]}ye=ye*A+B;var W=Math.max(W,ye),Y=Math.min(Y,ye),be=k.west+L*xe;p?be=u(be):be*=w;var Ie=Re.CesiumMath.clamp(Ie=(be-t)/(i-t),0,1),Ue=le*d+xe;if(0<m){var ve=pe===re,Te=pe===ne-1,Me=ue||ce||ve||Te;if((ue||ce)&&(ve||Te))continue;Me&&(ye-=m,ve?(Ue=h-le-1+q,be-=1e-5*C):ce?Ue=q+h+(d-xe-1):Te?(Ue=q+h+d+le,be+=1e-5*C):ue&&(Ue=q+h+d+h+xe))}var Ve=he*r(be),Me=he*n(be),ve=z*Ve,Te=H*Me,xe=1/s(ve*Ve+Te*Me+ge*me),be=ve*xe,ve=Te*xe,Te=ge*xe,xe=new Ce.Cartesian3;xe.x=be+Ve*ye,xe.y=ve+Me*ye,xe.z=Te+me*ye,Le.Matrix4.multiplyByPoint(X,xe,Ye),Ce.Cartesian3.minimumByComponent(Ye,Z,Z),Ce.Cartesian3.maximumByComponent(Ye,j,j),G=Math.min(G,ye),J[Ue]=xe,$[Ue]=new Ce.Cartesian2(Ie,fe),K[Ue]=ye,v&&(ee[Ue]=de),V&&(te[Ue]=x.geodeticSurfaceNormal(xe))}}var Ae,Be,g=Le.BoundingSphere.fromPoints(J);Ne.defined(y)&&(Ae=ze.OrientedBoundingBox.fromRectangle(y,Y,W,x)),U&&(Be=new Oe.EllipsoidalOccluder(x).computeHorizonCullingPointPossiblyUnderEllipsoid(I,J,Y));for(var U=new Fe.AxisAlignedBoundingBox(Z,j,I),De=new Oe.TerrainEncoding(I,U,G,W,e,!1,v,V,T,M),Se=new Float32Array(Q*De.stride),Pe=0,Ee=0;Ee<Q;++Ee)Pe=De.encode(Se,Pe,J[Ee],$[Ee],K[Ee],void 0,ee[Ee],te[Ee]);return{vertices:Se,maximumHeight:W,minimumHeight:Y,encoding:De,boundingSphere3D:g,orientedBoundingBox:Ae,occludeePointInScaledSpace:Be}};var c,d,h,m,g,B,p,x,w,k,y,b={};c={defaultNoDataValue:0,decode:function(e,t){var a=(t=t||{}).encodedMaskData||null===t.encodedMaskData,i=g(e,t.inputOffset||0,a),e=null!==t.noDataValue?t.noDataValue:c.defaultNoDataValue,a=d(i,t.pixelType||Float32Array,t.encodedMaskData,e,t.returnMask),e={width:i.width,height:i.height,pixelData:a.resultPixels,minValue:a.minValue,maxValue:i.pixels.maxValue,noDataValue:e};return a.resultMask&&(e.maskData=a.resultMask),t.returnEncodedMask&&i.mask&&(e.encodedMaskData=i.mask.bitset||null),t.returnFileInfo&&(e.fileInfo=h(i),t.computeUsedBitDepths&&(e.fileInfo.bitDepths=m(i))),e}},d=function(e,t,a,i,r){var n,s,l,o=0,f=e.pixels.numBlocksX,u=e.pixels.numBlocksY,c=Math.floor(e.width/f),d=Math.floor(e.height/u),h=2*e.maxZError,m=Number.MAX_VALUE;a=a||(e.mask?e.mask.bitset:null),s=new t(e.width*e.height),r&&a&&(l=new Uint8Array(e.width*e.height));for(var g,p,x=new Float32Array(c*d),w=0;w<=u;w++){var k=w!==u?d:e.height%u;if(0!==k)for(var y=0;y<=f;y++){var b=y!==f?c:e.width%f;if(0!==b){var I,U,v,T,M=w*e.width*d+y*c,V=e.width-b,A=e.pixels.blocks[o];if(A.encoding<2?(I=0===A.encoding?A.rawData:(B(A.stuffedData,A.bitsPerPixel,A.numValidPixels,A.offset,h,x,e.pixels.maxValue),x),U=0):v=2===A.encoding?0:A.offset,a)for(p=0;p<k;p++){for(7&M&&(T=a[M>>3],T<<=7&M),g=0;g<b;g++)128&(T=!(7&M)?a[M>>3]:T)?(l&&(l[M]=1),m=(n=A.encoding<2?I[U++]:v)<m?n:m,s[M++]=n):(l&&(l[M]=0),s[M++]=i),T<<=1;M+=V}else if(A.encoding<2)for(p=0;p<k;p++){for(g=0;g<b;g++)m=(n=I[U++])<m?n:m,s[M++]=n;M+=V}else for(m=v<m?v:m,p=0;p<k;p++){for(g=0;g<b;g++)s[M++]=v;M+=V}if(1===A.encoding&&U!==A.numValidPixels)throw"Block and Mask do not match";o++}}}return{resultPixels:s,resultMask:l,minValue:m}},h=function(e){return{fileIdentifierString:e.fileIdentifierString,fileVersion:e.fileVersion,imageType:e.imageType,height:e.height,width:e.width,maxZError:e.maxZError,eofOffset:e.eofOffset,mask:e.mask?{numBlocksX:e.mask.numBlocksX,numBlocksY:e.mask.numBlocksY,numBytes:e.mask.numBytes,maxValue:e.mask.maxValue}:null,pixels:{numBlocksX:e.pixels.numBlocksX,numBlocksY:e.pixels.numBlocksY,numBytes:e.pixels.numBytes,maxValue:e.pixels.maxValue,noDataValue:e.noDataValue}}},m=function(e){for(var t=e.pixels.numBlocksX*e.pixels.numBlocksY,a={},i=0;i<t;i++){var r=e.pixels.blocks[i];0===r.encoding?a.float32=!0:1===r.encoding?a[r.bitsPerPixel]=!0:a[0]=!0}return Object.keys(a)},g=function(e,t,a){var i={},r=new Uint8Array(e,t,10);if(i.fileIdentifierString=String.fromCharCode.apply(null,r),"CntZImage"!==i.fileIdentifierString.trim())throw"Unexpected file identifier string: "+i.fileIdentifierString;t+=10;var n=new DataView(e,t,24);if(i.fileVersion=n.getInt32(0,!0),i.imageType=n.getInt32(4,!0),i.height=n.getUint32(8,!0),i.width=n.getUint32(12,!0),i.maxZError=n.getFloat64(16,!0),t+=24,!a)if(n=new DataView(e,t,16),i.mask={},i.mask.numBlocksY=n.getUint32(0,!0),i.mask.numBlocksX=n.getUint32(4,!0),i.mask.numBytes=n.getUint32(8,!0),i.mask.maxValue=n.getFloat32(12,!0),t+=16,0<i.mask.numBytes){var s=new Uint8Array(Math.ceil(i.width*i.height/8)),l=(n=new DataView(e,t,i.mask.numBytes)).getInt16(0,!0),o=2,f=0;do{if(0<l)for(;l--;)s[f++]=n.getUint8(o++);else for(var u=n.getUint8(o++),l=-l;l--;)s[f++]=u}while(l=n.getInt16(o,!0),(o+=2)<i.mask.numBytes);if(-32768!==l||f<s.length)throw"Unexpected end of mask RLE encoding";i.mask.bitset=s,t+=i.mask.numBytes}else 0==(i.mask.numBytes|i.mask.numBlocksY|i.mask.maxValue)&&(i.mask.bitset=new Uint8Array(Math.ceil(i.width*i.height/8)));n=new DataView(e,t,16),i.pixels={},i.pixels.numBlocksY=n.getUint32(0,!0),i.pixels.numBlocksX=n.getUint32(4,!0),i.pixels.numBytes=n.getUint32(8,!0),i.pixels.maxValue=n.getFloat32(12,!0),t+=16;var r=i.pixels.numBlocksX,a=i.pixels.numBlocksY,c=r+(0<i.width%r?1:0),d=a+(0<i.height%a?1:0);i.pixels.blocks=new Array(c*d);for(var h=0,m=0;m<d;m++)for(var g=0;g<c;g++){var p=0,x=e.byteLength-t;n=new DataView(e,t,Math.min(10,x));var w={};i.pixels.blocks[h++]=w;var k,x=n.getUint8(0);if(p++,w.encoding=63&x,3<w.encoding)throw"Invalid block encoding ("+w.encoding+")";if(2!==w.encoding){if(0!==x&&2!==x){if(x>>=6,2===(w.offsetType=x))w.offset=n.getInt8(1),p++;else if(1===x)w.offset=n.getInt16(1,!0),p+=2;else{if(0!==x)throw"Invalid block offset type";w.offset=n.getFloat32(1,!0),p+=4}if(1===w.encoding)if(x=n.getUint8(p),p++,w.bitsPerPixel=63&x,x>>=6,2===(w.numValidPixelsType=x))w.numValidPixels=n.getUint8(p),p++;else if(1===x)w.numValidPixels=n.getUint16(p,!0),p+=2;else{if(0!==x)throw"Invalid valid pixel count type";w.numValidPixels=n.getUint32(p,!0),p+=4}}if(t+=p,3!==w.encoding)if(0===w.encoding){var y=(i.pixels.numBytes-1)/4;if(y!==Math.floor(y))throw"uncompressed block has invalid length";k=new ArrayBuffer(4*y),new Uint8Array(k).set(new Uint8Array(e,t,4*y));var b=new Float32Array(k);w.rawData=b,t+=4*y}else 1===w.encoding&&(b=Math.ceil(w.numValidPixels*w.bitsPerPixel/8),y=Math.ceil(b/4),k=new ArrayBuffer(4*y),new Uint8Array(k).set(new Uint8Array(e,t,b)),w.stuffedData=new Uint32Array(k),t+=b)}else t++}return i.eofOffset=t,i},B=function(e,t,a,i,r,n,s){var l,o,f,u,c=(1<<t)-1,d=0,h=0,m=Math.ceil((s-i)/r),g=4*e.length-Math.ceil(t*a/8);for(e[e.length-1]<<=8*g,l=0;l<a;l++)0===h&&(u=e[d++],h=32),t<=h?(f=u>>>h-t&c,h-=t):(f=(u&c)<<(o=t-h)&c,f+=(u=e[d++])>>>(h=32-o)),n[l]=f<m?i+f*r:s;return n},x=c,w=function(){var y=function(e,t,a,i,r,n,s,l){var o,f,u,c,d,h=(1<<a)-1,m=0,g=0,p=4*e.length-Math.ceil(a*i/8);if(e[e.length-1]<<=8*p,r)for(o=0;o<i;o++)0===g&&(u=e[m++],g=32),a<=g?(f=u>>>g-a&h,g-=a):(f=(u&h)<<(c=a-g)&h,f+=(u=e[m++])>>>(g=32-c)),t[o]=r[f];else for(d=Math.ceil((l-n)/s),o=0;o<i;o++)0===g&&(u=e[m++],g=32),a<=g?(f=u>>>g-a&h,g-=a):(f=(u&h)<<(c=a-g)&h,f+=(u=e[m++])>>>(g=32-c)),t[o]=f<d?n+f*s:l},b=function(e,t,a,i,r,n){var s,l,o=(1<<t)-1,f=0,u=0,c=0,d=0,h=[],m=4*e.length-Math.ceil(t*a/8);e[e.length-1]<<=8*m;for(var g=Math.ceil((n-i)/r),u=0;u<a;u++)0===c&&(l=e[f++],c=32),t<=c?(d=l>>>c-t&o,c-=t):(d=(l&o)<<(s=t-c)&o,d+=(l=e[f++])>>>(c=32-s)),h[u]=d<g?i+d*r:n;return h.unshift(i),h},I=function(e,t,a,i,r,n,s,l){var o,f,u,c=(1<<a)-1,d=0,h=0,m=0;if(r)for(p=0;p<i;p++)0===h&&(f=e[d++],h=32,m=0),a<=h?(o=f>>>m&c,h-=a,m+=a):(o=f>>>m&c,h=32-(u=a-h),o|=((f=e[d++])&(1<<u)-1)<<a-u,m=u),t[p]=r[o];else for(var g=Math.ceil((l-n)/s),p=0;p<i;p++)0===h&&(f=e[d++],h=32,m=0),a<=h?(o=f>>>m&c,h-=a,m+=a):(o=f>>>m&c,h=32-(u=a-h),o|=((f=e[d++])&(1<<u)-1)<<a-u,m=u),t[p]=o<g?n+o*s:l;return t},U=function(e,t,a,i,r,n){for(var s,l,o=(1<<t)-1,f=0,u=0,c=0,d=0,h=0,m=[],g=Math.ceil((n-i)/r),u=0;u<a;u++)0===c&&(l=e[f++],c=32,h=0),t<=c?(d=l>>>h&o,c-=t,h+=t):(d=l>>>h&o,c=32-(s=t-c),d|=((l=e[f++])&(1<<s)-1)<<t-s,h=s),m[u]=d<g?i+d*r:n;return m.unshift(i),m},v=function(e,t,a,i){var r,n,s,l,o=(1<<a)-1,f=0,u=0,c=4*e.length-Math.ceil(a*i/8);for(e[e.length-1]<<=8*c,r=0;r<i;r++)0===u&&(s=e[f++],u=32),a<=u?(n=s>>>u-a&o,u-=a):(n=(s&o)<<(l=a-u)&o,n+=(s=e[f++])>>>(u=32-l)),t[r]=n;return t},T=function(e,t,a,i){for(var r,n,s,l=(1<<a)-1,o=0,f=0,u=0,c=0;c<i;c++)0===f&&(n=e[o++],f=32,u=0),a<=f?(r=n>>>u&l,f-=a,u+=a):(r=n>>>u&l,f=32-(s=a-f),r|=((n=e[o++])&(1<<s)-1)<<a-s,u=s),t[c]=r;return t},R={HUFFMAN_LUT_BITS_MAX:12,computeChecksumFletcher32:function(e){for(var t=65535,a=65535,i=e.length,r=Math.floor(i/2),n=0;r;){var s=359<=r?359:r;for(r-=s;t+=e[n++]<<8,a+=t+=e[n++],--s;);t=(65535&t)+(t>>>16),a=(65535&a)+(a>>>16)}return 1&i&&(a+=t+=e[n]<<8),((a=(65535&a)+(a>>>16))<<16|(t=(65535&t)+(t>>>16)))>>>0},readHeaderInfo:function(e,t){var a=t.ptr,i=new Uint8Array(e,a,6),r={};if(r.fileIdentifierString=String.fromCharCode.apply(null,i),0!==r.fileIdentifierString.lastIndexOf("Lerc2",0))throw"Unexpected file identifier string (expect Lerc2 ): "+r.fileIdentifierString;a+=6;var n=new DataView(e,a,8),i=n.getInt32(0,!0);if(a+=4,3<=(r.fileVersion=i)&&(r.checksum=n.getUint32(4,!0),a+=4),n=new DataView(e,a,12),r.height=n.getUint32(0,!0),r.width=n.getUint32(4,!0),a+=8,4<=i?(r.numDims=n.getUint32(8,!0),a+=4):r.numDims=1,n=new DataView(e,a,40),r.numValidPixel=n.getUint32(0,!0),r.microBlockSize=n.getInt32(4,!0),r.blobSize=n.getInt32(8,!0),r.imageType=n.getInt32(12,!0),r.maxZError=n.getFloat64(16,!0),r.zMin=n.getFloat64(24,!0),r.zMax=n.getFloat64(32,!0),a+=40,t.headerInfo=r,t.ptr=a,3<=i&&this.computeChecksumFletcher32(new Uint8Array(e,a-(4<=i?52:48),r.blobSize-14))!==r.checksum)throw"Checksum failed.";return!0},checkMinMaxRanges:function(e,t){var a=t.headerInfo,i=this.getDataTypeArray(a.imageType),r=a.numDims*this.getDataTypeSize(a.imageType),n=this.readSubArray(e,t.ptr,i,r),s=this.readSubArray(e,t.ptr+r,i,r);t.ptr+=2*r;for(var l=!0,o=0;o<a.numDims;o++)if(n[o]!==s[o]){l=!1;break}return a.minValues=n,a.maxValues=s,l},readSubArray:function(e,t,a,i){var r=a===Uint8Array?new Uint8Array(e,t,i):(r=new ArrayBuffer(i),new Uint8Array(r).set(new Uint8Array(e,t,i)),new a(r));return r},readMask:function(e,t){var a=t.ptr,i=t.headerInfo,r=i.width*i.height,i=i.numValidPixel,n=new DataView(e,a,4),s={};if(s.numBytes=n.getUint32(0,!0),a+=4,(0===i||r===i)&&0!==s.numBytes)throw"invalid mask";if(0===i)o=new Uint8Array(Math.ceil(r/8)),s.bitset=o,d=new Uint8Array(r),t.pixels.resultMask=d,a+=s.numBytes;else if(0<s.numBytes){var l,o=new Uint8Array(Math.ceil(r/8)),f=(n=new DataView(e,a,s.numBytes)).getInt16(0,!0),u=2,c=0;do{if(0<f)for(;f--;)o[c++]=n.getUint8(u++);else for(l=n.getUint8(u++),f=-f;f--;)o[c++]=l}while(f=n.getInt16(u,!0),(u+=2)<s.numBytes);if(-32768!==f||c<o.length)throw"Unexpected end of mask RLE encoding";for(var d=new Uint8Array(r),h=0,m=0,m=0;m<r;m++)7&m?(h=o[m>>3],h<<=7&m):h=o[m>>3],128&h&&(d[m]=1);t.pixels.resultMask=d,s.bitset=o,a+=s.numBytes}return t.ptr=a,t.mask=s,!0},readDataOneSweep:function(e,t,a){var i=t.ptr,r=t.headerInfo,n=r.numDims,s=r.width*r.height,l=r.imageType,r=r.numValidPixel*R.getDataTypeSize(l)*n,o=t.pixels.resultMask,f=a===Uint8Array?new Uint8Array(e,i,r):(l=new ArrayBuffer(r),new Uint8Array(l).set(new Uint8Array(e,i,r)),new a(l));if(f.length===s*n)t.pixels.resultPixels=f;else{t.pixels.resultPixels=new a(s*n);var u,c=0,d=0,h=0;if(1<n)for(h=0;h<n;h++)for(u=h*s,d=0;d<s;d++)o[d]&&(t.pixels.resultPixels[u+d]=f[c++]);else for(d=0;d<s;d++)o[d]&&(t.pixels.resultPixels[d]=f[c++])}return t.ptr=i+=r,!0},readHuffmanTree:function(e,t){var a=this.HUFFMAN_LUT_BITS_MAX,i=new DataView(e,t.ptr,16);if(t.ptr+=16,i.getInt32(0,!0)<2)throw"unsupported Huffman version";var r=i.getInt32(4,!0),n=i.getInt32(8,!0),s=i.getInt32(12,!0);if(s<=n)return!1;var l=new Uint32Array(s-n);R.decodeBits(e,t,l);for(var o,f,u,c=[],d=n;d<s;d++)c[o=d-(d<r?0:r)]={first:l[d-n],second:null};var h=e.byteLength-t.ptr,i=Math.ceil(h/4),i=new ArrayBuffer(4*i);new Uint8Array(i).set(new Uint8Array(e,t.ptr,h));var m=new Uint32Array(i),g=0,p=0,x=m[0];for(d=n;d<s;d++)0<(u=c[o=d-(d<r?0:r)].first)&&(c[o].second=x<<g>>>32-u,u<=32-g?32===(g+=u)&&(g=0,x=m[++p]):(x=m[++p],c[o].second|=x>>>32-(g+=u-32)));var w=0,k=0,y=new V;for(d=0;d<c.length;d++)void 0!==c[d]&&(w=Math.max(w,c[d].first));k=a<=w?a:w,30<=w&&console.log("WARning, large NUM LUT BITS IS "+w);var b,I,U,v,T,M=[];for(d=n;d<s;d++)if(0<(u=c[o=d-(d<r?0:r)].first))if(b=[u,o],u<=k)for(I=c[o].second<<k-u,U=1<<k-u,f=0;f<U;f++)M[I|f]=b;else for(I=c[o].second,T=y,v=u-1;0<=v;v--)T=I>>>v&1?(T.right||(T.right=new V),T.right):(T.left||(T.left=new V),T.left),0!==v||T.val||(T.val=b[1]);return{decodeLut:M,numBitsLUTQick:k,numBitsLUT:w,tree:y,stuffedData:m,srcPtr:p,bitPos:g}},readHuffman:function(e,t,a){var i,r,n,s,l,o,f,u,c,d=t.headerInfo,h=d.numDims,m=t.headerInfo.height,g=t.headerInfo.width,p=g*m,e=this.readHuffmanTree(e,t),x=e.decodeLut,w=e.tree,k=e.stuffedData,y=e.srcPtr,b=e.bitPos,I=e.numBitsLUTQick,U=e.numBitsLUT,v=0===t.headerInfo.imageType?128:0,T=t.pixels.resultMask,M=0;0<b&&(y++,b=0);for(var V=k[y],A=1===t.encodeMode,B=new a(p*h),D=B,S=0;S<d.numDims;S++){if(1<h&&(D=new a(B.buffer,p*S,p),M=0),t.headerInfo.numValidPixel===g*m)for(o=u=0;o<m;o++)for(f=0;f<g;f++,u++){if(r=0,l=s=V<<b>>>32-I,x[l=32-b<I?s|=k[y+1]>>>64-b-I:l])r=x[l][1],b+=x[l][0];else for(l=s=V<<b>>>32-U,32-b<U&&(l=s|=k[y+1]>>>64-b-U),i=w,c=0;c<U;c++)if(!(i=s>>>U-c-1&1?i.right:i.left).left&&!i.right){r=i.val,b=b+c+1;break}32<=b&&(b-=32,V=k[++y]),n=r-v,A?(n+=!(0<f)&&0<o?D[u-g]:M,n&=255,M=D[u]=n):D[u]=n}else for(o=u=0;o<m;o++)for(f=0;f<g;f++,u++)if(T[u]){if(r=0,l=s=V<<b>>>32-I,x[l=32-b<I?s|=k[y+1]>>>64-b-I:l])r=x[l][1],b+=x[l][0];else for(l=s=V<<b>>>32-U,32-b<U&&(l=s|=k[y+1]>>>64-b-U),i=w,c=0;c<U;c++)if(!(i=s>>>U-c-1&1?i.right:i.left).left&&!i.right){r=i.val,b=b+c+1;break}32<=b&&(b-=32,V=k[++y]),n=r-v,A?(!(0<f&&T[u-1])&&0<o&&T[u-g]?n+=D[u-g]:n+=M,n&=255,M=D[u]=n):D[u]=n}t.ptr=t.ptr+4*(y+1)+(0<b?4:0)}t.pixels.resultPixels=B},decodeBits:function(e,t,a,i,r){var n=t.headerInfo,s=n.fileVersion,l=0,o=5<=e.byteLength-t.ptr?5:e.byteLength-t.ptr,f=new DataView(e,t.ptr,o),u=f.getUint8(0);l++;var c=u>>6,d=0==c?4:3-c,o=0<(32&u),c=31&u,u=0;if(1==d)u=f.getUint8(l),l++;else if(2==d)u=f.getUint16(l,!0),l+=2;else{if(4!=d)throw"Invalid valid pixel count type";u=f.getUint32(l,!0),l+=4}var h,m,g,p,x,w,k,d=2*n.maxZError,n=1<n.numDims?n.maxValues[r]:n.zMax;if(o){for(t.counter.lut++,w=f.getUint8(l),l++,p=Math.ceil((w-1)*c/8),x=Math.ceil(p/4),m=new ArrayBuffer(4*x),g=new Uint8Array(m),t.ptr+=l,g.set(new Uint8Array(e,t.ptr,p)),f=new Uint32Array(m),t.ptr+=p,k=0;w-1>>>k;)k++;p=Math.ceil(u*k/8),x=Math.ceil(p/4),m=new ArrayBuffer(4*x),(g=new Uint8Array(m)).set(new Uint8Array(e,t.ptr,p)),h=new Uint32Array(m),t.ptr+=p,f=(3<=s?U:b)(f,c,w-1,i,d,n),(3<=s?I:y)(h,a,k,u,f)}else t.counter.bitstuffer++,k=c,t.ptr+=l,0<k&&(p=Math.ceil(u*k/8),x=Math.ceil(p/4),m=new ArrayBuffer(4*x),(g=new Uint8Array(m)).set(new Uint8Array(e,t.ptr,p)),h=new Uint32Array(m),t.ptr+=p,3<=s?null===i?T(h,a,k,u):I(h,a,k,u,!1,i,d,n):null===i?v(h,a,k,u):y(h,a,k,u,!1,i,d,n))},readTiles:function(e,t,a){var i=t.headerInfo,r=i.width,n=i.height,s=i.microBlockSize,l=i.imageType,o=R.getDataTypeSize(l),f=Math.ceil(r/s),u=Math.ceil(n/s);t.pixels.numBlocksY=u,t.pixels.numBlocksX=f;for(var c,d,h,m,g,p,x,w,k,y,b,I,U,v,T=t.pixels.ptr=0,M=0,V=0,A=0,B=0,D=0,S=0,P=0,E=new a(s*s),C=n%s||s,F=r%s||s,L=i.numDims,N=t.pixels.resultMask,O=t.pixels.resultPixels,V=0;V<u;V++)for(c=V!==u-1?s:C,A=0;A<f;A++)for(B=V*r*s+A*s,p=r-(d=A!==f-1?s:F),v=0;v<L;v++){if(1<L&&(O=new a(t.pixels.resultPixels.buffer,r*n*v*o,r*n)),h=e.byteLength-t.ptr,k={},P=0,P++,g=(m=(w=new DataView(e,t.ptr,Math.min(10,h))).getUint8(0))>>6&255,(m>>2&15)!=(A*s>>3&15))throw"integrity issue";if(3<(b=3&m))throw t.ptr+=P,"Invalid block encoding ("+b+")";if(2!=b)if(0==b){if(t.counter.uncompressed++,t.ptr+=P,D=(D=c*d*o)<(x=e.byteLength-t.ptr)?D:x,I=new ArrayBuffer(D%o==0?D:D+o-D%o),new Uint8Array(I).set(new Uint8Array(e,t.ptr,D)),y=new a(I),S=0,N)for(T=0;T<c;T++){for(M=0;M<d;M++)N[B]&&(O[B]=y[S++]),B++;B+=p}else for(T=0;T<c;T++){for(M=0;M<d;M++)O[B++]=y[S++];B+=p}t.ptr+=S*o}else if(I=R.getDataTypeUsed(l,g),U=R.getOnePixel(k,P,I,w),P+=R.getDataTypeSize(I),3==b)if(t.ptr+=P,t.counter.constantoffset++,N)for(T=0;T<c;T++){for(M=0;M<d;M++)N[B]&&(O[B]=U),B++;B+=p}else for(T=0;T<c;T++){for(M=0;M<d;M++)O[B++]=U;B+=p}else if(t.ptr+=P,R.decodeBits(e,t,E,U,v),P=0,N)for(T=0;T<c;T++){for(M=0;M<d;M++)N[B]&&(O[B]=E[P++]),B++;B+=p}else for(T=0;T<c;T++){for(M=0;M<d;M++)O[B++]=E[P++];B+=p}else t.counter.constant++,t.ptr+=P}},formatFileInfo:function(e){return{fileIdentifierString:e.headerInfo.fileIdentifierString,fileVersion:e.headerInfo.fileVersion,imageType:e.headerInfo.imageType,height:e.headerInfo.height,width:e.headerInfo.width,numValidPixel:e.headerInfo.numValidPixel,microBlockSize:e.headerInfo.microBlockSize,blobSize:e.headerInfo.blobSize,maxZError:e.headerInfo.maxZError,pixelType:R.getPixelType(e.headerInfo.imageType),eofOffset:e.eofOffset,mask:e.mask?{numBytes:e.mask.numBytes}:null,pixels:{numBlocksX:e.pixels.numBlocksX,numBlocksY:e.pixels.numBlocksY,maxValue:e.headerInfo.zMax,minValue:e.headerInfo.zMin,noDataValue:e.noDataValue}}},constructConstantSurface:function(e){var t,a=e.headerInfo.zMax,i=e.headerInfo.numDims,r=e.headerInfo.height*e.headerInfo.width,n=r*i,s=0,l=0,o=e.pixels.resultMask;if(o)if(1<i)for(s=0;s<i;s++)for(t=s*r,l=0;l<r;l++)o[l]&&(e.pixels.resultPixels[t+l]=a);else for(l=0;l<r;l++)o[l]&&(e.pixels.resultPixels[l]=a);else if(e.pixels.resultPixels.fill)e.pixels.resultPixels.fill(a);else for(l=0;l<n;l++)e.pixels.resultPixels[l]=a},getDataTypeArray:function(e){var t;switch(e){case 0:t=Int8Array;break;case 1:t=Uint8Array;break;case 2:t=Int16Array;break;case 3:t=Uint16Array;break;case 4:t=Int32Array;break;case 5:t=Uint32Array;break;case 6:t=Float32Array;break;case 7:t=Float64Array;break;default:t=Float32Array}return t},getPixelType:function(e){var t;switch(e){case 0:t="S8";break;case 1:t="U8";break;case 2:t="S16";break;case 3:t="U16";break;case 4:t="S32";break;case 5:t="U32";break;case 6:t="F32";break;case 7:t="F64";break;default:t="F32"}return t},isValidPixelValue:function(e,t){if(null===t)return!1;var a;switch(e){case 0:a=-128<=t&&t<=127;break;case 1:a=0<=t&&t<=255;break;case 2:a=-32768<=t&&t<=32767;break;case 3:a=0<=t&&t<=65536;break;case 4:a=-2147483648<=t&&t<=2147483647;break;case 5:a=0<=t&&t<=4294967296;break;case 6:a=-34027999387901484e22<=t&&t<=34027999387901484e22;break;case 7:a=5e-324<=t&&t<=17976931348623157e292;break;default:a=!1}return a},getDataTypeSize:function(e){var t=0;switch(e){case 0:case 1:t=1;break;case 2:case 3:t=2;break;case 4:case 5:case 6:t=4;break;case 7:t=8;break;default:t=e}return t},getDataTypeUsed:function(e,t){var a=e;switch(e){case 2:case 4:a=e-t;break;case 3:case 5:a=e-2*t;break;case 6:a=0===t?e:1===t?2:1;break;case 7:a=0===t?e:e-2*t+1;break;default:a=e}return a},getOnePixel:function(e,t,a,i){var r=0;switch(a){case 0:r=i.getInt8(t);break;case 1:r=i.getUint8(t);break;case 2:r=i.getInt16(t,!0);break;case 3:r=i.getUint16(t,!0);break;case 4:r=i.getInt32(t,!0);break;case 5:r=i.getUInt32(t,!0);break;case 6:r=i.getFloat32(t,!0);break;case 7:r=i.getFloat64(t,!0);break;default:throw"the decoder does not understand this pixel type"}return r}},V=function(e,t,a){this.val=e,this.left=t,this.right=a};return{decode:function(e,t){var a=(t=t||{}).noDataValue,i=0,r={};r.ptr=t.inputOffset||0,r.pixels={},R.readHeaderInfo(e,r);var n=r.headerInfo,s=n.fileVersion,l=R.getDataTypeArray(n.imageType);R.readMask(e,r),n.numValidPixel===n.width*n.height||r.pixels.resultMask||(r.pixels.resultMask=t.maskData);var o,f=n.width*n.height;if(r.pixels.resultPixels=new l(f*n.numDims),r.counter={onesweep:0,uncompressed:0,lut:0,bitstuffer:0,constant:0,constantoffset:0},0!==n.numValidPixel)if(n.zMax===n.zMin)R.constructConstantSurface(r);else if(4<=s&&R.checkMinMaxRanges(e,r))R.constructConstantSurface(r);else{var u=new DataView(e,r.ptr,2),c=u.getUint8(0);if(r.ptr++,c)R.readDataOneSweep(e,r,l);else if(1<s&&n.imageType<=1&&Math.abs(n.maxZError-.5)<1e-5){u=u.getUint8(1);if(r.ptr++,2<(r.encodeMode=u)||s<4&&1<u)throw"Invalid Huffman flag "+u;u?R.readHuffman(e,r,l):R.readTiles(e,r,l)}else R.readTiles(e,r,l)}r.eofOffset=r.ptr,t.inputOffset?(o=r.headerInfo.blobSize+t.inputOffset-r.ptr,1<=Math.abs(o)&&(r.eofOffset=t.inputOffset+r.headerInfo.blobSize)):(o=r.headerInfo.blobSize-r.ptr,1<=Math.abs(o)&&(r.eofOffset=r.headerInfo.blobSize));var d={width:n.width,height:n.height,pixelData:r.pixels.resultPixels,minValue:n.zMin,maxValue:n.zMax,validPixelCount:n.numValidPixel,dimCount:n.numDims,dimStats:{minValues:n.minValues,maxValues:n.maxValues},maskData:r.pixels.resultMask};if(r.pixels.resultMask&&R.isValidPixelValue(n.imageType,a)){for(var h=r.pixels.resultMask,i=0;i<f;i++)h[i]||(d.pixelData[i]=a);d.noDataValue=a}return r.noDataValue=a,t.returnFileInfo&&(d.fileInfo=R.formatFileInfo(r)),d},getBandCount:function(e){for(var t=0,a=0,i={ptr:0,pixels:{}};a<e.byteLength-58;)R.readHeaderInfo(e,i),a+=i.headerInfo.blobSize,t++,i.ptr=a;return t}}}(),p=new ArrayBuffer(4),y=new Uint8Array(p),k=(new Uint32Array(p)[0]=1)===y[0],y={decode:function(e,t){if(!k)throw"Big endian system is not supported.";var a,i,r=(t=t||{}).inputOffset||0,n=new Uint8Array(e,r,10),n=String.fromCharCode.apply(null,n);if("CntZImage"===n.trim())a=x,i=1;else{if("Lerc2"!==n.substring(0,5))throw"Unexpected file identifier string: "+n;a=w,i=2}for(var s,l,o,f,u,c,d=0,h=e.byteLength-10,m=[],g={width:0,height:0,pixels:[],pixelType:t.pixelType,mask:null,statistics:[]};r<h;){var p=a.decode(e,{inputOffset:r,encodedMaskData:s,maskData:o,returnMask:0===d,returnEncodedMask:0===d,returnFileInfo:!0,pixelType:t.pixelType||null,noDataValue:t.noDataValue||null}),r=p.fileInfo.eofOffset;0===d&&(s=p.encodedMaskData,o=p.maskData,g.width=p.width,g.height=p.height,g.dimCount=p.dimCount||1,g.pixelType=p.pixelType||p.fileInfo.pixelType,g.mask=p.maskData),1<i&&p.fileInfo.mask&&0<p.fileInfo.mask.numBytes&&m.push(p.maskData),d++,g.pixels.push(p.pixelData),g.statistics.push({minValue:p.minValue,maxValue:p.maxValue,noDataValue:p.noDataValue,dimStats:p.dimStats})}if(1<i&&1<m.length){for(c=g.width*g.height,g.bandMasks=m,(o=new Uint8Array(c)).set(m[0]),f=1;f<m.length;f++)for(l=m[f],u=0;u<c;u++)o[u]=o[u]&l[u];g.maskData=o}return g}},b.Lerc=y;var I=b.Lerc;return t(function(e,t){if(e.encoding===u.LERC){try{i=I.decode(e.heightmap)}catch(e){throw new r.RuntimeError(e)}if(i.statistics[0].minValue===Number.MAX_VALUE)throw new r.RuntimeError("Invalid tile data");e.heightmap=i.pixels[0],e.width=i.width,e.height=i.height}e.ellipsoid=Ce.Ellipsoid.clone(e.ellipsoid),e.rectangle=Ce.Rectangle.clone(e.rectangle);var a=_e.computeVertices(e),i=a.vertices;return t.push(i.buffer),{vertices:i.buffer,numberOfAttributes:a.encoding.stride,minimumHeight:a.minimumHeight,maximumHeight:a.maximumHeight,gridWidth:e.width,gridHeight:e.height,boundingSphere3D:a.boundingSphere3D,orientedBoundingBox:a.orientedBoundingBox,occludeePointInScaledSpace:a.occludeePointInScaledSpace,encoding:a.encoding,westIndicesSouthToNorth:a.westIndicesSouthToNorth,southIndicesEastToWest:a.southIndicesEastToWest,eastIndicesNorthToSouth:a.eastIndicesNorthToSouth,northIndicesWestToEast:a.northIndicesWestToEast}})});
+/**
+ * Cesium - https://github.com/CesiumGS/cesium
+ *
+ * Copyright 2011-2020 Cesium Contributors
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ *
+ * Columbus View (Pat. Pend.)
+ *
+ * Portions licensed separately.
+ * See https://github.com/CesiumGS/cesium/blob/main/LICENSE.md for full licensing details.
+ */
+
+define(['./Matrix2-d35cf4b5', './AxisAlignedBoundingBox-7b93960a', './Transforms-f0a54c7b', './defaultValue-81eec7ed', './RuntimeError-8952249c', './TerrainEncoding-a8a1f120', './ComponentDatatype-9e86ac8f', './OrientedBoundingBox-0b41570b', './WebMercatorProjection-2d464b74', './_commonjsHelpers-3aae1032-26891ab7', './createTaskProcessorWorker', './combine-3c023bda', './AttributeCompression-d0b97a83', './WebGLConstants-508b9636', './EllipsoidTangentPlane-2abe082d', './IntersectionTests-a25e058d', './Plane-24f22488'], (function (Matrix2, AxisAlignedBoundingBox, Transforms, defaultValue, RuntimeError, TerrainEncoding, ComponentDatatype, OrientedBoundingBox, WebMercatorProjection, _commonjsHelpers3aae1032, createTaskProcessorWorker, combine, AttributeCompression, WebGLConstants, EllipsoidTangentPlane, IntersectionTests, Plane) { 'use strict';
+
+  /**
+   * The encoding that is used for a heightmap
+   *
+   * @enum {Number}
+   */
+  const HeightmapEncoding = {
+    /**
+     * No encoding
+     *
+     * @type {Number}
+     * @constant
+     */
+    NONE: 0,
+
+    /**
+     * LERC encoding
+     *
+     * @type {Number}
+     * @constant
+     *
+     * @see {@link https://github.com/Esri/lerc|The LERC specification}
+     */
+    LERC: 1,
+  };
+  var HeightmapEncoding$1 = Object.freeze(HeightmapEncoding);
+
+  /**
+   * Contains functions to create a mesh from a heightmap image.
+   *
+   * @namespace HeightmapTessellator
+   *
+   * @private
+   */
+  const HeightmapTessellator = {};
+
+  /**
+   * The default structure of a heightmap, as given to {@link HeightmapTessellator.computeVertices}.
+   *
+   * @constant
+   */
+  HeightmapTessellator.DEFAULT_STRUCTURE = Object.freeze({
+    heightScale: 1.0,
+    heightOffset: 0.0,
+    elementsPerHeight: 1,
+    stride: 1,
+    elementMultiplier: 256.0,
+    isBigEndian: false,
+  });
+
+  const cartesian3Scratch = new Matrix2.Cartesian3();
+  const matrix4Scratch = new Matrix2.Matrix4();
+  const minimumScratch = new Matrix2.Cartesian3();
+  const maximumScratch = new Matrix2.Cartesian3();
+
+  /**
+   * Fills an array of vertices from a heightmap image.
+   *
+   * @param {Object} options Object with the following properties:
+   * @param {Int8Array|Uint8Array|Int16Array|Uint16Array|Int32Array|Uint32Array|Float32Array|Float64Array} options.heightmap The heightmap to tessellate.
+   * @param {Number} options.width The width of the heightmap, in height samples.
+   * @param {Number} options.height The height of the heightmap, in height samples.
+   * @param {Number} options.skirtHeight The height of skirts to drape at the edges of the heightmap.
+   * @param {Rectangle} options.nativeRectangle A rectangle in the native coordinates of the heightmap's projection.  For
+   *                 a heightmap with a geographic projection, this is degrees.  For the web mercator
+   *                 projection, this is meters.
+   * @param {Number} [options.exaggeration=1.0] The scale used to exaggerate the terrain.
+   * @param {Number} [options.exaggerationRelativeHeight=0.0] The height from which terrain is exaggerated.
+   * @param {Rectangle} [options.rectangle] The rectangle covered by the heightmap, in geodetic coordinates with north, south, east and
+   *                 west properties in radians.  Either rectangle or nativeRectangle must be provided.  If both
+   *                 are provided, they're assumed to be consistent.
+   * @param {Boolean} [options.isGeographic=true] True if the heightmap uses a {@link GeographicProjection}, or false if it uses
+   *                  a {@link WebMercatorProjection}.
+   * @param {Cartesian3} [options.relativeToCenter=Cartesian3.ZERO] The positions will be computed as <code>Cartesian3.subtract(worldPosition, relativeToCenter)</code>.
+   * @param {Ellipsoid} [options.ellipsoid=Ellipsoid.WGS84] The ellipsoid to which the heightmap applies.
+   * @param {Object} [options.structure] An object describing the structure of the height data.
+   * @param {Number} [options.structure.heightScale=1.0] The factor by which to multiply height samples in order to obtain
+   *                 the height above the heightOffset, in meters.  The heightOffset is added to the resulting
+   *                 height after multiplying by the scale.
+   * @param {Number} [options.structure.heightOffset=0.0] The offset to add to the scaled height to obtain the final
+   *                 height in meters.  The offset is added after the height sample is multiplied by the
+   *                 heightScale.
+   * @param {Number} [options.structure.elementsPerHeight=1] The number of elements in the buffer that make up a single height
+   *                 sample.  This is usually 1, indicating that each element is a separate height sample.  If
+   *                 it is greater than 1, that number of elements together form the height sample, which is
+   *                 computed according to the structure.elementMultiplier and structure.isBigEndian properties.
+   * @param {Number} [options.structure.stride=1] The number of elements to skip to get from the first element of
+   *                 one height to the first element of the next height.
+   * @param {Number} [options.structure.elementMultiplier=256.0] The multiplier used to compute the height value when the
+   *                 stride property is greater than 1.  For example, if the stride is 4 and the strideMultiplier
+   *                 is 256, the height is computed as follows:
+   *                 `height = buffer[index] + buffer[index + 1] * 256 + buffer[index + 2] * 256 * 256 + buffer[index + 3] * 256 * 256 * 256`
+   *                 This is assuming that the isBigEndian property is false.  If it is true, the order of the
+   *                 elements is reversed.
+   * @param {Number} [options.structure.lowestEncodedHeight] The lowest value that can be stored in the height buffer.  Any heights that are lower
+   *                 than this value after encoding with the `heightScale` and `heightOffset` are clamped to this value.  For example, if the height
+   *                 buffer is a `Uint16Array`, this value should be 0 because a `Uint16Array` cannot store negative numbers.  If this parameter is
+   *                 not specified, no minimum value is enforced.
+   * @param {Number} [options.structure.highestEncodedHeight] The highest value that can be stored in the height buffer.  Any heights that are higher
+   *                 than this value after encoding with the `heightScale` and `heightOffset` are clamped to this value.  For example, if the height
+   *                 buffer is a `Uint16Array`, this value should be `256 * 256 - 1` or 65535 because a `Uint16Array` cannot store numbers larger
+   *                 than 65535.  If this parameter is not specified, no maximum value is enforced.
+   * @param {Boolean} [options.structure.isBigEndian=false] Indicates endianness of the elements in the buffer when the
+   *                  stride property is greater than 1.  If this property is false, the first element is the
+   *                  low-order element.  If it is true, the first element is the high-order element.
+   *
+   * @example
+   * const width = 5;
+   * const height = 5;
+   * const statistics = Cesium.HeightmapTessellator.computeVertices({
+   *     heightmap : [1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0, 8.0, 9.0],
+   *     width : width,
+   *     height : height,
+   *     skirtHeight : 0.0,
+   *     nativeRectangle : {
+   *         west : 10.0,
+   *         east : 20.0,
+   *         south : 30.0,
+   *         north : 40.0
+   *     }
+   * });
+   *
+   * const encoding = statistics.encoding;
+   * const position = encoding.decodePosition(statistics.vertices, index);
+   */
+  HeightmapTessellator.computeVertices = function (options) {
+    //>>includeStart('debug', pragmas.debug);
+    if (!defaultValue.defined(options) || !defaultValue.defined(options.heightmap)) {
+      throw new RuntimeError.DeveloperError("options.heightmap is required.");
+    }
+    if (!defaultValue.defined(options.width) || !defaultValue.defined(options.height)) {
+      throw new RuntimeError.DeveloperError("options.width and options.height are required.");
+    }
+    if (!defaultValue.defined(options.nativeRectangle)) {
+      throw new RuntimeError.DeveloperError("options.nativeRectangle is required.");
+    }
+    if (!defaultValue.defined(options.skirtHeight)) {
+      throw new RuntimeError.DeveloperError("options.skirtHeight is required.");
+    }
+    //>>includeEnd('debug');
+
+    // This function tends to be a performance hotspot for terrain rendering,
+    // so it employs a lot of inlining and unrolling as an optimization.
+    // In particular, the functionality of Ellipsoid.cartographicToCartesian
+    // is inlined.
+
+    const cos = Math.cos;
+    const sin = Math.sin;
+    const sqrt = Math.sqrt;
+    const atan = Math.atan;
+    const exp = Math.exp;
+    const piOverTwo = ComponentDatatype.CesiumMath.PI_OVER_TWO;
+    const toRadians = ComponentDatatype.CesiumMath.toRadians;
+
+    const heightmap = options.heightmap;
+    const width = options.width;
+    const height = options.height;
+    const skirtHeight = options.skirtHeight;
+    const hasSkirts = skirtHeight > 0.0;
+
+    const isGeographic = defaultValue.defaultValue(options.isGeographic, true);
+    const ellipsoid = defaultValue.defaultValue(options.ellipsoid, Matrix2.Ellipsoid.WGS84);
+
+    const oneOverGlobeSemimajorAxis = 1.0 / ellipsoid.maximumRadius;
+
+    const nativeRectangle = Matrix2.Rectangle.clone(options.nativeRectangle);
+    const rectangle = Matrix2.Rectangle.clone(options.rectangle);
+
+    let geographicWest;
+    let geographicSouth;
+    let geographicEast;
+    let geographicNorth;
+
+    if (!defaultValue.defined(rectangle)) {
+      if (isGeographic) {
+        geographicWest = toRadians(nativeRectangle.west);
+        geographicSouth = toRadians(nativeRectangle.south);
+        geographicEast = toRadians(nativeRectangle.east);
+        geographicNorth = toRadians(nativeRectangle.north);
+      } else {
+        geographicWest = nativeRectangle.west * oneOverGlobeSemimajorAxis;
+        geographicSouth =
+          piOverTwo -
+          2.0 * atan(exp(-nativeRectangle.south * oneOverGlobeSemimajorAxis));
+        geographicEast = nativeRectangle.east * oneOverGlobeSemimajorAxis;
+        geographicNorth =
+          piOverTwo -
+          2.0 * atan(exp(-nativeRectangle.north * oneOverGlobeSemimajorAxis));
+      }
+    } else {
+      geographicWest = rectangle.west;
+      geographicSouth = rectangle.south;
+      geographicEast = rectangle.east;
+      geographicNorth = rectangle.north;
+    }
+
+    let relativeToCenter = options.relativeToCenter;
+    const hasRelativeToCenter = defaultValue.defined(relativeToCenter);
+    relativeToCenter = hasRelativeToCenter ? relativeToCenter : Matrix2.Cartesian3.ZERO;
+    const includeWebMercatorT = defaultValue.defaultValue(options.includeWebMercatorT, false);
+
+    const exaggeration = defaultValue.defaultValue(options.exaggeration, 1.0);
+    const exaggerationRelativeHeight = defaultValue.defaultValue(
+      options.exaggerationRelativeHeight,
+      0.0
+    );
+    const hasExaggeration = exaggeration !== 1.0;
+    const includeGeodeticSurfaceNormals = hasExaggeration;
+
+    const structure = defaultValue.defaultValue(
+      options.structure,
+      HeightmapTessellator.DEFAULT_STRUCTURE
+    );
+    const heightScale = defaultValue.defaultValue(
+      structure.heightScale,
+      HeightmapTessellator.DEFAULT_STRUCTURE.heightScale
+    );
+    const heightOffset = defaultValue.defaultValue(
+      structure.heightOffset,
+      HeightmapTessellator.DEFAULT_STRUCTURE.heightOffset
+    );
+    const elementsPerHeight = defaultValue.defaultValue(
+      structure.elementsPerHeight,
+      HeightmapTessellator.DEFAULT_STRUCTURE.elementsPerHeight
+    );
+    const stride = defaultValue.defaultValue(
+      structure.stride,
+      HeightmapTessellator.DEFAULT_STRUCTURE.stride
+    );
+    const elementMultiplier = defaultValue.defaultValue(
+      structure.elementMultiplier,
+      HeightmapTessellator.DEFAULT_STRUCTURE.elementMultiplier
+    );
+    const isBigEndian = defaultValue.defaultValue(
+      structure.isBigEndian,
+      HeightmapTessellator.DEFAULT_STRUCTURE.isBigEndian
+    );
+
+    let rectangleWidth = Matrix2.Rectangle.computeWidth(nativeRectangle);
+    let rectangleHeight = Matrix2.Rectangle.computeHeight(nativeRectangle);
+
+    const granularityX = rectangleWidth / (width - 1);
+    const granularityY = rectangleHeight / (height - 1);
+
+    if (!isGeographic) {
+      rectangleWidth *= oneOverGlobeSemimajorAxis;
+      rectangleHeight *= oneOverGlobeSemimajorAxis;
+    }
+
+    const radiiSquared = ellipsoid.radiiSquared;
+    const radiiSquaredX = radiiSquared.x;
+    const radiiSquaredY = radiiSquared.y;
+    const radiiSquaredZ = radiiSquared.z;
+
+    let minimumHeight = 65536.0;
+    let maximumHeight = -65536.0;
+
+    const fromENU = Transforms.Transforms.eastNorthUpToFixedFrame(
+      relativeToCenter,
+      ellipsoid
+    );
+    const toENU = Matrix2.Matrix4.inverseTransformation(fromENU, matrix4Scratch);
+
+    let southMercatorY;
+    let oneOverMercatorHeight;
+    if (includeWebMercatorT) {
+      southMercatorY = WebMercatorProjection.WebMercatorProjection.geodeticLatitudeToMercatorAngle(
+        geographicSouth
+      );
+      oneOverMercatorHeight =
+        1.0 /
+        (WebMercatorProjection.WebMercatorProjection.geodeticLatitudeToMercatorAngle(geographicNorth) -
+          southMercatorY);
+    }
+
+    const minimum = minimumScratch;
+    minimum.x = Number.POSITIVE_INFINITY;
+    minimum.y = Number.POSITIVE_INFINITY;
+    minimum.z = Number.POSITIVE_INFINITY;
+
+    const maximum = maximumScratch;
+    maximum.x = Number.NEGATIVE_INFINITY;
+    maximum.y = Number.NEGATIVE_INFINITY;
+    maximum.z = Number.NEGATIVE_INFINITY;
+
+    let hMin = Number.POSITIVE_INFINITY;
+
+    const gridVertexCount = width * height;
+    const edgeVertexCount = skirtHeight > 0.0 ? width * 2 + height * 2 : 0;
+    const vertexCount = gridVertexCount + edgeVertexCount;
+
+    const positions = new Array(vertexCount);
+    const heights = new Array(vertexCount);
+    const uvs = new Array(vertexCount);
+    const webMercatorTs = includeWebMercatorT ? new Array(vertexCount) : [];
+    const geodeticSurfaceNormals = includeGeodeticSurfaceNormals
+      ? new Array(vertexCount)
+      : [];
+
+    let startRow = 0;
+    let endRow = height;
+    let startCol = 0;
+    let endCol = width;
+
+    if (hasSkirts) {
+      --startRow;
+      ++endRow;
+      --startCol;
+      ++endCol;
+    }
+
+    const skirtOffsetPercentage = 0.00001;
+
+    for (let rowIndex = startRow; rowIndex < endRow; ++rowIndex) {
+      let row = rowIndex;
+      if (row < 0) {
+        row = 0;
+      }
+      if (row >= height) {
+        row = height - 1;
+      }
+
+      let latitude = nativeRectangle.north - granularityY * row;
+
+      if (!isGeographic) {
+        latitude =
+          piOverTwo - 2.0 * atan(exp(-latitude * oneOverGlobeSemimajorAxis));
+      } else {
+        latitude = toRadians(latitude);
+      }
+
+      let v = (latitude - geographicSouth) / (geographicNorth - geographicSouth);
+      v = ComponentDatatype.CesiumMath.clamp(v, 0.0, 1.0);
+
+      const isNorthEdge = rowIndex === startRow;
+      const isSouthEdge = rowIndex === endRow - 1;
+      if (skirtHeight > 0.0) {
+        if (isNorthEdge) {
+          latitude += skirtOffsetPercentage * rectangleHeight;
+        } else if (isSouthEdge) {
+          latitude -= skirtOffsetPercentage * rectangleHeight;
+        }
+      }
+
+      const cosLatitude = cos(latitude);
+      const nZ = sin(latitude);
+      const kZ = radiiSquaredZ * nZ;
+
+      let webMercatorT;
+      if (includeWebMercatorT) {
+        webMercatorT =
+          (WebMercatorProjection.WebMercatorProjection.geodeticLatitudeToMercatorAngle(latitude) -
+            southMercatorY) *
+          oneOverMercatorHeight;
+      }
+
+      for (let colIndex = startCol; colIndex < endCol; ++colIndex) {
+        let col = colIndex;
+        if (col < 0) {
+          col = 0;
+        }
+        if (col >= width) {
+          col = width - 1;
+        }
+
+        const terrainOffset = row * (width * stride) + col * stride;
+
+        let heightSample;
+        if (elementsPerHeight === 1) {
+          heightSample = heightmap[terrainOffset];
+        } else {
+          heightSample = 0;
+
+          let elementOffset;
+          if (isBigEndian) {
+            for (
+              elementOffset = 0;
+              elementOffset < elementsPerHeight;
+              ++elementOffset
+            ) {
+              heightSample =
+                heightSample * elementMultiplier +
+                heightmap[terrainOffset + elementOffset];
+            }
+          } else {
+            for (
+              elementOffset = elementsPerHeight - 1;
+              elementOffset >= 0;
+              --elementOffset
+            ) {
+              heightSample =
+                heightSample * elementMultiplier +
+                heightmap[terrainOffset + elementOffset];
+            }
+          }
+        }
+
+        heightSample = heightSample * heightScale + heightOffset;
+
+        maximumHeight = Math.max(maximumHeight, heightSample);
+        minimumHeight = Math.min(minimumHeight, heightSample);
+
+        let longitude = nativeRectangle.west + granularityX * col;
+
+        if (!isGeographic) {
+          longitude = longitude * oneOverGlobeSemimajorAxis;
+        } else {
+          longitude = toRadians(longitude);
+        }
+
+        let u = (longitude - geographicWest) / (geographicEast - geographicWest);
+        u = ComponentDatatype.CesiumMath.clamp(u, 0.0, 1.0);
+
+        let index = row * width + col;
+
+        if (skirtHeight > 0.0) {
+          const isWestEdge = colIndex === startCol;
+          const isEastEdge = colIndex === endCol - 1;
+          const isEdge = isNorthEdge || isSouthEdge || isWestEdge || isEastEdge;
+          const isCorner =
+            (isNorthEdge || isSouthEdge) && (isWestEdge || isEastEdge);
+          if (isCorner) {
+            // Don't generate skirts on the corners.
+            continue;
+          } else if (isEdge) {
+            heightSample -= skirtHeight;
+
+            if (isWestEdge) {
+              // The outer loop iterates north to south but the indices are ordered south to north, hence the index flip below
+              index = gridVertexCount + (height - row - 1);
+              longitude -= skirtOffsetPercentage * rectangleWidth;
+            } else if (isSouthEdge) {
+              // Add after west indices. South indices are ordered east to west.
+              index = gridVertexCount + height + (width - col - 1);
+            } else if (isEastEdge) {
+              // Add after west and south indices. East indices are ordered north to south. The index is flipped like above.
+              index = gridVertexCount + height + width + row;
+              longitude += skirtOffsetPercentage * rectangleWidth;
+            } else if (isNorthEdge) {
+              // Add after west, south, and east indices. North indices are ordered west to east.
+              index = gridVertexCount + height + width + height + col;
+            }
+          }
+        }
+
+        const nX = cosLatitude * cos(longitude);
+        const nY = cosLatitude * sin(longitude);
+
+        const kX = radiiSquaredX * nX;
+        const kY = radiiSquaredY * nY;
+
+        const gamma = sqrt(kX * nX + kY * nY + kZ * nZ);
+        const oneOverGamma = 1.0 / gamma;
+
+        const rSurfaceX = kX * oneOverGamma;
+        const rSurfaceY = kY * oneOverGamma;
+        const rSurfaceZ = kZ * oneOverGamma;
+
+        const position = new Matrix2.Cartesian3();
+        position.x = rSurfaceX + nX * heightSample;
+        position.y = rSurfaceY + nY * heightSample;
+        position.z = rSurfaceZ + nZ * heightSample;
+
+        Matrix2.Matrix4.multiplyByPoint(toENU, position, cartesian3Scratch);
+        Matrix2.Cartesian3.minimumByComponent(cartesian3Scratch, minimum, minimum);
+        Matrix2.Cartesian3.maximumByComponent(cartesian3Scratch, maximum, maximum);
+        hMin = Math.min(hMin, heightSample);
+
+        positions[index] = position;
+        uvs[index] = new Matrix2.Cartesian2(u, v);
+        heights[index] = heightSample;
+
+        if (includeWebMercatorT) {
+          webMercatorTs[index] = webMercatorT;
+        }
+
+        if (includeGeodeticSurfaceNormals) {
+          geodeticSurfaceNormals[index] = ellipsoid.geodeticSurfaceNormal(
+            position
+          );
+        }
+      }
+    }
+
+    const boundingSphere3D = Transforms.BoundingSphere.fromPoints(positions);
+    let orientedBoundingBox;
+    if (defaultValue.defined(rectangle)) {
+      orientedBoundingBox = OrientedBoundingBox.OrientedBoundingBox.fromRectangle(
+        rectangle,
+        minimumHeight,
+        maximumHeight,
+        ellipsoid
+      );
+    }
+
+    let occludeePointInScaledSpace;
+    if (hasRelativeToCenter) {
+      const occluder = new TerrainEncoding.EllipsoidalOccluder(ellipsoid);
+      occludeePointInScaledSpace = occluder.computeHorizonCullingPointPossiblyUnderEllipsoid(
+        relativeToCenter,
+        positions,
+        minimumHeight
+      );
+    }
+
+    const aaBox = new AxisAlignedBoundingBox.AxisAlignedBoundingBox(minimum, maximum, relativeToCenter);
+    const encoding = new TerrainEncoding.TerrainEncoding(
+      relativeToCenter,
+      aaBox,
+      hMin,
+      maximumHeight,
+      fromENU,
+      false,
+      includeWebMercatorT,
+      includeGeodeticSurfaceNormals,
+      exaggeration,
+      exaggerationRelativeHeight
+    );
+    const vertices = new Float32Array(vertexCount * encoding.stride);
+
+    let bufferIndex = 0;
+    for (let j = 0; j < vertexCount; ++j) {
+      bufferIndex = encoding.encode(
+        vertices,
+        bufferIndex,
+        positions[j],
+        uvs[j],
+        heights[j],
+        undefined,
+        webMercatorTs[j],
+        geodeticSurfaceNormals[j]
+      );
+    }
+
+    return {
+      vertices: vertices,
+      maximumHeight: maximumHeight,
+      minimumHeight: minimumHeight,
+      encoding: encoding,
+      boundingSphere3D: boundingSphere3D,
+      orientedBoundingBox: orientedBoundingBox,
+      occludeePointInScaledSpace: occludeePointInScaledSpace,
+    };
+  };
+
+  /* This file is automatically rebuilt by the Cesium build process. */
+
+  var LercDecode = _commonjsHelpers3aae1032.createCommonjsModule(function (module) {
+  /* jshint forin: false, bitwise: false */
+  /*
+  Copyright 2015-2018 Esri
+
+  Licensed under the Apache License, Version 2.0 (the "License");
+  you may not use this file except in compliance with the License.
+  You may obtain a copy of the License at
+
+  http://www.apache.org/licenses/LICENSE-2.0
+
+  Unless required by applicable law or agreed to in writing, software
+  distributed under the License is distributed on an "AS IS" BASIS,
+  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  See the License for the specific language governing permissions and
+  limitations under the License.
+
+  A copy of the license and additional notices are located with the
+  source distribution at:
+
+  http://github.com/Esri/lerc/
+
+  Contributors:  Johannes Schmid, (LERC v1)
+                 Chayanika Khatua, (LERC v1)
+                 Wenxue Ju (LERC v1, v2.x)
+  */
+
+  /* Copyright 2015-2018 Esri. Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with the License. You may obtain a copy of the License at http://www.apache.org/licenses/LICENSE-2.0 @preserve */
+
+  /**
+   * a module for decoding LERC blobs
+   * @module Lerc
+   */
+  (function() {
+    //the original LercDecode for Version 1
+    var LercDecode = (function() {
+
+      // WARNING: This decoder version can only read old version 1 Lerc blobs. Use with caution.
+
+      // Note: currently, this module only has an implementation for decoding LERC data, not encoding. The name of
+      // the class was chosen to be future proof.
+
+      var CntZImage = {};
+
+      CntZImage.defaultNoDataValue = -3.4027999387901484e+38; // smallest Float32 value
+
+      /**
+       * Decode a LERC byte stream and return an object containing the pixel data and some required and optional
+       * information about it, such as the image's width and height.
+       *
+       * @param {ArrayBuffer} input The LERC input byte stream
+       * @param {object} [options] Decoding options, containing any of the following properties:
+       * @config {number} [inputOffset = 0]
+       *        Skip the first inputOffset bytes of the input byte stream. A valid LERC file is expected at that position.
+       * @config {Uint8Array} [encodedMask = null]
+       *        If specified, the decoder will not read mask information from the input and use the specified encoded
+       *        mask data instead. Mask header/data must not be present in the LERC byte stream in this case.
+       * @config {number} [noDataValue = LercCode.defaultNoDataValue]
+       *        Pixel value to use for masked pixels.
+       * @config {ArrayBufferView|Array} [pixelType = Float32Array]
+       *        The desired type of the pixelData array in the return value. Note that it is the caller's responsibility to
+       *        provide an appropriate noDataValue if the default pixelType is overridden.
+       * @config {boolean} [returnMask = false]
+       *        If true, the return value will contain a maskData property of type Uint8Array which has one element per
+       *        pixel, the value of which is 1 or 0 depending on whether that pixel's data is present or masked. If the
+       *        input LERC data does not contain a mask, maskData will not be returned.
+       * @config {boolean} [returnEncodedMask = false]
+       *        If true, the return value will contain a encodedMaskData property, which can be passed into encode() as
+       *        encodedMask.
+       * @config {boolean} [returnFileInfo = false]
+       *        If true, the return value will have a fileInfo property that contains metadata obtained from the
+       *        LERC headers and the decoding process.
+       * @config {boolean} [computeUsedBitDepths = false]
+       *        If true, the fileInfo property in the return value will contain the set of all block bit depths
+       *        encountered during decoding. Will only have an effect if returnFileInfo option is true.
+       * @returns {{width, height, pixelData, minValue, maxValue, noDataValue, maskData, encodedMaskData, fileInfo}}
+       */
+      CntZImage.decode = function(input, options) {
+        options = options || {};
+
+        var skipMask = options.encodedMaskData || (options.encodedMaskData === null);
+        var parsedData = parse(input, options.inputOffset || 0, skipMask);
+
+        var noDataValue = (options.noDataValue !== null) ? options.noDataValue : CntZImage.defaultNoDataValue;
+
+        var uncompressedData = uncompressPixelValues(parsedData, options.pixelType || Float32Array,
+          options.encodedMaskData, noDataValue, options.returnMask);
+
+        var result = {
+          width: parsedData.width,
+          height: parsedData.height,
+          pixelData: uncompressedData.resultPixels,
+          minValue: uncompressedData.minValue,
+          maxValue: parsedData.pixels.maxValue,
+          noDataValue: noDataValue
+        };
+
+        if (uncompressedData.resultMask) {
+          result.maskData = uncompressedData.resultMask;
+        }
+
+        if (options.returnEncodedMask && parsedData.mask) {
+          result.encodedMaskData = parsedData.mask.bitset ? parsedData.mask.bitset : null;
+        }
+
+        if (options.returnFileInfo) {
+          result.fileInfo = formatFileInfo(parsedData);
+          if (options.computeUsedBitDepths) {
+            result.fileInfo.bitDepths = computeUsedBitDepths(parsedData);
+          }
+        }
+
+        return result;
+      };
+
+      var uncompressPixelValues = function(data, TypedArrayClass, maskBitset, noDataValue, storeDecodedMask) {
+        var blockIdx = 0;
+        var numX = data.pixels.numBlocksX;
+        var numY = data.pixels.numBlocksY;
+        var blockWidth = Math.floor(data.width / numX);
+        var blockHeight = Math.floor(data.height / numY);
+        var scale = 2 * data.maxZError;
+        var minValue = Number.MAX_VALUE, currentValue;
+        maskBitset = maskBitset || ((data.mask) ? data.mask.bitset : null);
+
+        var resultPixels, resultMask;
+        resultPixels = new TypedArrayClass(data.width * data.height);
+        if (storeDecodedMask && maskBitset) {
+          resultMask = new Uint8Array(data.width * data.height);
+        }
+        var blockDataBuffer = new Float32Array(blockWidth * blockHeight);
+
+        var xx, yy;
+        for (var y = 0; y <= numY; y++) {
+          var thisBlockHeight = (y !== numY) ? blockHeight : (data.height % numY);
+          if (thisBlockHeight === 0) {
+            continue;
+          }
+          for (var x = 0; x <= numX; x++) {
+            var thisBlockWidth = (x !== numX) ? blockWidth : (data.width % numX);
+            if (thisBlockWidth === 0) {
+              continue;
+            }
+
+            var outPtr = y * data.width * blockHeight + x * blockWidth;
+            var outStride = data.width - thisBlockWidth;
+
+            var block = data.pixels.blocks[blockIdx];
+
+            var blockData, blockPtr, constValue;
+            if (block.encoding < 2) {
+              // block is either uncompressed or bit-stuffed (encodings 0 and 1)
+              if (block.encoding === 0) {
+                // block is uncompressed
+                blockData = block.rawData;
+              } else {
+                // block is bit-stuffed
+                unstuff(block.stuffedData, block.bitsPerPixel, block.numValidPixels, block.offset, scale, blockDataBuffer, data.pixels.maxValue);
+                blockData = blockDataBuffer;
+              }
+              blockPtr = 0;
+            }
+            else if (block.encoding === 2) {
+              // block is all 0
+              constValue = 0;
+            }
+            else {
+              // block has constant value (encoding === 3)
+              constValue = block.offset;
+            }
+
+            var maskByte;
+            if (maskBitset) {
+              for (yy = 0; yy < thisBlockHeight; yy++) {
+                if (outPtr & 7) {
+                  //
+                  maskByte = maskBitset[outPtr >> 3];
+                  maskByte <<= outPtr & 7;
+                }
+                for (xx = 0; xx < thisBlockWidth; xx++) {
+                  if (!(outPtr & 7)) {
+                    // read next byte from mask
+                    maskByte = maskBitset[outPtr >> 3];
+                  }
+                  if (maskByte & 128) {
+                    // pixel data present
+                    if (resultMask) {
+                      resultMask[outPtr] = 1;
+                    }
+                    currentValue = (block.encoding < 2) ? blockData[blockPtr++] : constValue;
+                    minValue = minValue > currentValue ? currentValue : minValue;
+                    resultPixels[outPtr++] = currentValue;
+                  } else {
+                    // pixel data not present
+                    if (resultMask) {
+                      resultMask[outPtr] = 0;
+                    }
+                    resultPixels[outPtr++] = noDataValue;
+                  }
+                  maskByte <<= 1;
+                }
+                outPtr += outStride;
+              }
+            } else {
+              // mask not present, simply copy block over
+              if (block.encoding < 2) {
+                // duplicating this code block for performance reasons
+                // blockData case:
+                for (yy = 0; yy < thisBlockHeight; yy++) {
+                  for (xx = 0; xx < thisBlockWidth; xx++) {
+                    currentValue = blockData[blockPtr++];
+                    minValue = minValue > currentValue ? currentValue : minValue;
+                    resultPixels[outPtr++] = currentValue;
+                  }
+                  outPtr += outStride;
+                }
+              }
+              else {
+                // constValue case:
+                minValue = minValue > constValue ? constValue : minValue;
+                for (yy = 0; yy < thisBlockHeight; yy++) {
+                  for (xx = 0; xx < thisBlockWidth; xx++) {
+                    resultPixels[outPtr++] = constValue;
+                  }
+                  outPtr += outStride;
+                }
+              }
+            }
+            if ((block.encoding === 1) && (blockPtr !== block.numValidPixels)) {
+              throw "Block and Mask do not match";
+            }
+            blockIdx++;
+          }
+        }
+
+        return {
+          resultPixels: resultPixels,
+          resultMask: resultMask,
+          minValue: minValue
+        };
+      };
+
+      var formatFileInfo = function(data) {
+        return {
+          "fileIdentifierString": data.fileIdentifierString,
+          "fileVersion": data.fileVersion,
+          "imageType": data.imageType,
+          "height": data.height,
+          "width": data.width,
+          "maxZError": data.maxZError,
+          "eofOffset": data.eofOffset,
+          "mask": data.mask ? {
+            "numBlocksX": data.mask.numBlocksX,
+            "numBlocksY": data.mask.numBlocksY,
+            "numBytes": data.mask.numBytes,
+            "maxValue": data.mask.maxValue
+          } : null,
+          "pixels": {
+            "numBlocksX": data.pixels.numBlocksX,
+            "numBlocksY": data.pixels.numBlocksY,
+            "numBytes": data.pixels.numBytes,
+            "maxValue": data.pixels.maxValue,
+            "noDataValue": data.noDataValue
+          }
+        };
+      };
+
+      var computeUsedBitDepths = function(data) {
+        var numBlocks = data.pixels.numBlocksX * data.pixels.numBlocksY;
+        var bitDepths = {};
+        for (var i = 0; i < numBlocks; i++) {
+          var block = data.pixels.blocks[i];
+          if (block.encoding === 0) {
+            bitDepths.float32 = true;
+          } else if (block.encoding === 1) {
+            bitDepths[block.bitsPerPixel] = true;
+          } else {
+            bitDepths[0] = true;
+          }
+        }
+
+        return Object.keys(bitDepths);
+      };
+
+      var parse = function(input, fp, skipMask) {
+        var data = {};
+
+        // File header
+        var fileIdView = new Uint8Array(input, fp, 10);
+        data.fileIdentifierString = String.fromCharCode.apply(null, fileIdView);
+        if (data.fileIdentifierString.trim() !== "CntZImage") {
+          throw "Unexpected file identifier string: " + data.fileIdentifierString;
+        }
+        fp += 10;
+        var view = new DataView(input, fp, 24);
+        data.fileVersion = view.getInt32(0, true);
+        data.imageType = view.getInt32(4, true);
+        data.height = view.getUint32(8, true);
+        data.width = view.getUint32(12, true);
+        data.maxZError = view.getFloat64(16, true);
+        fp += 24;
+
+        // Mask Header
+        if (!skipMask) {
+          view = new DataView(input, fp, 16);
+          data.mask = {};
+          data.mask.numBlocksY = view.getUint32(0, true);
+          data.mask.numBlocksX = view.getUint32(4, true);
+          data.mask.numBytes = view.getUint32(8, true);
+          data.mask.maxValue = view.getFloat32(12, true);
+          fp += 16;
+
+          // Mask Data
+          if (data.mask.numBytes > 0) {
+            var bitset = new Uint8Array(Math.ceil(data.width * data.height / 8));
+            view = new DataView(input, fp, data.mask.numBytes);
+            var cnt = view.getInt16(0, true);
+            var ip = 2, op = 0;
+            do {
+              if (cnt > 0) {
+                while (cnt--) { bitset[op++] = view.getUint8(ip++); }
+              } else {
+                var val = view.getUint8(ip++);
+                cnt = -cnt;
+                while (cnt--) { bitset[op++] = val; }
+              }
+              cnt = view.getInt16(ip, true);
+              ip += 2;
+            } while (ip < data.mask.numBytes);
+            if ((cnt !== -32768) || (op < bitset.length)) {
+              throw "Unexpected end of mask RLE encoding";
+            }
+            data.mask.bitset = bitset;
+            fp += data.mask.numBytes;
+          }
+          else if ((data.mask.numBytes | data.mask.numBlocksY | data.mask.maxValue) === 0) {  // Special case, all nodata
+            data.mask.bitset = new Uint8Array(Math.ceil(data.width * data.height / 8));
+          }
+        }
+
+        // Pixel Header
+        view = new DataView(input, fp, 16);
+        data.pixels = {};
+        data.pixels.numBlocksY = view.getUint32(0, true);
+        data.pixels.numBlocksX = view.getUint32(4, true);
+        data.pixels.numBytes = view.getUint32(8, true);
+        data.pixels.maxValue = view.getFloat32(12, true);
+        fp += 16;
+
+        var numBlocksX = data.pixels.numBlocksX;
+        var numBlocksY = data.pixels.numBlocksY;
+        // the number of blocks specified in the header does not take into account the blocks at the end of
+        // each row/column with a special width/height that make the image complete in case the width is not
+        // evenly divisible by the number of blocks.
+        var actualNumBlocksX = numBlocksX + ((data.width % numBlocksX) > 0 ? 1 : 0);
+        var actualNumBlocksY = numBlocksY + ((data.height % numBlocksY) > 0 ? 1 : 0);
+        data.pixels.blocks = new Array(actualNumBlocksX * actualNumBlocksY);
+        var blockI = 0;
+        for (var blockY = 0; blockY < actualNumBlocksY; blockY++) {
+          for (var blockX = 0; blockX < actualNumBlocksX; blockX++) {
+
+            // Block
+            var size = 0;
+            var bytesLeft = input.byteLength - fp;
+            view = new DataView(input, fp, Math.min(10, bytesLeft));
+            var block = {};
+            data.pixels.blocks[blockI++] = block;
+            var headerByte = view.getUint8(0); size++;
+            block.encoding = headerByte & 63;
+            if (block.encoding > 3) {
+              throw "Invalid block encoding (" + block.encoding + ")";
+            }
+            if (block.encoding === 2) {
+              fp++;
+              continue;
+            }
+            if ((headerByte !== 0) && (headerByte !== 2)) {
+              headerByte >>= 6;
+              block.offsetType = headerByte;
+              if (headerByte === 2) {
+                block.offset = view.getInt8(1); size++;
+              } else if (headerByte === 1) {
+                block.offset = view.getInt16(1, true); size += 2;
+              } else if (headerByte === 0) {
+                block.offset = view.getFloat32(1, true); size += 4;
+              } else {
+                throw "Invalid block offset type";
+              }
+
+              if (block.encoding === 1) {
+                headerByte = view.getUint8(size); size++;
+                block.bitsPerPixel = headerByte & 63;
+                headerByte >>= 6;
+                block.numValidPixelsType = headerByte;
+                if (headerByte === 2) {
+                  block.numValidPixels = view.getUint8(size); size++;
+                } else if (headerByte === 1) {
+                  block.numValidPixels = view.getUint16(size, true); size += 2;
+                } else if (headerByte === 0) {
+                  block.numValidPixels = view.getUint32(size, true); size += 4;
+                } else {
+                  throw "Invalid valid pixel count type";
+                }
+              }
+            }
+            fp += size;
+
+            if (block.encoding === 3) {
+              continue;
+            }
+
+            var arrayBuf, store8;
+            if (block.encoding === 0) {
+              var numPixels = (data.pixels.numBytes - 1) / 4;
+              if (numPixels !== Math.floor(numPixels)) {
+                throw "uncompressed block has invalid length";
+              }
+              arrayBuf = new ArrayBuffer(numPixels * 4);
+              store8 = new Uint8Array(arrayBuf);
+              store8.set(new Uint8Array(input, fp, numPixels * 4));
+              var rawData = new Float32Array(arrayBuf);
+              block.rawData = rawData;
+              fp += numPixels * 4;
+            } else if (block.encoding === 1) {
+              var dataBytes = Math.ceil(block.numValidPixels * block.bitsPerPixel / 8);
+              var dataWords = Math.ceil(dataBytes / 4);
+              arrayBuf = new ArrayBuffer(dataWords * 4);
+              store8 = new Uint8Array(arrayBuf);
+              store8.set(new Uint8Array(input, fp, dataBytes));
+              block.stuffedData = new Uint32Array(arrayBuf);
+              fp += dataBytes;
+            }
+          }
+        }
+        data.eofOffset = fp;
+        return data;
+      };
+
+      var unstuff = function(src, bitsPerPixel, numPixels, offset, scale, dest, maxValue) {
+        var bitMask = (1 << bitsPerPixel) - 1;
+        var i = 0, o;
+        var bitsLeft = 0;
+        var n, buffer;
+        var nmax = Math.ceil((maxValue - offset) / scale);
+        // get rid of trailing bytes that are already part of next block
+        var numInvalidTailBytes = src.length * 4 - Math.ceil(bitsPerPixel * numPixels / 8);
+        src[src.length - 1] <<= 8 * numInvalidTailBytes;
+
+        for (o = 0; o < numPixels; o++) {
+          if (bitsLeft === 0) {
+            buffer = src[i++];
+            bitsLeft = 32;
+          }
+          if (bitsLeft >= bitsPerPixel) {
+            n = (buffer >>> (bitsLeft - bitsPerPixel)) & bitMask;
+            bitsLeft -= bitsPerPixel;
+          } else {
+            var missingBits = (bitsPerPixel - bitsLeft);
+            n = ((buffer & bitMask) << missingBits) & bitMask;
+            buffer = src[i++];
+            bitsLeft = 32 - missingBits;
+            n += (buffer >>> bitsLeft);
+          }
+          //pixel values may exceed max due to quantization
+          dest[o] = n < nmax ? offset + n * scale : maxValue;
+        }
+        return dest;
+      };
+
+      return CntZImage;
+    })();
+
+    //version 2. Supports 2.1, 2.2, 2.3
+    var Lerc2Decode = (function() {
+      // Note: currently, this module only has an implementation for decoding LERC data, not encoding. The name of
+      // the class was chosen to be future proof, following LercDecode.
+
+      /*****************************************
+      * private static class bitsutffer used by Lerc2Decode
+      *******************************************/
+      var BitStuffer = {
+        //methods ending with 2 are for the new byte order used by Lerc2.3 and above.
+        //originalUnstuff is used to unpack Huffman code table. code is duplicated to unstuffx for performance reasons.
+        unstuff: function(src, dest, bitsPerPixel, numPixels, lutArr, offset, scale, maxValue) {
+          var bitMask = (1 << bitsPerPixel) - 1;
+          var i = 0, o;
+          var bitsLeft = 0;
+          var n, buffer, missingBits, nmax;
+
+          // get rid of trailing bytes that are already part of next block
+          var numInvalidTailBytes = src.length * 4 - Math.ceil(bitsPerPixel * numPixels / 8);
+          src[src.length - 1] <<= 8 * numInvalidTailBytes;
+          if (lutArr) {
+            for (o = 0; o < numPixels; o++) {
+              if (bitsLeft === 0) {
+                buffer = src[i++];
+                bitsLeft = 32;
+              }
+              if (bitsLeft >= bitsPerPixel) {
+                n = (buffer >>> (bitsLeft - bitsPerPixel)) & bitMask;
+                bitsLeft -= bitsPerPixel;
+              }
+              else {
+                missingBits = (bitsPerPixel - bitsLeft);
+                n = ((buffer & bitMask) << missingBits) & bitMask;
+                buffer = src[i++];
+                bitsLeft = 32 - missingBits;
+                n += (buffer >>> bitsLeft);
+              }
+              dest[o] = lutArr[n];//offset + lutArr[n] * scale;
+            }
+          }
+          else {
+            nmax = Math.ceil((maxValue - offset) / scale);
+            for (o = 0; o < numPixels; o++) {
+              if (bitsLeft === 0) {
+                buffer = src[i++];
+                bitsLeft = 32;
+              }
+              if (bitsLeft >= bitsPerPixel) {
+                n = (buffer >>> (bitsLeft - bitsPerPixel)) & bitMask;
+                bitsLeft -= bitsPerPixel;
+              }
+              else {
+                missingBits = (bitsPerPixel - bitsLeft);
+                n = ((buffer & bitMask) << missingBits) & bitMask;
+                buffer = src[i++];
+                bitsLeft = 32 - missingBits;
+                n += (buffer >>> bitsLeft);
+              }
+              //pixel values may exceed max due to quantization
+              dest[o] = n < nmax ? offset + n * scale : maxValue;
+            }
+          }
+        },
+
+        unstuffLUT: function(src, bitsPerPixel, numPixels, offset, scale, maxValue) {
+          var bitMask = (1 << bitsPerPixel) - 1;
+          var i = 0, o = 0, missingBits = 0, bitsLeft = 0, n = 0;
+          var buffer;
+          var dest = [];
+
+          // get rid of trailing bytes that are already part of next block
+          var numInvalidTailBytes = src.length * 4 - Math.ceil(bitsPerPixel * numPixels / 8);
+          src[src.length - 1] <<= 8 * numInvalidTailBytes;
+
+          var nmax = Math.ceil((maxValue - offset) / scale);
+          for (o = 0; o < numPixels; o++) {
+            if (bitsLeft === 0) {
+              buffer = src[i++];
+              bitsLeft = 32;
+            }
+            if (bitsLeft >= bitsPerPixel) {
+              n = (buffer >>> (bitsLeft - bitsPerPixel)) & bitMask;
+              bitsLeft -= bitsPerPixel;
+            } else {
+              missingBits = (bitsPerPixel - bitsLeft);
+              n = ((buffer & bitMask) << missingBits) & bitMask;
+              buffer = src[i++];
+              bitsLeft = 32 - missingBits;
+              n += (buffer >>> bitsLeft);
+            }
+            //dest.push(n);
+            dest[o] = n < nmax ? offset + n * scale : maxValue;
+          }
+          dest.unshift(offset);//1st one
+          return dest;
+        },
+
+        unstuff2: function(src, dest, bitsPerPixel, numPixels, lutArr, offset, scale, maxValue) {
+          var bitMask = (1 << bitsPerPixel) - 1;
+          var i = 0, o;
+          var bitsLeft = 0, bitPos = 0;
+          var n, buffer, missingBits;
+          if (lutArr) {
+            for (o = 0; o < numPixels; o++) {
+              if (bitsLeft === 0) {
+                buffer = src[i++];
+                bitsLeft = 32;
+                bitPos = 0;
+              }
+              if (bitsLeft >= bitsPerPixel) {
+                n = ((buffer >>> bitPos) & bitMask);
+                bitsLeft -= bitsPerPixel;
+                bitPos += bitsPerPixel;
+              } else {
+                missingBits = (bitsPerPixel - bitsLeft);
+                n = (buffer >>> bitPos) & bitMask;
+                buffer = src[i++];
+                bitsLeft = 32 - missingBits;
+                n |= (buffer & ((1 << missingBits) - 1)) << (bitsPerPixel - missingBits);
+                bitPos = missingBits;
+              }
+              dest[o] = lutArr[n];
+            }
+          }
+          else {
+            var nmax = Math.ceil((maxValue - offset) / scale);
+            for (o = 0; o < numPixels; o++) {
+              if (bitsLeft === 0) {
+                buffer = src[i++];
+                bitsLeft = 32;
+                bitPos = 0;
+              }
+              if (bitsLeft >= bitsPerPixel) {
+                //no unsigned left shift
+                n = ((buffer >>> bitPos) & bitMask);
+                bitsLeft -= bitsPerPixel;
+                bitPos += bitsPerPixel;
+              } else {
+                missingBits = (bitsPerPixel - bitsLeft);
+                n = (buffer >>> bitPos) & bitMask;//((buffer & bitMask) << missingBits) & bitMask;
+                buffer = src[i++];
+                bitsLeft = 32 - missingBits;
+                n |= (buffer & ((1 << missingBits) - 1)) << (bitsPerPixel - missingBits);
+                bitPos = missingBits;
+              }
+              //pixel values may exceed max due to quantization
+              dest[o] = n < nmax ? offset + n * scale : maxValue;
+            }
+          }
+          return dest;
+        },
+
+        unstuffLUT2: function(src, bitsPerPixel, numPixels, offset, scale, maxValue) {
+          var bitMask = (1 << bitsPerPixel) - 1;
+          var i = 0, o = 0, missingBits = 0, bitsLeft = 0, n = 0, bitPos = 0;
+          var buffer;
+          var dest = [];
+          var nmax = Math.ceil((maxValue - offset) / scale);
+          for (o = 0; o < numPixels; o++) {
+            if (bitsLeft === 0) {
+              buffer = src[i++];
+              bitsLeft = 32;
+              bitPos = 0;
+            }
+            if (bitsLeft >= bitsPerPixel) {
+              //no unsigned left shift
+              n = ((buffer >>> bitPos) & bitMask);
+              bitsLeft -= bitsPerPixel;
+              bitPos += bitsPerPixel;
+            } else {
+              missingBits = (bitsPerPixel - bitsLeft);
+              n = (buffer >>> bitPos) & bitMask;//((buffer & bitMask) << missingBits) & bitMask;
+              buffer = src[i++];
+              bitsLeft = 32 - missingBits;
+              n |= (buffer & ((1 << missingBits) - 1)) << (bitsPerPixel - missingBits);
+              bitPos = missingBits;
+            }
+            //dest.push(n);
+            dest[o] = n < nmax ? offset + n * scale : maxValue;
+          }
+          dest.unshift(offset);
+          return dest;
+        },
+
+        originalUnstuff: function(src, dest, bitsPerPixel, numPixels) {
+          var bitMask = (1 << bitsPerPixel) - 1;
+          var i = 0, o;
+          var bitsLeft = 0;
+          var n, buffer, missingBits;
+
+          // get rid of trailing bytes that are already part of next block
+          var numInvalidTailBytes = src.length * 4 - Math.ceil(bitsPerPixel * numPixels / 8);
+          src[src.length - 1] <<= 8 * numInvalidTailBytes;
+
+          for (o = 0; o < numPixels; o++) {
+            if (bitsLeft === 0) {
+              buffer = src[i++];
+              bitsLeft = 32;
+            }
+            if (bitsLeft >= bitsPerPixel) {
+              n = (buffer >>> (bitsLeft - bitsPerPixel)) & bitMask;
+              bitsLeft -= bitsPerPixel;
+            }
+            else {
+              missingBits = (bitsPerPixel - bitsLeft);
+              n = ((buffer & bitMask) << missingBits) & bitMask;
+              buffer = src[i++];
+              bitsLeft = 32 - missingBits;
+              n += (buffer >>> bitsLeft);
+            }
+            dest[o] = n;
+          }
+          return dest;
+        },
+
+        originalUnstuff2: function(src, dest, bitsPerPixel, numPixels) {
+          var bitMask = (1 << bitsPerPixel) - 1;
+          var i = 0, o;
+          var bitsLeft = 0, bitPos = 0;
+          var n, buffer, missingBits;
+          //micro-optimizations
+          for (o = 0; o < numPixels; o++) {
+            if (bitsLeft === 0) {
+              buffer = src[i++];
+              bitsLeft = 32;
+              bitPos = 0;
+            }
+            if (bitsLeft >= bitsPerPixel) {
+              //no unsigned left shift
+              n = ((buffer >>> bitPos) & bitMask);
+              bitsLeft -= bitsPerPixel;
+              bitPos += bitsPerPixel;
+            } else {
+              missingBits = (bitsPerPixel - bitsLeft);
+              n = (buffer >>> bitPos) & bitMask;//((buffer & bitMask) << missingBits) & bitMask;
+              buffer = src[i++];
+              bitsLeft = 32 - missingBits;
+              n |= (buffer & ((1 << missingBits) - 1)) << (bitsPerPixel - missingBits);
+              bitPos = missingBits;
+            }
+            dest[o] = n;
+          }
+          return dest;
+        }
+      };
+
+      /*****************************************
+      *private static class used by Lerc2Decode
+      ******************************************/
+      var Lerc2Helpers = {
+        HUFFMAN_LUT_BITS_MAX: 12, //use 2^12 lut, treat it like constant
+        computeChecksumFletcher32: function(input) {
+
+          var sum1 = 0xffff, sum2 = 0xffff;
+          var len = input.length;
+          var words = Math.floor(len / 2);
+          var i = 0;
+          while (words) {
+            var tlen = (words >= 359) ? 359 : words;
+            words -= tlen;
+            do {
+              sum1 += (input[i++] << 8);
+              sum2 += sum1 += input[i++];
+            } while (--tlen);
+
+            sum1 = (sum1 & 0xffff) + (sum1 >>> 16);
+            sum2 = (sum2 & 0xffff) + (sum2 >>> 16);
+          }
+
+          // add the straggler byte if it exists
+          if (len & 1) {
+            sum2 += sum1 += (input[i] << 8);
+          }
+          // second reduction step to reduce sums to 16 bits
+          sum1 = (sum1 & 0xffff) + (sum1 >>> 16);
+          sum2 = (sum2 & 0xffff) + (sum2 >>> 16);
+
+          return (sum2 << 16 | sum1) >>> 0;
+        },
+
+        readHeaderInfo: function(input, data) {
+          var ptr = data.ptr;
+          var fileIdView = new Uint8Array(input, ptr, 6);
+          var headerInfo = {};
+          headerInfo.fileIdentifierString = String.fromCharCode.apply(null, fileIdView);
+          if (headerInfo.fileIdentifierString.lastIndexOf("Lerc2", 0) !== 0) {
+            throw "Unexpected file identifier string (expect Lerc2 ): " + headerInfo.fileIdentifierString;
+          }
+          ptr += 6;
+          var view = new DataView(input, ptr, 8);
+          var fileVersion = view.getInt32(0, true);
+          headerInfo.fileVersion = fileVersion;
+          ptr += 4;
+          if (fileVersion >= 3) {
+            headerInfo.checksum = view.getUint32(4, true); //nrows
+            ptr += 4;
+          }
+
+          //keys start from here
+          view = new DataView(input, ptr, 12);
+          headerInfo.height = view.getUint32(0, true); //nrows
+          headerInfo.width = view.getUint32(4, true); //ncols
+          ptr += 8;
+          if (fileVersion >= 4) {
+            headerInfo.numDims = view.getUint32(8, true);
+            ptr += 4;
+          }
+          else {
+            headerInfo.numDims = 1;
+          }
+
+          view = new DataView(input, ptr, 40);
+          headerInfo.numValidPixel = view.getUint32(0, true);
+          headerInfo.microBlockSize = view.getInt32(4, true);
+          headerInfo.blobSize = view.getInt32(8, true);
+          headerInfo.imageType = view.getInt32(12, true);
+
+          headerInfo.maxZError = view.getFloat64(16, true);
+          headerInfo.zMin = view.getFloat64(24, true);
+          headerInfo.zMax = view.getFloat64(32, true);
+          ptr += 40;
+          data.headerInfo = headerInfo;
+          data.ptr = ptr;
+
+          var checksum, keyLength;
+          if (fileVersion >= 3) {
+            keyLength = fileVersion >= 4 ? 52 : 48;
+            checksum = this.computeChecksumFletcher32(new Uint8Array(input, ptr - keyLength, headerInfo.blobSize - 14));
+            if (checksum !== headerInfo.checksum) {
+              throw "Checksum failed.";
+            }
+          }
+          return true;
+        },
+
+        checkMinMaxRanges: function(input, data) {
+          var headerInfo = data.headerInfo;
+          var OutPixelTypeArray = this.getDataTypeArray(headerInfo.imageType);
+          var rangeBytes = headerInfo.numDims * this.getDataTypeSize(headerInfo.imageType);
+          var minValues = this.readSubArray(input, data.ptr, OutPixelTypeArray, rangeBytes);
+          var maxValues = this.readSubArray(input, data.ptr + rangeBytes, OutPixelTypeArray, rangeBytes);
+          data.ptr += (2 * rangeBytes);
+          var i, equal = true;
+          for (i = 0; i < headerInfo.numDims; i++) {
+            if (minValues[i] !== maxValues[i]) {
+              equal = false;
+              break;
+            }
+          }
+          headerInfo.minValues = minValues;
+          headerInfo.maxValues = maxValues;
+          return equal;
+        },
+
+        readSubArray: function(input, ptr, OutPixelTypeArray, numBytes) {
+          var rawData;
+          if (OutPixelTypeArray === Uint8Array) {
+            rawData = new Uint8Array(input, ptr, numBytes);
+          }
+          else {
+            var arrayBuf = new ArrayBuffer(numBytes);
+            var store8 = new Uint8Array(arrayBuf);
+            store8.set(new Uint8Array(input, ptr, numBytes));
+            rawData = new OutPixelTypeArray(arrayBuf);
+          }
+          return rawData;
+        },
+
+        readMask: function(input, data) {
+          var ptr = data.ptr;
+          var headerInfo = data.headerInfo;
+          var numPixels = headerInfo.width * headerInfo.height;
+          var numValidPixel = headerInfo.numValidPixel;
+
+          var view = new DataView(input, ptr, 4);
+          var mask = {};
+          mask.numBytes = view.getUint32(0, true);
+          ptr += 4;
+
+          // Mask Data
+          if ((0 === numValidPixel || numPixels === numValidPixel) && 0 !== mask.numBytes) {
+            throw ("invalid mask");
+          }
+          var bitset, resultMask;
+          if (numValidPixel === 0) {
+            bitset = new Uint8Array(Math.ceil(numPixels / 8));
+            mask.bitset = bitset;
+            resultMask = new Uint8Array(numPixels);
+            data.pixels.resultMask = resultMask;
+            ptr += mask.numBytes;
+          }// ????? else if (data.mask.numBytes > 0 && data.mask.numBytes< data.numValidPixel) {
+          else if (mask.numBytes > 0) {
+            bitset = new Uint8Array(Math.ceil(numPixels / 8));
+            view = new DataView(input, ptr, mask.numBytes);
+            var cnt = view.getInt16(0, true);
+            var ip = 2, op = 0, val = 0;
+            do {
+              if (cnt > 0) {
+                while (cnt--) { bitset[op++] = view.getUint8(ip++); }
+              } else {
+                val = view.getUint8(ip++);
+                cnt = -cnt;
+                while (cnt--) { bitset[op++] = val; }
+              }
+              cnt = view.getInt16(ip, true);
+              ip += 2;
+            } while (ip < mask.numBytes);
+            if ((cnt !== -32768) || (op < bitset.length)) {
+              throw "Unexpected end of mask RLE encoding";
+            }
+
+            resultMask = new Uint8Array(numPixels);
+            var mb = 0, k = 0;
+
+            for (k = 0; k < numPixels; k++) {
+              if (k & 7) {
+                mb = bitset[k >> 3];
+                mb <<= k & 7;
+              }
+              else {
+                mb = bitset[k >> 3];
+              }
+              if (mb & 128) {
+                resultMask[k] = 1;
+              }
+            }
+            data.pixels.resultMask = resultMask;
+
+            mask.bitset = bitset;
+            ptr += mask.numBytes;
+          }
+          data.ptr = ptr;
+          data.mask = mask;
+          return true;
+        },
+
+        readDataOneSweep: function(input, data, OutPixelTypeArray) {
+          var ptr = data.ptr;
+          var headerInfo = data.headerInfo;
+          var numDims = headerInfo.numDims;
+          var numPixels = headerInfo.width * headerInfo.height;
+          var imageType = headerInfo.imageType;
+          var numBytes = headerInfo.numValidPixel * Lerc2Helpers.getDataTypeSize(imageType) * numDims;
+          //data.pixels.numBytes = numBytes;
+          var rawData;
+          var mask = data.pixels.resultMask;
+          if (OutPixelTypeArray === Uint8Array) {
+            rawData = new Uint8Array(input, ptr, numBytes);
+          }
+          else {
+            var arrayBuf = new ArrayBuffer(numBytes);
+            var store8 = new Uint8Array(arrayBuf);
+            store8.set(new Uint8Array(input, ptr, numBytes));
+            rawData = new OutPixelTypeArray(arrayBuf);
+          }
+          if (rawData.length === numPixels * numDims) {
+            data.pixels.resultPixels = rawData;
+          }
+          else  //mask
+          {
+            data.pixels.resultPixels = new OutPixelTypeArray(numPixels * numDims);
+            var z = 0, k = 0, i = 0, nStart = 0;
+            if (numDims > 1) {
+              for (i=0; i < numDims; i++) {
+                nStart = i * numPixels;
+                for (k = 0; k < numPixels; k++) {
+                  if (mask[k]) {
+                    data.pixels.resultPixels[nStart + k] = rawData[z++];
+                  }
+                }
+              }
+            }
+            else {
+              for (k = 0; k < numPixels; k++) {
+                if (mask[k]) {
+                  data.pixels.resultPixels[k] = rawData[z++];
+                }
+              }
+            }
+          }
+          ptr += numBytes;
+          data.ptr = ptr;       //return data;
+          return true;
+        },
+
+        readHuffmanTree: function(input, data) {
+          var BITS_MAX = this.HUFFMAN_LUT_BITS_MAX; //8 is slow for the large test image
+          //var size_max = 1 << BITS_MAX;
+          /* ************************
+           * reading code table
+           *************************/
+          var view = new DataView(input, data.ptr, 16);
+          data.ptr += 16;
+          var version = view.getInt32(0, true);
+          if (version < 2) {
+            throw "unsupported Huffman version";
+          }
+          var size = view.getInt32(4, true);
+          var i0 = view.getInt32(8, true);
+          var i1 = view.getInt32(12, true);
+          if (i0 >= i1) {
+            return false;
+          }
+          var blockDataBuffer = new Uint32Array(i1 - i0);
+          Lerc2Helpers.decodeBits(input, data, blockDataBuffer);
+          var codeTable = []; //size
+          var i, j, k, len;
+
+          for (i = i0; i < i1; i++) {
+            j = i - (i < size ? 0 : size);//wrap around
+            codeTable[j] = { first: blockDataBuffer[i - i0], second: null };
+          }
+
+          var dataBytes = input.byteLength - data.ptr;
+          var dataWords = Math.ceil(dataBytes / 4);
+          var arrayBuf = new ArrayBuffer(dataWords * 4);
+          var store8 = new Uint8Array(arrayBuf);
+          store8.set(new Uint8Array(input, data.ptr, dataBytes));
+          var stuffedData = new Uint32Array(arrayBuf); //must start from x*4
+          var bitPos = 0, word, srcPtr = 0;
+          word = stuffedData[0];
+          for (i = i0; i < i1; i++) {
+            j = i - (i < size ? 0 : size);//wrap around
+            len = codeTable[j].first;
+            if (len > 0) {
+              codeTable[j].second = (word << bitPos) >>> (32 - len);
+
+              if (32 - bitPos >= len) {
+                bitPos += len;
+                if (bitPos === 32) {
+                  bitPos = 0;
+                  srcPtr++;
+                  word = stuffedData[srcPtr];
+                }
+              }
+              else {
+                bitPos += len - 32;
+                srcPtr++;
+                word = stuffedData[srcPtr];
+                codeTable[j].second |= word >>> (32 - bitPos);
+              }
+            }
+          }
+
+          //finished reading code table
+
+          /* ************************
+           * building lut
+           *************************/
+          var numBitsLUT = 0, numBitsLUTQick = 0;
+          var tree = new TreeNode();
+          for (i = 0; i < codeTable.length; i++) {
+            if (codeTable[i] !== undefined) {
+              numBitsLUT = Math.max(numBitsLUT, codeTable[i].first);
+            }
+          }
+          if (numBitsLUT >= BITS_MAX) {
+            numBitsLUTQick = BITS_MAX;
+          }
+          else {
+            numBitsLUTQick = numBitsLUT;
+          }
+          if (numBitsLUT >= 30) {
+            console.log("WARning, large NUM LUT BITS IS " + numBitsLUT);
+          }
+          var decodeLut = [], entry, code, numEntries, jj, currentBit, node;
+          for (i = i0; i < i1; i++) {
+            j = i - (i < size ? 0 : size);//wrap around
+            len = codeTable[j].first;
+            if (len > 0) {
+              entry = [len, j];
+              if (len <= numBitsLUTQick) {
+                code = codeTable[j].second << (numBitsLUTQick - len);
+                numEntries = 1 << (numBitsLUTQick - len);
+                for (k = 0; k < numEntries; k++) {
+                  decodeLut[code | k] = entry;
+                }
+              }
+              else {
+                //build tree
+                code = codeTable[j].second;
+                node = tree;
+                for (jj = len - 1; jj >= 0; jj--) {
+                  currentBit = code >>> jj & 1; //no left shift as length could be 30,31
+                  if (currentBit) {
+                    if (!node.right) {
+                      node.right = new TreeNode();
+                    }
+                    node = node.right;
+                  }
+                  else {
+                    if (!node.left) {
+                      node.left = new TreeNode();
+                    }
+                    node = node.left;
+                  }
+                  if (jj === 0 && !node.val) {
+                    node.val = entry[1];
+                  }
+                }
+              }
+            }
+          }
+          return {
+            decodeLut: decodeLut,
+            numBitsLUTQick: numBitsLUTQick,
+            numBitsLUT: numBitsLUT,
+            tree: tree,
+            stuffedData: stuffedData,
+            srcPtr: srcPtr,
+            bitPos: bitPos
+          };
+        },
+
+        readHuffman: function(input, data, OutPixelTypeArray) {
+          var headerInfo = data.headerInfo;
+          var numDims = headerInfo.numDims;
+          var height = data.headerInfo.height;
+          var width = data.headerInfo.width;
+          var numPixels = width * height;
+          //var size_max = 1 << BITS_MAX;
+          /* ************************
+           * reading huffman structure info
+           *************************/
+          var huffmanInfo = this.readHuffmanTree(input, data);
+          var decodeLut = huffmanInfo.decodeLut;
+          var tree = huffmanInfo.tree;
+          //stuffedData includes huffman headers
+          var stuffedData = huffmanInfo.stuffedData;
+          var srcPtr = huffmanInfo.srcPtr;
+          var bitPos = huffmanInfo.bitPos;
+          var numBitsLUTQick = huffmanInfo.numBitsLUTQick;
+          var numBitsLUT = huffmanInfo.numBitsLUT;
+          var offset = data.headerInfo.imageType === 0 ? 128 : 0;
+          /*************************
+          *  decode
+          ***************************/
+          var node, val, delta, mask = data.pixels.resultMask, valTmp, valTmpQuick, currentBit;
+          var i, j, k, ii;
+          var prevVal = 0;
+          if (bitPos > 0) {
+            srcPtr++;
+            bitPos = 0;
+          }
+          var word = stuffedData[srcPtr];
+          var deltaEncode = data.encodeMode === 1;
+          var resultPixelsAllDim = new OutPixelTypeArray(numPixels * numDims);
+          var resultPixels = resultPixelsAllDim;
+          var iDim;
+          for (iDim = 0; iDim < headerInfo.numDims; iDim++) {
+            if (numDims > 1) {
+              //get the mem block of current dimension
+              resultPixels = new OutPixelTypeArray(resultPixelsAllDim.buffer, numPixels * iDim, numPixels);
+              prevVal = 0;
+            }
+            if (data.headerInfo.numValidPixel === width * height) { //all valid
+              for (k = 0, i = 0; i < height; i++) {
+                for (j = 0; j < width; j++, k++) {
+                  val = 0;
+                  valTmp = (word << bitPos) >>> (32 - numBitsLUTQick);
+                  valTmpQuick = valTmp;// >>> deltaBits;
+                  if (32 - bitPos < numBitsLUTQick) {
+                    valTmp |= ((stuffedData[srcPtr + 1]) >>> (64 - bitPos - numBitsLUTQick));
+                    valTmpQuick = valTmp;// >>> deltaBits;
+                  }
+                  if (decodeLut[valTmpQuick])    // if there, move the correct number of bits and done
+                  {
+                    val = decodeLut[valTmpQuick][1];
+                    bitPos += decodeLut[valTmpQuick][0];
+                  }
+                  else {
+                    valTmp = (word << bitPos) >>> (32 - numBitsLUT);
+                    valTmpQuick = valTmp;// >>> deltaBits;
+                    if (32 - bitPos < numBitsLUT) {
+                      valTmp |= ((stuffedData[srcPtr + 1]) >>> (64 - bitPos - numBitsLUT));
+                      valTmpQuick = valTmp;// >>> deltaBits;
+                    }
+                    node = tree;
+                    for (ii = 0; ii < numBitsLUT; ii++) {
+                      currentBit = valTmp >>> (numBitsLUT - ii - 1) & 1;
+                      node = currentBit ? node.right : node.left;
+                      if (!(node.left || node.right)) {
+                        val = node.val;
+                        bitPos = bitPos + ii + 1;
+                        break;
+                      }
+                    }
+                  }
+
+                  if (bitPos >= 32) {
+                    bitPos -= 32;
+                    srcPtr++;
+                    word = stuffedData[srcPtr];
+                  }
+
+                  delta = val - offset;
+                  if (deltaEncode) {
+                    if (j > 0) {
+                      delta += prevVal;    // use overflow
+                    }
+                    else if (i > 0) {
+                      delta += resultPixels[k - width];
+                    }
+                    else {
+                      delta += prevVal;
+                    }
+                    delta &= 0xFF; //overflow
+                    resultPixels[k] = delta;//overflow
+                    prevVal = delta;
+                  }
+                  else {
+                    resultPixels[k] = delta;
+                  }
+                }
+              }
+            }
+            else { //not all valid, use mask
+              for (k = 0, i = 0; i < height; i++) {
+                for (j = 0; j < width; j++, k++) {
+                  if (mask[k]) {
+                    val = 0;
+                    valTmp = (word << bitPos) >>> (32 - numBitsLUTQick);
+                    valTmpQuick = valTmp;// >>> deltaBits;
+                    if (32 - bitPos < numBitsLUTQick) {
+                      valTmp |= ((stuffedData[srcPtr + 1]) >>> (64 - bitPos - numBitsLUTQick));
+                      valTmpQuick = valTmp;// >>> deltaBits;
+                    }
+                    if (decodeLut[valTmpQuick])    // if there, move the correct number of bits and done
+                    {
+                      val = decodeLut[valTmpQuick][1];
+                      bitPos += decodeLut[valTmpQuick][0];
+                    }
+                    else {
+                      valTmp = (word << bitPos) >>> (32 - numBitsLUT);
+                      valTmpQuick = valTmp;// >>> deltaBits;
+                      if (32 - bitPos < numBitsLUT) {
+                        valTmp |= ((stuffedData[srcPtr + 1]) >>> (64 - bitPos - numBitsLUT));
+                        valTmpQuick = valTmp;// >>> deltaBits;
+                      }
+                      node = tree;
+                      for (ii = 0; ii < numBitsLUT; ii++) {
+                        currentBit = valTmp >>> (numBitsLUT - ii - 1) & 1;
+                        node = currentBit ? node.right : node.left;
+                        if (!(node.left || node.right)) {
+                          val = node.val;
+                          bitPos = bitPos + ii + 1;
+                          break;
+                        }
+                      }
+                    }
+
+                    if (bitPos >= 32) {
+                      bitPos -= 32;
+                      srcPtr++;
+                      word = stuffedData[srcPtr];
+                    }
+
+                    delta = val - offset;
+                    if (deltaEncode) {
+                      if (j > 0 && mask[k - 1]) {
+                        delta += prevVal;    // use overflow
+                      }
+                      else if (i > 0 && mask[k - width]) {
+                        delta += resultPixels[k - width];
+                      }
+                      else {
+                        delta += prevVal;
+                      }
+
+                      delta &= 0xFF; //overflow
+                      resultPixels[k] = delta;//overflow
+                      prevVal = delta;
+                    }
+                    else {
+                      resultPixels[k] = delta;
+                    }
+                  }
+                }
+              }
+            }
+            data.ptr = data.ptr + (srcPtr + 1) * 4 + (bitPos > 0 ? 4 : 0);
+          }
+          data.pixels.resultPixels = resultPixelsAllDim;
+        },
+
+        decodeBits: function(input, data, blockDataBuffer, offset, iDim) {
+          {
+            //bitstuff encoding is 3
+            var headerInfo = data.headerInfo;
+            var fileVersion = headerInfo.fileVersion;
+            //var block = {};
+            var blockPtr = 0;
+            var view = new DataView(input, data.ptr, 5);//to do
+            var headerByte = view.getUint8(0);
+            blockPtr++;
+            var bits67 = headerByte >> 6;
+            var n = (bits67 === 0) ? 4 : 3 - bits67;
+            var doLut = (headerByte & 32) > 0 ? true : false;//5th bit
+            var numBits = headerByte & 31;
+            var numElements = 0;
+            if (n === 1) {
+              numElements = view.getUint8(blockPtr); blockPtr++;
+            } else if (n === 2) {
+              numElements = view.getUint16(blockPtr, true); blockPtr += 2;
+            } else if (n === 4) {
+              numElements = view.getUint32(blockPtr, true); blockPtr += 4;
+            } else {
+              throw "Invalid valid pixel count type";
+            }
+            //fix: huffman codes are bit stuffed, but not bound by data's max value, so need to use originalUnstuff
+            //offset = offset || 0;
+            var scale = 2 * headerInfo.maxZError;
+            var stuffedData, arrayBuf, store8, dataBytes, dataWords;
+            var lutArr, lutData, lutBytes, bitsPerPixel;
+            var zMax = headerInfo.numDims > 1 ? headerInfo.maxValues[iDim] : headerInfo.zMax;
+            if (doLut) {
+              data.counter.lut++;
+              lutBytes = view.getUint8(blockPtr);
+              blockPtr++;
+              dataBytes = Math.ceil((lutBytes - 1) * numBits / 8);
+              dataWords = Math.ceil(dataBytes / 4);
+              arrayBuf = new ArrayBuffer(dataWords * 4);
+              store8 = new Uint8Array(arrayBuf);
+
+              data.ptr += blockPtr;
+              store8.set(new Uint8Array(input, data.ptr, dataBytes));
+
+              lutData = new Uint32Array(arrayBuf);
+              data.ptr += dataBytes;
+
+              bitsPerPixel = 0;
+              while ((lutBytes - 1) >>> bitsPerPixel) {
+                bitsPerPixel++;
+              }
+              dataBytes = Math.ceil(numElements * bitsPerPixel / 8);
+              dataWords = Math.ceil(dataBytes / 4);
+              arrayBuf = new ArrayBuffer(dataWords * 4);
+              store8 = new Uint8Array(arrayBuf);
+              store8.set(new Uint8Array(input, data.ptr, dataBytes));
+              stuffedData = new Uint32Array(arrayBuf);
+              data.ptr += dataBytes;
+              if (fileVersion >= 3) {
+                lutArr = BitStuffer.unstuffLUT2(lutData, numBits, lutBytes - 1, offset, scale, zMax);
+              }
+              else {
+                lutArr = BitStuffer.unstuffLUT(lutData, numBits, lutBytes - 1, offset, scale, zMax);
+              }
+              //lutArr.unshift(0);
+              if (fileVersion >= 3) {
+                //BitStuffer.unstuff2(block, blockDataBuffer, headerInfo.zMax);
+                BitStuffer.unstuff2(stuffedData, blockDataBuffer, bitsPerPixel, numElements, lutArr);
+              }
+              else {
+                BitStuffer.unstuff(stuffedData, blockDataBuffer, bitsPerPixel, numElements, lutArr);
+              }
+            }
+            else {
+              //console.debug("bitstuffer");
+              data.counter.bitstuffer++;
+              bitsPerPixel = numBits;
+              data.ptr += blockPtr;
+              if (bitsPerPixel > 0) {
+                dataBytes = Math.ceil(numElements * bitsPerPixel / 8);
+                dataWords = Math.ceil(dataBytes / 4);
+                arrayBuf = new ArrayBuffer(dataWords * 4);
+                store8 = new Uint8Array(arrayBuf);
+                store8.set(new Uint8Array(input, data.ptr, dataBytes));
+                stuffedData = new Uint32Array(arrayBuf);
+                data.ptr += dataBytes;
+                if (fileVersion >= 3) {
+                  if (offset == null) {
+                    BitStuffer.originalUnstuff2(stuffedData, blockDataBuffer, bitsPerPixel, numElements);
+                  }
+                  else {
+                    BitStuffer.unstuff2(stuffedData, blockDataBuffer, bitsPerPixel, numElements, false, offset, scale, zMax);
+                  }
+                }
+                else {
+                  if (offset == null) {
+                    BitStuffer.originalUnstuff(stuffedData, blockDataBuffer, bitsPerPixel, numElements);
+                  }
+                  else {
+                    BitStuffer.unstuff(stuffedData, blockDataBuffer, bitsPerPixel, numElements, false, offset, scale, zMax);
+                  }
+                }
+              }
+            }
+          }
+
+        },
+
+        readTiles: function(input, data, OutPixelTypeArray) {
+          var headerInfo = data.headerInfo;
+          var width = headerInfo.width;
+          var height = headerInfo.height;
+          var microBlockSize = headerInfo.microBlockSize;
+          var imageType = headerInfo.imageType;
+          var dataTypeSize = Lerc2Helpers.getDataTypeSize(imageType);
+          var numBlocksX = Math.ceil(width / microBlockSize);
+          var numBlocksY = Math.ceil(height / microBlockSize);
+          data.pixels.numBlocksY = numBlocksY;
+          data.pixels.numBlocksX = numBlocksX;
+          data.pixels.ptr = 0;
+          var row = 0, col = 0, blockY = 0, blockX = 0, thisBlockHeight = 0, thisBlockWidth = 0, bytesLeft = 0, headerByte = 0, bits67 = 0, testCode = 0, outPtr = 0, outStride = 0, numBytes = 0, bytesleft = 0, z = 0, blockPtr = 0;
+          var view, block, arrayBuf, store8, rawData;
+          var blockEncoding;
+          var blockDataBuffer = new OutPixelTypeArray(microBlockSize * microBlockSize);
+          var lastBlockHeight = (height % microBlockSize) || microBlockSize;
+          var lastBlockWidth = (width % microBlockSize) || microBlockSize;
+          var offsetType, offset;
+          var numDims = headerInfo.numDims, iDim;
+          var mask = data.pixels.resultMask;
+          var resultPixels = data.pixels.resultPixels;
+          for (blockY = 0; blockY < numBlocksY; blockY++) {
+            thisBlockHeight = (blockY !== numBlocksY - 1) ? microBlockSize : lastBlockHeight;
+            for (blockX = 0; blockX < numBlocksX; blockX++) {
+              //console.debug("y" + blockY + " x" + blockX);
+              thisBlockWidth = (blockX !== numBlocksX - 1) ? microBlockSize : lastBlockWidth;
+
+              outPtr = blockY * width * microBlockSize + blockX * microBlockSize;
+              outStride = width - thisBlockWidth;
+
+
+              for (iDim = 0; iDim < numDims; iDim++) {
+                if (numDims > 1) {
+                  resultPixels = new OutPixelTypeArray(data.pixels.resultPixels.buffer, width * height * iDim * dataTypeSize, width * height);
+                }
+                bytesLeft = input.byteLength - data.ptr;
+                view = new DataView(input, data.ptr, Math.min(10, bytesLeft));
+                block = {};
+                blockPtr = 0;
+                headerByte = view.getUint8(0);
+                blockPtr++;
+                bits67 = (headerByte >> 6) & 0xFF;
+                testCode = (headerByte >> 2) & 15;    // use bits 2345 for integrity check
+                if (testCode !== (((blockX * microBlockSize) >> 3) & 15)) {
+                  throw "integrity issue";
+                  //return false;
+                }
+
+                blockEncoding = headerByte & 3;
+                if (blockEncoding > 3) {
+                  data.ptr += blockPtr;
+                  throw "Invalid block encoding (" + blockEncoding + ")";
+                }
+                else if (blockEncoding === 2) { //constant 0
+                  data.counter.constant++;
+                  data.ptr += blockPtr;
+                  continue;
+                }
+                else if (blockEncoding === 0) {  //uncompressed
+                  data.counter.uncompressed++;
+                  data.ptr += blockPtr;
+                  numBytes = thisBlockHeight * thisBlockWidth * dataTypeSize;
+                  bytesleft = input.byteLength - data.ptr;
+                  numBytes = numBytes < bytesleft ? numBytes : bytesleft;
+                  //bit alignment
+                  arrayBuf = new ArrayBuffer((numBytes % dataTypeSize) === 0 ? numBytes : (numBytes + dataTypeSize - numBytes % dataTypeSize));
+                  store8 = new Uint8Array(arrayBuf);
+                  store8.set(new Uint8Array(input, data.ptr, numBytes));
+                  rawData = new OutPixelTypeArray(arrayBuf);
+                  z = 0;
+                  if (mask) {
+                    for (row = 0; row < thisBlockHeight; row++) {
+                      for (col = 0; col < thisBlockWidth; col++) {
+                        if (mask[outPtr]) {
+                          resultPixels[outPtr] = rawData[z++];
+                        }
+                        outPtr++;
+                      }
+                      outPtr += outStride;
+                    }
+                  }
+                  else {//all valid
+                    for (row = 0; row < thisBlockHeight; row++) {
+                      for (col = 0; col < thisBlockWidth; col++) {
+                        resultPixels[outPtr++] = rawData[z++];
+                      }
+                      outPtr += outStride;
+                    }
+                  }
+                  data.ptr += z * dataTypeSize;
+                }
+                else { //1 or 3
+                  offsetType = Lerc2Helpers.getDataTypeUsed(imageType, bits67);
+                  offset = Lerc2Helpers.getOnePixel(block, blockPtr, offsetType, view);
+                  blockPtr += Lerc2Helpers.getDataTypeSize(offsetType);
+                  if (blockEncoding === 3) //constant offset value
+                  {
+                    data.ptr += blockPtr;
+                    data.counter.constantoffset++;
+                    //you can delete the following resultMask case in favor of performance because val is constant and users use nodata mask, otherwise nodatavalue post processing handles it too.
+                    //while the above statement is true, we're not doing it as we want to keep invalid pixel value at 0 rather than arbitrary values
+                    if (mask) {
+                      for (row = 0; row < thisBlockHeight; row++) {
+                        for (col = 0; col < thisBlockWidth; col++) {
+                          if (mask[outPtr]) {
+                            resultPixels[outPtr] = offset;
+                          }
+                          outPtr++;
+                        }
+                        outPtr += outStride;
+                      }
+                    }
+                    else {
+                      for (row = 0; row < thisBlockHeight; row++) {
+                        for (col = 0; col < thisBlockWidth; col++) {
+                          resultPixels[outPtr++] = offset;
+                        }
+                        outPtr += outStride;
+                      }
+                    }
+                  }
+                  else { //bitstuff encoding is 3
+                    data.ptr += blockPtr;
+                    //heavy lifting
+                    Lerc2Helpers.decodeBits(input, data, blockDataBuffer, offset, iDim);
+                    blockPtr = 0;
+                    if (mask) {
+                      for (row = 0; row < thisBlockHeight; row++) {
+                        for (col = 0; col < thisBlockWidth; col++) {
+                          if (mask[outPtr]) {
+                            resultPixels[outPtr] = blockDataBuffer[blockPtr++];
+                          }
+                          outPtr++;
+                        }
+                        outPtr += outStride;
+                      }
+                    }
+                    else {
+                      for (row = 0; row < thisBlockHeight; row++) {
+                        for (col = 0; col < thisBlockWidth; col++) {
+                          resultPixels[outPtr++] = blockDataBuffer[blockPtr++];
+                        }
+                        outPtr += outStride;
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+
+        /*****************
+        *  private methods (helper methods)
+        *****************/
+
+        formatFileInfo: function(data) {
+          return {
+            "fileIdentifierString": data.headerInfo.fileIdentifierString,
+            "fileVersion": data.headerInfo.fileVersion,
+            "imageType": data.headerInfo.imageType,
+            "height": data.headerInfo.height,
+            "width": data.headerInfo.width,
+            "numValidPixel": data.headerInfo.numValidPixel,
+            "microBlockSize": data.headerInfo.microBlockSize,
+            "blobSize": data.headerInfo.blobSize,
+            "maxZError": data.headerInfo.maxZError,
+            "pixelType": Lerc2Helpers.getPixelType(data.headerInfo.imageType),
+            "eofOffset": data.eofOffset,
+            "mask": data.mask ? {
+              "numBytes": data.mask.numBytes
+            } : null,
+            "pixels": {
+              "numBlocksX": data.pixels.numBlocksX,
+              "numBlocksY": data.pixels.numBlocksY,
+              //"numBytes": data.pixels.numBytes,
+              "maxValue": data.headerInfo.zMax,
+              "minValue": data.headerInfo.zMin,
+              "noDataValue": data.noDataValue
+            }
+          };
+        },
+
+        constructConstantSurface: function(data) {
+          var val = data.headerInfo.zMax;
+          var numDims =  data.headerInfo.numDims;
+          var numPixels = data.headerInfo.height * data.headerInfo.width;
+          var numPixelAllDims = numPixels * numDims;
+          var i=0, k = 0, nStart=0;
+          var mask = data.pixels.resultMask;
+          if (mask) {
+            if (numDims > 1) {
+              for (i=0; i < numDims; i++) {
+                nStart = i * numPixels;
+                for (k = 0; k < numPixels; k++) {
+                  if (mask[k]) {
+                    data.pixels.resultPixels[nStart + k] = val;
+                  }
+                }
+              }
+            }
+            else {
+              for (k = 0; k < numPixels; k++) {
+                if (mask[k]) {
+                  data.pixels.resultPixels[k] = val;
+                }
+              }
+            }
+          }
+          else {
+            if (data.pixels.resultPixels.fill) {
+              data.pixels.resultPixels.fill(val);
+            }
+            else {
+              for (k = 0; k < numPixelAllDims; k++) {
+                data.pixels.resultPixels[k] = val;
+              }
+            }
+          }
+          return;
+        },
+
+        getDataTypeArray: function(t) {
+          var tp;
+          switch (t) {
+            case 0: //char
+              tp = Int8Array;
+              break;
+            case 1: //byte
+              tp = Uint8Array;
+              break;
+            case 2: //short
+              tp = Int16Array;
+              break;
+            case 3: //ushort
+              tp = Uint16Array;
+              break;
+            case 4:
+              tp = Int32Array;
+              break;
+            case 5:
+              tp = Uint32Array;
+              break;
+            case 6:
+              tp = Float32Array;
+              break;
+            case 7:
+              tp = Float64Array;
+              break;
+            default:
+              tp = Float32Array;
+          }
+          return tp;
+        },
+
+        getPixelType: function(t) {
+          var tp;
+          switch (t) {
+            case 0: //char
+              tp = "S8";
+              break;
+            case 1: //byte
+              tp = "U8";
+              break;
+            case 2: //short
+              tp = "S16";
+              break;
+            case 3: //ushort
+              tp = "U16";
+              break;
+            case 4:
+              tp = "S32";
+              break;
+            case 5:
+              tp = "U32";
+              break;
+            case 6:
+              tp = "F32";
+              break;
+            case 7:
+              tp = "F64"; //not supported
+              break;
+            default:
+              tp = "F32";
+          }
+          return tp;
+        },
+
+        isValidPixelValue: function(t, val) {
+          if (val == null) {
+            return false;
+          }
+          var isValid;
+          switch (t) {
+            case 0: //char
+              isValid = val >= -128 && val <= 127;
+              break;
+            case 1: //byte  (unsigned char)
+              isValid = val >= 0 && val <= 255;
+              break;
+            case 2: //short
+              isValid = val >= -32768 && val <= 32767;
+              break;
+            case 3: //ushort
+              isValid = val >= 0 && val <= 65536;
+              break;
+            case 4: //int 32
+              isValid = val >= -2147483648 && val <= 2147483647;
+              break;
+            case 5: //uinit 32
+              isValid = val >= 0 && val <= 4294967296;
+              break;
+            case 6:
+              isValid = val >= -3.4027999387901484e+38 && val <= 3.4027999387901484e+38;
+              break;
+            case 7:
+              isValid = val >= 5e-324 && val <= 1.7976931348623157e+308;
+              break;
+            default:
+              isValid = false;
+          }
+          return isValid;
+        },
+
+        getDataTypeSize: function(t) {
+          var s = 0;
+          switch (t) {
+            case 0: //ubyte
+            case 1: //byte
+              s = 1;
+              break;
+            case 2: //short
+            case 3: //ushort
+              s = 2;
+              break;
+            case 4:
+            case 5:
+            case 6:
+              s = 4;
+              break;
+            case 7:
+              s = 8;
+              break;
+            default:
+              s = t;
+          }
+          return s;
+        },
+
+        getDataTypeUsed: function(dt, tc) {
+          var t = dt;
+          switch (dt) {
+            case 2: //short
+            case 4: //long
+              t = dt - tc;
+              break;
+            case 3: //ushort
+            case 5: //ulong
+              t = dt - 2 * tc;
+              break;
+            case 6: //float
+              if (0 === tc) {
+                t = dt;
+              }
+              else if (1 === tc) {
+                t = 2;
+              }
+              else {
+                t = 1;//byte
+              }
+              break;
+            case 7: //double
+              if (0 === tc) {
+                t = dt;
+              }
+              else {
+                t = dt - 2 * tc + 1;
+              }
+              break;
+            default:
+              t = dt;
+              break;
+          }
+          return t;
+        },
+
+        getOnePixel: function(block, blockPtr, offsetType, view) {
+          var temp = 0;
+          switch (offsetType) {
+            case 0: //char
+              temp = view.getInt8(blockPtr);
+              break;
+            case 1: //byte
+              temp = view.getUint8(blockPtr);
+              break;
+            case 2:
+              temp = view.getInt16(blockPtr, true);
+              break;
+            case 3:
+              temp = view.getUint16(blockPtr, true);
+              break;
+            case 4:
+              temp = view.getInt32(blockPtr, true);
+              break;
+            case 5:
+              temp = view.getUInt32(blockPtr, true);
+              break;
+            case 6:
+              temp = view.getFloat32(blockPtr, true);
+              break;
+            case 7:
+              //temp = view.getFloat64(blockPtr, true);
+              //blockPtr += 8;
+              //lerc2 encoding doesnt handle float 64, force to float32???
+              temp = view.getFloat64(blockPtr, true);
+              break;
+            default:
+              throw ("the decoder does not understand this pixel type");
+          }
+          return temp;
+        }
+      };
+
+      /***************************************************
+      *private class for a tree node. Huffman code is in Lerc2Helpers
+      ****************************************************/
+      var TreeNode = function(val, left, right) {
+        this.val = val;
+        this.left = left;
+        this.right = right;
+      };
+
+      var Lerc2Decode = {
+        /*
+        * ********removed options compared to LERC1. We can bring some of them back if needed.
+         * removed pixel type. LERC2 is typed and doesn't require user to give pixel type
+         * changed encodedMaskData to maskData. LERC2 's js version make it faster to use maskData directly.
+         * removed returnMask. mask is used by LERC2 internally and is cost free. In case of user input mask, it's returned as well and has neglible cost.
+         * removed nodatavalue. Because LERC2 pixels are typed, nodatavalue will sacrify a useful value for many types (8bit, 16bit) etc,
+         *       user has to be knowledgable enough about raster and their data to avoid usability issues. so nodata value is simply removed now.
+         *       We can add it back later if their's a clear requirement.
+         * removed encodedMask. This option was not implemented in LercDecode. It can be done after decoding (less efficient)
+         * removed computeUsedBitDepths.
+         *
+         *
+         * response changes compared to LERC1
+         * 1. encodedMaskData is not available
+         * 2. noDataValue is optional (returns only if user's noDataValue is with in the valid data type range)
+         * 3. maskData is always available
+        */
+        /*****************
+        *  public properties
+        ******************/
+        //HUFFMAN_LUT_BITS_MAX: 12, //use 2^12 lut, not configurable
+
+        /*****************
+        *  public methods
+        *****************/
+
+        /**
+         * Decode a LERC2 byte stream and return an object containing the pixel data and optional metadata.
+         *
+         * @param {ArrayBuffer} input The LERC input byte stream
+         * @param {object} [options] options Decoding options
+         * @param {number} [options.inputOffset] The number of bytes to skip in the input byte stream. A valid LERC file is expected at that position
+         * @param {boolean} [options.returnFileInfo] If true, the return value will have a fileInfo property that contains metadata obtained from the LERC headers and the decoding process
+         */
+        decode: function(/*byte array*/ input, /*object*/ options) {
+          //currently there's a bug in the sparse array, so please do not set to false
+          options = options || {};
+          var noDataValue = options.noDataValue;
+
+          //initialize
+          var i = 0, data = {};
+          data.ptr = options.inputOffset || 0;
+          data.pixels = {};
+
+          // File header
+          if (!Lerc2Helpers.readHeaderInfo(input, data)) ;
+          var headerInfo = data.headerInfo;
+          var fileVersion = headerInfo.fileVersion;
+          var OutPixelTypeArray = Lerc2Helpers.getDataTypeArray(headerInfo.imageType);
+
+          // Mask Header
+          Lerc2Helpers.readMask(input, data);
+          if (headerInfo.numValidPixel !== headerInfo.width * headerInfo.height && !data.pixels.resultMask) {
+            data.pixels.resultMask = options.maskData;
+          }
+
+          var numPixels = headerInfo.width * headerInfo.height;
+          data.pixels.resultPixels = new OutPixelTypeArray(numPixels * headerInfo.numDims);
+
+          data.counter = {
+            onesweep: 0,
+            uncompressed: 0,
+            lut: 0,
+            bitstuffer: 0,
+            constant: 0,
+            constantoffset: 0
+          };
+          if (headerInfo.numValidPixel !== 0) {
+            //not tested
+            if (headerInfo.zMax === headerInfo.zMin) //constant surface
+            {
+              Lerc2Helpers.constructConstantSurface(data);
+            }
+            else if (fileVersion >= 4 && Lerc2Helpers.checkMinMaxRanges(input, data)) {
+              Lerc2Helpers.constructConstantSurface(data);
+            }
+            else {
+              var view = new DataView(input, data.ptr, 2);
+              var bReadDataOneSweep = view.getUint8(0);
+              data.ptr++;
+              if (bReadDataOneSweep) {
+                //console.debug("OneSweep");
+                Lerc2Helpers.readDataOneSweep(input, data, OutPixelTypeArray);
+              }
+              else {
+                //lerc2.1: //bitstuffing + lut
+                //lerc2.2: //bitstuffing + lut + huffman
+                //lerc2.3: new bitstuffer
+                if (fileVersion > 1 && headerInfo.imageType <= 1 && Math.abs(headerInfo.maxZError - 0.5) < 0.00001) {
+                  //this is 2.x plus 8 bit (unsigned and signed) data, possiblity of Huffman
+                  var flagHuffman = view.getUint8(1);
+                  data.ptr++;
+                  data.encodeMode = flagHuffman;
+                  if (flagHuffman > 2 || (fileVersion < 4 && flagHuffman > 1)) {
+                    throw "Invalid Huffman flag " + flagHuffman;
+                  }
+                  if (flagHuffman) {//1 - delta Huffman, 2 - Huffman
+                    //console.log("Huffman");
+                    Lerc2Helpers.readHuffman(input, data, OutPixelTypeArray);
+                  }
+                  else {
+                    //console.log("Tiles");
+                    Lerc2Helpers.readTiles(input, data, OutPixelTypeArray);
+                  }
+                }
+                else { //lerc2.x non-8 bit data
+                  //console.log("Tiles");
+                  Lerc2Helpers.readTiles(input, data, OutPixelTypeArray);
+                }
+              }
+            }
+          }
+
+          data.eofOffset = data.ptr;
+          var diff;
+          if (options.inputOffset) {
+            diff = data.headerInfo.blobSize + options.inputOffset - data.ptr;
+            if (Math.abs(diff) >= 1) {
+              //console.debug("incorrect eof: dataptr " + data.ptr + " offset " + options.inputOffset + " blobsize " + data.headerInfo.blobSize + " diff: " + diff);
+              data.eofOffset = options.inputOffset + data.headerInfo.blobSize;
+            }
+          }
+          else {
+            diff = data.headerInfo.blobSize - data.ptr;
+            if (Math.abs(diff) >= 1) {
+              //console.debug("incorrect first band eof: dataptr " + data.ptr + " blobsize " + data.headerInfo.blobSize + " diff: " + diff);
+              data.eofOffset = data.headerInfo.blobSize;
+            }
+          }
+
+          var result = {
+            width: headerInfo.width,
+            height: headerInfo.height,
+            pixelData: data.pixels.resultPixels,
+            minValue: headerInfo.zMin,
+            maxValue: headerInfo.zMax,
+            validPixelCount: headerInfo.numValidPixel,
+            dimCount: headerInfo.numDims,
+            dimStats: {
+              minValues: headerInfo.minValues,
+              maxValues: headerInfo.maxValues
+            },
+            maskData: data.pixels.resultMask
+            //noDataValue: noDataValue
+          };
+
+          //we should remove this if there's no existing client
+          //optional noDataValue processing, it's user's responsiblity
+          if (data.pixels.resultMask && Lerc2Helpers.isValidPixelValue(headerInfo.imageType, noDataValue)) {
+            var mask = data.pixels.resultMask;
+            for (i = 0; i < numPixels; i++) {
+              if (!mask[i]) {
+                result.pixelData[i] = noDataValue;
+              }
+            }
+            result.noDataValue = noDataValue;
+          }
+          data.noDataValue = noDataValue;
+          if (options.returnFileInfo) {
+            result.fileInfo = Lerc2Helpers.formatFileInfo(data);
+          }
+          return result;
+        },
+
+        getBandCount: function(/*byte array*/ input) {
+          var count = 0;
+          var i = 0;
+          var temp = {};
+          temp.ptr = 0;
+          temp.pixels = {};
+          while (i < input.byteLength - 58) {
+            Lerc2Helpers.readHeaderInfo(input, temp);
+            i += temp.headerInfo.blobSize;
+            count++;
+            temp.ptr = i;
+          }
+          return count;
+        }
+      };
+
+      return Lerc2Decode;
+    })();
+
+    var isPlatformLittleEndian = (function() {
+      var a = new ArrayBuffer(4);
+      var b = new Uint8Array(a);
+      var c = new Uint32Array(a);
+      c[0] = 1;
+      return b[0] === 1;
+    })();
+
+    var Lerc = {
+      /************wrapper**********************************************/
+      /**
+       * A wrapper for decoding both LERC1 and LERC2 byte streams capable of handling multiband pixel blocks for various pixel types.
+       *
+       * @alias module:Lerc
+       * @param {ArrayBuffer} input The LERC input byte stream
+       * @param {object} [options] The decoding options below are optional.
+       * @param {number} [options.inputOffset] The number of bytes to skip in the input byte stream. A valid Lerc file is expected at that position.
+       * @param {string} [options.pixelType] (LERC1 only) Default value is F32. Valid pixel types for input are U8/S8/S16/U16/S32/U32/F32.
+       * @param {number} [options.noDataValue] (LERC1 only). It is recommended to use the returned mask instead of setting this value.
+       * @returns {{width, height, pixels, pixelType, mask, statistics}}
+         * @property {number} width Width of decoded image.
+         * @property {number} height Height of decoded image.
+         * @property {array} pixels [band1, band2, …] Each band is a typed array of width*height.
+         * @property {string} pixelType The type of pixels represented in the output.
+         * @property {mask} mask Typed array with a size of width*height, or null if all pixels are valid.
+         * @property {array} statistics [statistics_band1, statistics_band2, …] Each element is a statistics object representing min and max values
+      **/
+      decode: function(encodedData, options) {
+        if (!isPlatformLittleEndian) {
+          throw "Big endian system is not supported.";
+        }
+        options = options || {};
+        var inputOffset = options.inputOffset || 0;
+        var fileIdView = new Uint8Array(encodedData, inputOffset, 10);
+        var fileIdentifierString = String.fromCharCode.apply(null, fileIdView);
+        var lerc, majorVersion;
+        if (fileIdentifierString.trim() === "CntZImage") {
+          lerc = LercDecode;
+          majorVersion = 1;
+        }
+        else if (fileIdentifierString.substring(0, 5) === "Lerc2") {
+          lerc = Lerc2Decode;
+          majorVersion = 2;
+        }
+        else {
+          throw "Unexpected file identifier string: " + fileIdentifierString;
+        }
+
+        var iPlane = 0, eof = encodedData.byteLength - 10, encodedMaskData, bandMasks = [], bandMask, maskData;
+        var decodedPixelBlock = {
+          width: 0,
+          height: 0,
+          pixels: [],
+          pixelType: options.pixelType,
+          mask: null,
+          statistics: []
+        };
+
+        while (inputOffset < eof) {
+          var result = lerc.decode(encodedData, {
+            inputOffset: inputOffset,//for both lerc1 and lerc2
+            encodedMaskData: encodedMaskData,//lerc1 only
+            maskData: maskData,//lerc2 only
+            returnMask: iPlane === 0 ? true : false,//lerc1 only
+            returnEncodedMask: iPlane === 0 ? true : false,//lerc1 only
+            returnFileInfo: true,//for both lerc1 and lerc2
+            pixelType: options.pixelType || null,//lerc1 only
+            noDataValue: options.noDataValue || null//lerc1 only
+          });
+
+          inputOffset = result.fileInfo.eofOffset;
+          if (iPlane === 0) {
+            encodedMaskData = result.encodedMaskData;//lerc1
+            maskData = result.maskData;//lerc2
+            decodedPixelBlock.width = result.width;
+            decodedPixelBlock.height = result.height;
+            decodedPixelBlock.dimCount = result.dimCount || 1;
+            //decodedPixelBlock.dimStats = decodedPixelBlock.dimStats;
+            decodedPixelBlock.pixelType = result.pixelType || result.fileInfo.pixelType;
+            decodedPixelBlock.mask = result.maskData;
+          }
+          if (majorVersion >1 && result.fileInfo.mask && result.fileInfo.mask.numBytes > 0) {
+            bandMasks.push(result.maskData);
+          }
+
+          iPlane++;
+          decodedPixelBlock.pixels.push(result.pixelData);
+          decodedPixelBlock.statistics.push({
+            minValue: result.minValue,
+            maxValue: result.maxValue,
+            noDataValue: result.noDataValue,
+            dimStats: result.dimStats
+          });
+        }
+        var i, j, numPixels;
+        if (majorVersion > 1 && bandMasks.length > 1) {
+          numPixels = decodedPixelBlock.width * decodedPixelBlock.height;
+          decodedPixelBlock.bandMasks = bandMasks;
+          maskData = new Uint8Array(numPixels);
+          maskData.set(bandMasks[0]);
+          for (i = 1; i < bandMasks.length; i++) {
+            bandMask = bandMasks[i];
+            for (j = 0; j < numPixels; j++) {
+              maskData[j] = maskData[j] & bandMask[j];
+            }
+          }
+          decodedPixelBlock.maskData = maskData;
+        }
+
+        return decodedPixelBlock;
+      }
+    };
+
+    if (module.exports) {/* jshint ignore:line */
+      //commonJS module 1.0/1.1/1.1.1 systems, such as nodeJS
+      //http://wiki.commonjs.org/wiki/Modules
+      module.exports = Lerc;/* jshint ignore:line */
+    }
+    else {
+      //assign to this, most likely window
+      this.Lerc = Lerc;
+    }
+
+  })();
+  });
+
+  function createVerticesFromHeightmap(parameters, transferableObjects) {
+    // LERC encoded buffers must be decoded, then we can process them like normal
+    if (parameters.encoding === HeightmapEncoding$1.LERC) {
+      let result;
+      try {
+        result = LercDecode.decode(parameters.heightmap);
+      } catch (error) {
+        throw new RuntimeError.RuntimeError(error);
+      }
+
+      const lercStatistics = result.statistics[0];
+      if (lercStatistics.minValue === Number.MAX_VALUE) {
+        throw new RuntimeError.RuntimeError("Invalid tile data");
+      }
+
+      parameters.heightmap = result.pixels[0];
+      parameters.width = result.width;
+      parameters.height = result.height;
+    }
+
+    parameters.ellipsoid = Matrix2.Ellipsoid.clone(parameters.ellipsoid);
+    parameters.rectangle = Matrix2.Rectangle.clone(parameters.rectangle);
+
+    const statistics = HeightmapTessellator.computeVertices(parameters);
+    const vertices = statistics.vertices;
+    transferableObjects.push(vertices.buffer);
+
+    return {
+      vertices: vertices.buffer,
+      numberOfAttributes: statistics.encoding.stride,
+      minimumHeight: statistics.minimumHeight,
+      maximumHeight: statistics.maximumHeight,
+      gridWidth: parameters.width,
+      gridHeight: parameters.height,
+      boundingSphere3D: statistics.boundingSphere3D,
+      orientedBoundingBox: statistics.orientedBoundingBox,
+      occludeePointInScaledSpace: statistics.occludeePointInScaledSpace,
+      encoding: statistics.encoding,
+      westIndicesSouthToNorth: statistics.westIndicesSouthToNorth,
+      southIndicesEastToWest: statistics.southIndicesEastToWest,
+      eastIndicesNorthToSouth: statistics.eastIndicesNorthToSouth,
+      northIndicesWestToEast: statistics.northIndicesWestToEast,
+    };
+  }
+  var createVerticesFromHeightmap$1 = createTaskProcessorWorker(createVerticesFromHeightmap);
+
+  return createVerticesFromHeightmap$1;
+
+}));
+//# sourceMappingURL=createVerticesFromHeightmap.js.map

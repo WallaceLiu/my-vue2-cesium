@@ -1,1 +1,435 @@
-define(["./when-ad3237a0","./Cartesian2-08065eec","./arrayRemoveDuplicates-707c233c","./BoundingRectangle-195cb660","./Transforms-475655a6","./ComponentDatatype-a867ddaa","./PolylineVolumeGeometryLibrary-5dcc593d","./Check-be2d5acb","./GeometryAttribute-9b226476","./GeometryAttributes-27dc652d","./GeometryPipeline-8c1d3649","./IndexDatatype-9504f550","./Math-5ca9b250","./PolygonPipeline-18050975","./VertexFormat-fc4fc84a","./combine-1510933d","./RuntimeError-767bd866","./WebGLConstants-1c8239cc","./EllipsoidTangentPlane-797b6936","./AxisAlignedBoundingBox-06bbfd79","./IntersectionTests-0e877967","./Plane-e6ee56b8","./PolylinePipeline-254d54fb","./EllipsoidGeodesic-dc284f08","./EllipsoidRhumbLine-4a6ed5de","./AttributeCompression-9fbb8447","./EncodedCartesian3-a785c24c"],function(c,u,i,r,T,G,D,e,w,R,B,S,a,I,m,t,n,o,l,s,p,d,y,g,h,f,v){"use strict";function b(e){var t=(e=c.defaultValue(e,c.defaultValue.EMPTY_OBJECT)).polylinePositions,n=e.shapePositions;this._positions=t,this._shape=n,this._ellipsoid=u.Ellipsoid.clone(c.defaultValue(e.ellipsoid,u.Ellipsoid.WGS84)),this._cornerType=c.defaultValue(e.cornerType,D.CornerType.ROUNDED),this._vertexFormat=m.VertexFormat.clone(c.defaultValue(e.vertexFormat,m.VertexFormat.DEFAULT)),this._granularity=c.defaultValue(e.granularity,a.CesiumMath.RADIANS_PER_DEGREE),this._workerName="createPolylineVolumeGeometry";t=1+t.length*u.Cartesian3.packedLength;t+=1+n.length*u.Cartesian2.packedLength,this.packedLength=t+u.Ellipsoid.packedLength+m.VertexFormat.packedLength+2}b.pack=function(e,t,n){var a;n=c.defaultValue(n,0);var i=e._positions,r=i.length;for(t[n++]=r,a=0;a<r;++a,n+=u.Cartesian3.packedLength)u.Cartesian3.pack(i[a],t,n);var o=e._shape,r=o.length;for(t[n++]=r,a=0;a<r;++a,n+=u.Cartesian2.packedLength)u.Cartesian2.pack(o[a],t,n);return u.Ellipsoid.pack(e._ellipsoid,t,n),n+=u.Ellipsoid.packedLength,m.VertexFormat.pack(e._vertexFormat,t,n),n+=m.VertexFormat.packedLength,t[n++]=e._cornerType,t[n]=e._granularity,t};var P=u.Ellipsoid.clone(u.Ellipsoid.UNIT_SPHERE),E=new m.VertexFormat,_={polylinePositions:void 0,shapePositions:void 0,ellipsoid:P,vertexFormat:E,cornerType:void 0,granularity:void 0};b.unpack=function(e,t,n){t=c.defaultValue(t,0);for(var a=e[t++],i=new Array(a),r=0;r<a;++r,t+=u.Cartesian3.packedLength)i[r]=u.Cartesian3.unpack(e,t);var a=e[t++],o=new Array(a);for(r=0;r<a;++r,t+=u.Cartesian2.packedLength)o[r]=u.Cartesian2.unpack(e,t);var l=u.Ellipsoid.unpack(e,t,P);t+=u.Ellipsoid.packedLength;var s=m.VertexFormat.unpack(e,t,E);t+=m.VertexFormat.packedLength;var p=e[t++],d=e[t];return c.defined(n)?(n._positions=i,n._shape=o,n._ellipsoid=u.Ellipsoid.clone(l,n._ellipsoid),n._vertexFormat=m.VertexFormat.clone(s,n._vertexFormat),n._cornerType=p,n._granularity=d,n):(_.polylinePositions=i,_.shapePositions=o,_.cornerType=p,_.granularity=d,new b(_))};var k=new r.BoundingRectangle;return b.createGeometry=function(e){var t=e._positions,n=i.arrayRemoveDuplicates(t,u.Cartesian3.equalsEpsilon),a=e._shape,a=D.PolylineVolumeGeometryLibrary.removeDuplicatesFromShape(a);if(!(n.length<2||a.length<3)){I.PolygonPipeline.computeWindingOrder2D(a)===I.WindingOrder.CLOCKWISE&&a.reverse();t=r.BoundingRectangle.fromPoints(a,k);return function(e,t,n,a){var i=new R.GeometryAttributes;a.position&&(i.position=new w.GeometryAttribute({componentDatatype:G.ComponentDatatype.DOUBLE,componentsPerAttribute:3,values:e}));var r,o,l,s,p,d=t.length,c=e.length/3,u=(c-2*d)/(2*d),m=I.PolygonPipeline.triangulate(t),y=(u-1)*d*6+2*m.length,g=S.IndexDatatype.createTypedArray(c,y),h=2*d,f=0;for(L=0;L<u-1;L++){for(r=0;r<d-1;r++)p=(o=2*r+L*d*2)+h,s=(l=o+1)+h,g[f++]=l,g[f++]=o,g[f++]=s,g[f++]=s,g[f++]=o,g[f++]=p;s=(l=(o=2*d-2+L*d*2)+1)+h,p=o+h,g[f++]=l,g[f++]=o,g[f++]=s,g[f++]=s,g[f++]=o,g[f++]=p}if(a.st||a.tangent||a.bitangent){for(var v,b,P=new Float32Array(2*c),E=1/(u-1),_=1/n.height,k=n.height/2,C=0,L=0;L<u;L++){for(b=_*(t[0].y+k),P[C++]=v=L*E,P[C++]=b,r=1;r<d;r++)b=_*(t[r].y+k),P[C++]=v,P[C++]=b,P[C++]=v,P[C++]=b;b=_*(t[0].y+k),P[C++]=v,P[C++]=b}for(r=0;r<d;r++)b=_*(t[r].y+k),P[C++]=v=0,P[C++]=b;for(r=0;r<d;r++)b=_*(t[r].y+k),P[C++]=v=(u-1)*E,P[C++]=b;i.st=new w.GeometryAttribute({componentDatatype:G.ComponentDatatype.FLOAT,componentsPerAttribute:2,values:new Float32Array(P)})}var V=c-2*d;for(L=0;L<m.length;L+=3){var F=m[L]+V,x=m[L+1]+V,A=m[L+2]+V;g[f++]=F,g[f++]=x,g[f++]=A,g[f++]=A+d,g[f++]=x+d,g[f++]=F+d}if(e=new w.Geometry({attributes:i,indices:g,boundingSphere:T.BoundingSphere.fromVertices(e),primitiveType:w.PrimitiveType.TRIANGLES}),a.normal&&(e=B.GeometryPipeline.computeNormal(e)),a.tangent||a.bitangent){try{e=B.GeometryPipeline.computeTangentAndBitangent(e)}catch(e){D.oneTimeWarning("polyline-volume-tangent-bitangent","Unable to compute tangents and bitangents for polyline volume geometry")}a.tangent||(e.attributes.tangent=void 0),a.bitangent||(e.attributes.bitangent=void 0),a.st||(e.attributes.st=void 0)}return e}(D.PolylineVolumeGeometryLibrary.computePositions(n,a,t,e,!0),a,t,e._vertexFormat)}},function(e,t){return(e=c.defined(t)?b.unpack(e,t):e)._ellipsoid=u.Ellipsoid.clone(e._ellipsoid),b.createGeometry(e)}});
+/**
+ * Cesium - https://github.com/CesiumGS/cesium
+ *
+ * Copyright 2011-2020 Cesium Contributors
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ *
+ * Columbus View (Pat. Pend.)
+ *
+ * Portions licensed separately.
+ * See https://github.com/CesiumGS/cesium/blob/main/LICENSE.md for full licensing details.
+ */
+
+define(['./defaultValue-81eec7ed', './Matrix2-d35cf4b5', './arrayRemoveDuplicates-1a15bd09', './BoundingRectangle-4293898d', './Transforms-f0a54c7b', './ComponentDatatype-9e86ac8f', './PolylineVolumeGeometryLibrary-62b3e4fb', './RuntimeError-8952249c', './GeometryAttribute-eeb38987', './GeometryAttributes-32b29525', './GeometryPipeline-55e02a41', './IndexDatatype-bed3935d', './PolygonPipeline-a3c0d57c', './VertexFormat-7df34ea5', './_commonjsHelpers-3aae1032-26891ab7', './combine-3c023bda', './WebGLConstants-508b9636', './EllipsoidTangentPlane-2abe082d', './AxisAlignedBoundingBox-7b93960a', './IntersectionTests-a25e058d', './Plane-24f22488', './PolylinePipeline-3b5d6486', './EllipsoidGeodesic-924f7301', './EllipsoidRhumbLine-d049f903', './AttributeCompression-d0b97a83', './EncodedCartesian3-530d5328'], (function (defaultValue, Matrix2, arrayRemoveDuplicates, BoundingRectangle, Transforms, ComponentDatatype, PolylineVolumeGeometryLibrary, RuntimeError, GeometryAttribute, GeometryAttributes, GeometryPipeline, IndexDatatype, PolygonPipeline, VertexFormat, _commonjsHelpers3aae1032, combine, WebGLConstants, EllipsoidTangentPlane, AxisAlignedBoundingBox, IntersectionTests, Plane, PolylinePipeline, EllipsoidGeodesic, EllipsoidRhumbLine, AttributeCompression, EncodedCartesian3) { 'use strict';
+
+  function computeAttributes(
+    combinedPositions,
+    shape,
+    boundingRectangle,
+    vertexFormat
+  ) {
+    const attributes = new GeometryAttributes.GeometryAttributes();
+    if (vertexFormat.position) {
+      attributes.position = new GeometryAttribute.GeometryAttribute({
+        componentDatatype: ComponentDatatype.ComponentDatatype.DOUBLE,
+        componentsPerAttribute: 3,
+        values: combinedPositions,
+      });
+    }
+    const shapeLength = shape.length;
+    const vertexCount = combinedPositions.length / 3;
+    const length = (vertexCount - shapeLength * 2) / (shapeLength * 2);
+    const firstEndIndices = PolygonPipeline.PolygonPipeline.triangulate(shape);
+
+    const indicesCount =
+      (length - 1) * shapeLength * 6 + firstEndIndices.length * 2;
+    const indices = IndexDatatype.IndexDatatype.createTypedArray(vertexCount, indicesCount);
+    let i, j;
+    let ll, ul, ur, lr;
+    const offset = shapeLength * 2;
+    let index = 0;
+    for (i = 0; i < length - 1; i++) {
+      for (j = 0; j < shapeLength - 1; j++) {
+        ll = j * 2 + i * shapeLength * 2;
+        lr = ll + offset;
+        ul = ll + 1;
+        ur = ul + offset;
+
+        indices[index++] = ul;
+        indices[index++] = ll;
+        indices[index++] = ur;
+        indices[index++] = ur;
+        indices[index++] = ll;
+        indices[index++] = lr;
+      }
+      ll = shapeLength * 2 - 2 + i * shapeLength * 2;
+      ul = ll + 1;
+      ur = ul + offset;
+      lr = ll + offset;
+
+      indices[index++] = ul;
+      indices[index++] = ll;
+      indices[index++] = ur;
+      indices[index++] = ur;
+      indices[index++] = ll;
+      indices[index++] = lr;
+    }
+
+    if (vertexFormat.st || vertexFormat.tangent || vertexFormat.bitangent) {
+      // st required for tangent/bitangent calculation
+      const st = new Float32Array(vertexCount * 2);
+      const lengthSt = 1 / (length - 1);
+      const heightSt = 1 / boundingRectangle.height;
+      const heightOffset = boundingRectangle.height / 2;
+      let s, t;
+      let stindex = 0;
+      for (i = 0; i < length; i++) {
+        s = i * lengthSt;
+        t = heightSt * (shape[0].y + heightOffset);
+        st[stindex++] = s;
+        st[stindex++] = t;
+        for (j = 1; j < shapeLength; j++) {
+          t = heightSt * (shape[j].y + heightOffset);
+          st[stindex++] = s;
+          st[stindex++] = t;
+          st[stindex++] = s;
+          st[stindex++] = t;
+        }
+        t = heightSt * (shape[0].y + heightOffset);
+        st[stindex++] = s;
+        st[stindex++] = t;
+      }
+      for (j = 0; j < shapeLength; j++) {
+        s = 0;
+        t = heightSt * (shape[j].y + heightOffset);
+        st[stindex++] = s;
+        st[stindex++] = t;
+      }
+      for (j = 0; j < shapeLength; j++) {
+        s = (length - 1) * lengthSt;
+        t = heightSt * (shape[j].y + heightOffset);
+        st[stindex++] = s;
+        st[stindex++] = t;
+      }
+
+      attributes.st = new GeometryAttribute.GeometryAttribute({
+        componentDatatype: ComponentDatatype.ComponentDatatype.FLOAT,
+        componentsPerAttribute: 2,
+        values: new Float32Array(st),
+      });
+    }
+
+    const endOffset = vertexCount - shapeLength * 2;
+    for (i = 0; i < firstEndIndices.length; i += 3) {
+      const v0 = firstEndIndices[i] + endOffset;
+      const v1 = firstEndIndices[i + 1] + endOffset;
+      const v2 = firstEndIndices[i + 2] + endOffset;
+
+      indices[index++] = v0;
+      indices[index++] = v1;
+      indices[index++] = v2;
+      indices[index++] = v2 + shapeLength;
+      indices[index++] = v1 + shapeLength;
+      indices[index++] = v0 + shapeLength;
+    }
+
+    let geometry = new GeometryAttribute.Geometry({
+      attributes: attributes,
+      indices: indices,
+      boundingSphere: Transforms.BoundingSphere.fromVertices(combinedPositions),
+      primitiveType: GeometryAttribute.PrimitiveType.TRIANGLES,
+    });
+
+    if (vertexFormat.normal) {
+      geometry = GeometryPipeline.GeometryPipeline.computeNormal(geometry);
+    }
+
+    if (vertexFormat.tangent || vertexFormat.bitangent) {
+      try {
+        geometry = GeometryPipeline.GeometryPipeline.computeTangentAndBitangent(geometry);
+      } catch (e) {
+        PolylineVolumeGeometryLibrary.oneTimeWarning(
+          "polyline-volume-tangent-bitangent",
+          "Unable to compute tangents and bitangents for polyline volume geometry"
+        );
+        //TODO https://github.com/CesiumGS/cesium/issues/3609
+      }
+
+      if (!vertexFormat.tangent) {
+        geometry.attributes.tangent = undefined;
+      }
+      if (!vertexFormat.bitangent) {
+        geometry.attributes.bitangent = undefined;
+      }
+      if (!vertexFormat.st) {
+        geometry.attributes.st = undefined;
+      }
+    }
+
+    return geometry;
+  }
+
+  /**
+   * A description of a polyline with a volume (a 2D shape extruded along a polyline).
+   *
+   * @alias PolylineVolumeGeometry
+   * @constructor
+   *
+   * @param {Object} options Object with the following properties:
+   * @param {Cartesian3[]} options.polylinePositions An array of {@link Cartesian3} positions that define the center of the polyline volume.
+   * @param {Cartesian2[]} options.shapePositions An array of {@link Cartesian2} positions that define the shape to be extruded along the polyline
+   * @param {Ellipsoid} [options.ellipsoid=Ellipsoid.WGS84] The ellipsoid to be used as a reference.
+   * @param {Number} [options.granularity=CesiumMath.RADIANS_PER_DEGREE] The distance, in radians, between each latitude and longitude. Determines the number of positions in the buffer.
+   * @param {VertexFormat} [options.vertexFormat=VertexFormat.DEFAULT] The vertex attributes to be computed.
+   * @param {CornerType} [options.cornerType=CornerType.ROUNDED] Determines the style of the corners.
+   *
+   * @see PolylineVolumeGeometry#createGeometry
+   *
+   * @demo {@link https://sandcastle.cesium.com/index.html?src=Polyline%20Volume.html|Cesium Sandcastle Polyline Volume Demo}
+   *
+   * @example
+   * function computeCircle(radius) {
+   *   const positions = [];
+   *   for (let i = 0; i < 360; i++) {
+   *     const radians = Cesium.Math.toRadians(i);
+   *     positions.push(new Cesium.Cartesian2(radius * Math.cos(radians), radius * Math.sin(radians)));
+   *   }
+   *   return positions;
+   * }
+   *
+   * const volume = new Cesium.PolylineVolumeGeometry({
+   *   vertexFormat : Cesium.VertexFormat.POSITION_ONLY,
+   *   polylinePositions : Cesium.Cartesian3.fromDegreesArray([
+   *     -72.0, 40.0,
+   *     -70.0, 35.0
+   *   ]),
+   *   shapePositions : computeCircle(100000.0)
+   * });
+   */
+  function PolylineVolumeGeometry(options) {
+    options = defaultValue.defaultValue(options, defaultValue.defaultValue.EMPTY_OBJECT);
+    const positions = options.polylinePositions;
+    const shape = options.shapePositions;
+
+    //>>includeStart('debug', pragmas.debug);
+    if (!defaultValue.defined(positions)) {
+      throw new RuntimeError.DeveloperError("options.polylinePositions is required.");
+    }
+    if (!defaultValue.defined(shape)) {
+      throw new RuntimeError.DeveloperError("options.shapePositions is required.");
+    }
+    //>>includeEnd('debug');
+
+    this._positions = positions;
+    this._shape = shape;
+    this._ellipsoid = Matrix2.Ellipsoid.clone(
+      defaultValue.defaultValue(options.ellipsoid, Matrix2.Ellipsoid.WGS84)
+    );
+    this._cornerType = defaultValue.defaultValue(options.cornerType, PolylineVolumeGeometryLibrary.CornerType.ROUNDED);
+    this._vertexFormat = VertexFormat.VertexFormat.clone(
+      defaultValue.defaultValue(options.vertexFormat, VertexFormat.VertexFormat.DEFAULT)
+    );
+    this._granularity = defaultValue.defaultValue(
+      options.granularity,
+      ComponentDatatype.CesiumMath.RADIANS_PER_DEGREE
+    );
+    this._workerName = "createPolylineVolumeGeometry";
+
+    let numComponents = 1 + positions.length * Matrix2.Cartesian3.packedLength;
+    numComponents += 1 + shape.length * Matrix2.Cartesian2.packedLength;
+
+    /**
+     * The number of elements used to pack the object into an array.
+     * @type {Number}
+     */
+    this.packedLength =
+      numComponents + Matrix2.Ellipsoid.packedLength + VertexFormat.VertexFormat.packedLength + 2;
+  }
+
+  /**
+   * Stores the provided instance into the provided array.
+   *
+   * @param {PolylineVolumeGeometry} value The value to pack.
+   * @param {Number[]} array The array to pack into.
+   * @param {Number} [startingIndex=0] The index into the array at which to start packing the elements.
+   *
+   * @returns {Number[]} The array that was packed into
+   */
+  PolylineVolumeGeometry.pack = function (value, array, startingIndex) {
+    //>>includeStart('debug', pragmas.debug);
+    if (!defaultValue.defined(value)) {
+      throw new RuntimeError.DeveloperError("value is required");
+    }
+    if (!defaultValue.defined(array)) {
+      throw new RuntimeError.DeveloperError("array is required");
+    }
+    //>>includeEnd('debug');
+
+    startingIndex = defaultValue.defaultValue(startingIndex, 0);
+
+    let i;
+
+    const positions = value._positions;
+    let length = positions.length;
+    array[startingIndex++] = length;
+
+    for (i = 0; i < length; ++i, startingIndex += Matrix2.Cartesian3.packedLength) {
+      Matrix2.Cartesian3.pack(positions[i], array, startingIndex);
+    }
+
+    const shape = value._shape;
+    length = shape.length;
+    array[startingIndex++] = length;
+
+    for (i = 0; i < length; ++i, startingIndex += Matrix2.Cartesian2.packedLength) {
+      Matrix2.Cartesian2.pack(shape[i], array, startingIndex);
+    }
+
+    Matrix2.Ellipsoid.pack(value._ellipsoid, array, startingIndex);
+    startingIndex += Matrix2.Ellipsoid.packedLength;
+
+    VertexFormat.VertexFormat.pack(value._vertexFormat, array, startingIndex);
+    startingIndex += VertexFormat.VertexFormat.packedLength;
+
+    array[startingIndex++] = value._cornerType;
+    array[startingIndex] = value._granularity;
+
+    return array;
+  };
+
+  const scratchEllipsoid = Matrix2.Ellipsoid.clone(Matrix2.Ellipsoid.UNIT_SPHERE);
+  const scratchVertexFormat = new VertexFormat.VertexFormat();
+  const scratchOptions = {
+    polylinePositions: undefined,
+    shapePositions: undefined,
+    ellipsoid: scratchEllipsoid,
+    vertexFormat: scratchVertexFormat,
+    cornerType: undefined,
+    granularity: undefined,
+  };
+
+  /**
+   * Retrieves an instance from a packed array.
+   *
+   * @param {Number[]} array The packed array.
+   * @param {Number} [startingIndex=0] The starting index of the element to be unpacked.
+   * @param {PolylineVolumeGeometry} [result] The object into which to store the result.
+   * @returns {PolylineVolumeGeometry} The modified result parameter or a new PolylineVolumeGeometry instance if one was not provided.
+   */
+  PolylineVolumeGeometry.unpack = function (array, startingIndex, result) {
+    //>>includeStart('debug', pragmas.debug);
+    if (!defaultValue.defined(array)) {
+      throw new RuntimeError.DeveloperError("array is required");
+    }
+    //>>includeEnd('debug');
+
+    startingIndex = defaultValue.defaultValue(startingIndex, 0);
+
+    let i;
+
+    let length = array[startingIndex++];
+    const positions = new Array(length);
+
+    for (i = 0; i < length; ++i, startingIndex += Matrix2.Cartesian3.packedLength) {
+      positions[i] = Matrix2.Cartesian3.unpack(array, startingIndex);
+    }
+
+    length = array[startingIndex++];
+    const shape = new Array(length);
+
+    for (i = 0; i < length; ++i, startingIndex += Matrix2.Cartesian2.packedLength) {
+      shape[i] = Matrix2.Cartesian2.unpack(array, startingIndex);
+    }
+
+    const ellipsoid = Matrix2.Ellipsoid.unpack(array, startingIndex, scratchEllipsoid);
+    startingIndex += Matrix2.Ellipsoid.packedLength;
+
+    const vertexFormat = VertexFormat.VertexFormat.unpack(
+      array,
+      startingIndex,
+      scratchVertexFormat
+    );
+    startingIndex += VertexFormat.VertexFormat.packedLength;
+
+    const cornerType = array[startingIndex++];
+    const granularity = array[startingIndex];
+
+    if (!defaultValue.defined(result)) {
+      scratchOptions.polylinePositions = positions;
+      scratchOptions.shapePositions = shape;
+      scratchOptions.cornerType = cornerType;
+      scratchOptions.granularity = granularity;
+      return new PolylineVolumeGeometry(scratchOptions);
+    }
+
+    result._positions = positions;
+    result._shape = shape;
+    result._ellipsoid = Matrix2.Ellipsoid.clone(ellipsoid, result._ellipsoid);
+    result._vertexFormat = VertexFormat.VertexFormat.clone(vertexFormat, result._vertexFormat);
+    result._cornerType = cornerType;
+    result._granularity = granularity;
+
+    return result;
+  };
+
+  const brScratch = new BoundingRectangle.BoundingRectangle();
+
+  /**
+   * Computes the geometric representation of a polyline with a volume, including its vertices, indices, and a bounding sphere.
+   *
+   * @param {PolylineVolumeGeometry} polylineVolumeGeometry A description of the polyline volume.
+   * @returns {Geometry|undefined} The computed vertices and indices.
+   */
+  PolylineVolumeGeometry.createGeometry = function (polylineVolumeGeometry) {
+    const positions = polylineVolumeGeometry._positions;
+    const cleanPositions = arrayRemoveDuplicates.arrayRemoveDuplicates(
+      positions,
+      Matrix2.Cartesian3.equalsEpsilon
+    );
+    let shape2D = polylineVolumeGeometry._shape;
+    shape2D = PolylineVolumeGeometryLibrary.PolylineVolumeGeometryLibrary.removeDuplicatesFromShape(shape2D);
+
+    if (cleanPositions.length < 2 || shape2D.length < 3) {
+      return undefined;
+    }
+
+    if (
+      PolygonPipeline.PolygonPipeline.computeWindingOrder2D(shape2D) === PolygonPipeline.WindingOrder.CLOCKWISE
+    ) {
+      shape2D.reverse();
+    }
+    const boundingRectangle = BoundingRectangle.BoundingRectangle.fromPoints(shape2D, brScratch);
+
+    const computedPositions = PolylineVolumeGeometryLibrary.PolylineVolumeGeometryLibrary.computePositions(
+      cleanPositions,
+      shape2D,
+      boundingRectangle,
+      polylineVolumeGeometry,
+      true
+    );
+    return computeAttributes(
+      computedPositions,
+      shape2D,
+      boundingRectangle,
+      polylineVolumeGeometry._vertexFormat
+    );
+  };
+
+  function createPolylineVolumeGeometry(polylineVolumeGeometry, offset) {
+    if (defaultValue.defined(offset)) {
+      polylineVolumeGeometry = PolylineVolumeGeometry.unpack(
+        polylineVolumeGeometry,
+        offset
+      );
+    }
+    polylineVolumeGeometry._ellipsoid = Matrix2.Ellipsoid.clone(
+      polylineVolumeGeometry._ellipsoid
+    );
+    return PolylineVolumeGeometry.createGeometry(polylineVolumeGeometry);
+  }
+
+  return createPolylineVolumeGeometry;
+
+}));
+//# sourceMappingURL=createPolylineVolumeGeometry.js.map

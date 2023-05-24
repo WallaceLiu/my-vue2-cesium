@@ -1,1 +1,1046 @@
-define(["./AttributeCompression-9fbb8447","./Transforms-475655a6","./Cartesian2-08065eec","./when-ad3237a0","./TerrainEncoding-8815c496","./IndexDatatype-9504f550","./Check-be2d5acb","./Math-5ca9b250","./OrientedBoundingBox-4a03a74e","./createTaskProcessorWorker","./combine-1510933d","./RuntimeError-767bd866","./ComponentDatatype-a867ddaa","./WebGLConstants-1c8239cc","./EllipsoidTangentPlane-797b6936","./AxisAlignedBoundingBox-06bbfd79","./IntersectionTests-0e877967","./Plane-e6ee56b8"],function(s,ue,oe,g,ae,pe,e,de,le,t,i,n,r,h,u,o,a,p){"use strict";var fe={clipTriangleAtAxisAlignedThreshold:function(e,t,i,n,s,r){var h,u;g.defined(r)?r.length=0:r=[];var o,a,p,d,l,f,c=t?(h=i<e,u=n<e,s<e):(h=e<i,u=e<n,e<s),t=h+u+c;return 1===t?h?(o=(e-i)/(n-i),a=(e-i)/(s-i),r.push(1),r.push(2),1!==a&&(r.push(-1),r.push(0),r.push(2),r.push(a)),1!==o&&(r.push(-1),r.push(0),r.push(1),r.push(o))):u?(p=(e-n)/(s-n),d=(e-n)/(i-n),r.push(2),r.push(0),1!==d&&(r.push(-1),r.push(1),r.push(0),r.push(d)),1!==p&&(r.push(-1),r.push(1),r.push(2),r.push(p))):c&&(l=(e-s)/(i-s),f=(e-s)/(n-s),r.push(0),r.push(1),1!==f&&(r.push(-1),r.push(2),r.push(1),r.push(f)),1!==l&&(r.push(-1),r.push(2),r.push(0),r.push(l))):2===t?h||i===e?u||n===e?c||s===e||(a=(e-i)/(s-i),p=(e-n)/(s-n),r.push(2),r.push(-1),r.push(0),r.push(2),r.push(a),r.push(-1),r.push(1),r.push(2),r.push(p)):(f=(e-s)/(n-s),o=(e-i)/(n-i),r.push(1),r.push(-1),r.push(2),r.push(1),r.push(f),r.push(-1),r.push(0),r.push(1),r.push(o)):(d=(e-n)/(i-n),l=(e-s)/(i-s),r.push(0),r.push(-1),r.push(1),r.push(0),r.push(d),r.push(-1),r.push(2),r.push(0),r.push(l)):3!==t&&(r.push(0),r.push(1),r.push(2)),r},computeBarycentricCoordinates:function(e,t,i,n,s,r,h,u,o){var a=i-h,i=h-s,s=r-u,r=n-u,n=1/(s*a+i*r),u=t-u,h=e-h,i=(s*h+i*u)*n,u=(-r*h+a*u)*n,n=1-i-u;return g.defined(o)?(o.x=i,o.y=u,o.z=n,o):new oe.Cartesian3(i,u,n)},computeLineSegmentLineSegmentIntersection:function(e,t,i,n,s,r,h,u,o){var a=(h-s)*(t-r)-(u-r)*(e-s),p=(i-e)*(t-r)-(n-t)*(e-s),s=(u-r)*(i-e)-(h-s)*(n-t);if(0!=s){a=a/s,s=p/s;return 0<=a&&a<=1&&0<=s&&s<=1?((o=!g.defined(o)?new oe.Cartesian2:o).x=e+a*(i-e),o.y=t+a*(n-t),o):void 0}}},ce=32767,ge=16383,me=[],xe=[],we=[],Ce=new oe.Cartographic,ve=new oe.Cartesian3,Be=[],ye=[],be=[],Ie=[],Ae=[],Te=new oe.Cartesian3,ze=new ue.BoundingSphere,Me=new le.OrientedBoundingBox,Ne=new oe.Cartesian2,Ve=new oe.Cartesian3;function Ee(){this.vertexBuffer=void 0,this.index=void 0,this.first=void 0,this.second=void 0,this.ratio=void 0}Ee.prototype.clone=function(e){return(e=!g.defined(e)?new Ee:e).uBuffer=this.uBuffer,e.vBuffer=this.vBuffer,e.heightBuffer=this.heightBuffer,e.normalBuffer=this.normalBuffer,e.index=this.index,e.first=this.first,e.second=this.second,e.ratio=this.ratio,e},Ee.prototype.initializeIndexed=function(e,t,i,n,s){this.uBuffer=e,this.vBuffer=t,this.heightBuffer=i,this.normalBuffer=n,this.index=s,this.first=void 0,this.second=void 0,this.ratio=void 0},Ee.prototype.initializeFromClipResult=function(e,t,i){var n=t+1;return-1!==e[t]?i[e[t]].clone(this):(this.vertexBuffer=void 0,this.index=void 0,this.first=i[e[n]],this.second=i[e[++n]],this.ratio=e[++n],++n),n},Ee.prototype.getKey=function(){return this.isIndexed()?this.index:JSON.stringify({first:this.first.getKey(),second:this.second.getKey(),ratio:this.ratio})},Ee.prototype.isIndexed=function(){return g.defined(this.index)},Ee.prototype.getH=function(){return g.defined(this.index)?this.heightBuffer[this.index]:de.CesiumMath.lerp(this.first.getH(),this.second.getH(),this.ratio)},Ee.prototype.getU=function(){return g.defined(this.index)?this.uBuffer[this.index]:de.CesiumMath.lerp(this.first.getU(),this.second.getU(),this.ratio)},Ee.prototype.getV=function(){return g.defined(this.index)?this.vBuffer[this.index]:de.CesiumMath.lerp(this.first.getV(),this.second.getV(),this.ratio)};var d=new oe.Cartesian2,l=-1,f=[new oe.Cartesian3,new oe.Cartesian3],c=[new oe.Cartesian3,new oe.Cartesian3];function m(e,t){var i=f[++l],n=c[l],i=s.AttributeCompression.octDecode(e.first.getNormalX(),e.first.getNormalY(),i),n=s.AttributeCompression.octDecode(e.second.getNormalX(),e.second.getNormalY(),n);return ve=oe.Cartesian3.lerp(i,n,e.ratio,ve),oe.Cartesian3.normalize(ve,ve),s.AttributeCompression.octEncode(ve,t),--l,t}Ee.prototype.getNormalX=function(){return g.defined(this.index)?this.normalBuffer[2*this.index]:(d=m(this,d)).x},Ee.prototype.getNormalY=function(){return g.defined(this.index)?this.normalBuffer[2*this.index+1]:(d=m(this,d)).y};var x=[];function Re(e,t,i,n,s,r,h,u,o){if(0!==h.length){for(var a=0,p=0;p<h.length;)p=x[a++].initializeFromClipResult(h,p,u);for(var d=0;d<a;++d){var l,f,c=x[d];c.isIndexed()?(c.newIndex=r[c.index],c.uBuffer=e,c.vBuffer=t,c.heightBuffer=i,o&&(c.normalBuffer=n)):(l=c.getKey(),g.defined(r[l])?c.newIndex=r[l]:(f=e.length,e.push(c.getU()),t.push(c.getV()),i.push(c.getH()),o&&(n.push(c.getNormalX()),n.push(c.getNormalY())),c.newIndex=f,r[l]=f))}3===a?(s.push(x[0].newIndex),s.push(x[1].newIndex),s.push(x[2].newIndex)):4===a&&(s.push(x[0].newIndex),s.push(x[1].newIndex),s.push(x[2].newIndex),s.push(x[0].newIndex),s.push(x[2].newIndex),s.push(x[3].newIndex))}}return x.push(new Ee),x.push(new Ee),x.push(new Ee),x.push(new Ee),t(function(e,t){var i=e.isEastChild,n=e.isNorthChild,s=i?ge:0,r=i?ce:ge,h=n?ge:0,u=n?ce:ge,o=Be,a=ye,p=be,d=Ae;o.length=0,a.length=0,p.length=0,d.length=0;var l=Ie;l.length=0;for(var f={},c=e.vertices,g=(g=e.indices).subarray(0,e.indexCountWithoutSkirts),m=ae.TerrainEncoding.clone(e.encoding),x=m.hasVertexNormals,w=0,C=e.vertexCountWithoutSkirts,v=e.minimumHeight,B=e.maximumHeight,y=new Array(C),b=new Array(C),I=new Array(C),A=x?new Array(2*C):void 0,T=0,z=0;T<C;++T,z+=2){var M=m.decodeTextureCoordinates(c,T,Ne),N=m.decodeHeight(c,T),V=de.CesiumMath.clamp(M.x*ce|0,0,ce),E=de.CesiumMath.clamp(M.y*ce|0,0,ce);I[T]=de.CesiumMath.clamp((N-v)/(B-v)*ce|0,0,ce),ce-(V=V<20?0:V)<20&&(V=ce),ce-(E=E<20?0:E)<20&&(E=ce),y[T]=V,b[T]=E,x&&(M=m.getOctEncodedNormal(c,T,Ve),A[z]=M.x,A[z+1]=M.y),(i&&ge<=V||!i&&V<=ge)&&(n&&ge<=E||!n&&E<=ge)&&(f[T]=w,o.push(V),a.push(E),p.push(I[T]),x&&(d.push(A[z]),d.push(A[z+1])),++w)}var R=[];R.push(new Ee),R.push(new Ee),R.push(new Ee);var H=[];for(H.push(new Ee),H.push(new Ee),H.push(new Ee),T=0;T<g.length;T+=3){var O=g[T],S=g[T+1],U=g[T+2],F=y[O],P=y[S],k=y[U];R[0].initializeIndexed(y,b,I,A,O),R[1].initializeIndexed(y,b,I,A,S),R[2].initializeIndexed(y,b,I,A,U);P=fe.clipTriangleAtAxisAlignedThreshold(ge,i,F,P,k,me);P.length<=0||(k=H[0].initializeFromClipResult(P,0,R))>=P.length||(k=H[1].initializeFromClipResult(P,k,R))>=P.length||(k=H[2].initializeFromClipResult(P,k,R),Re(o,a,p,d,l,f,fe.clipTriangleAtAxisAlignedThreshold(ge,n,H[0].getV(),H[1].getV(),H[2].getV(),xe),H,x),k<P.length&&(H[2].clone(H[1]),H[2].initializeFromClipResult(P,k,R),Re(o,a,p,d,l,f,fe.clipTriangleAtAxisAlignedThreshold(ge,n,H[0].getV(),H[1].getV(),H[2].getV(),xe),H,x)))}var D=i?-ce:0,W=n?-ce:0,X=[],K=[],L=[],Y=[],_=Number.MAX_VALUE,G=-_,J=we;J.length=0;var Z=oe.Ellipsoid.clone(e.ellipsoid),j=(he=oe.Rectangle.clone(e.childRectangle)).north,q=he.south,Q=he.east,$=he.west;for(Q<$&&(Q+=de.CesiumMath.TWO_PI),T=0;T<o.length;++T)V=(V=Math.round(o[T]))<=s?(X.push(T),0):r<=V?(L.push(T),ce):2*V+D,o[T]=V,E=(E=Math.round(a[T]))<=h?(K.push(T),0):u<=E?(Y.push(T),ce):2*E+W,a[T]=E,(N=de.CesiumMath.lerp(v,B,p[T]/ce))<_&&(_=N),G<N&&(G=N),p[T]=N,Ce.longitude=de.CesiumMath.lerp($,Q,V/ce),Ce.latitude=de.CesiumMath.lerp(q,j,E/ce),Ce.height=N,Z.cartographicToCartesian(Ce,ve),J.push(ve.x),J.push(ve.y),J.push(ve.z);var ee=ue.BoundingSphere.fromVertices(J,oe.Cartesian3.ZERO,3,ze),te=le.OrientedBoundingBox.fromRectangle(he,_,G,Z,Me),e=new ae.EllipsoidalOccluder(Z).computeHorizonCullingPointFromVerticesPossiblyUnderEllipsoid(ee.center,J,3,ee.center,_,Te),ie=G-_,ne=new Uint16Array(o.length+a.length+p.length);for(T=0;T<o.length;++T)ne[T]=o[T];var se=o.length;for(T=0;T<a.length;++T)ne[se+T]=a[T];for(se+=a.length,T=0;T<p.length;++T)ne[se+T]=ce*(p[T]-_)/ie;var re,he=pe.IndexDatatype.createTypedArray(o.length,l);return x?(re=new Uint8Array(d),t.push(ne.buffer,he.buffer,re.buffer),re=re.buffer):t.push(ne.buffer,he.buffer),{vertices:ne.buffer,encodedNormals:re,indices:he.buffer,minimumHeight:_,maximumHeight:G,westIndices:X,southIndices:K,eastIndices:L,northIndices:Y,boundingSphere:ee,orientedBoundingBox:te,horizonOcclusionPoint:e}})});
+/**
+ * Cesium - https://github.com/CesiumGS/cesium
+ *
+ * Copyright 2011-2020 Cesium Contributors
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ *
+ * Columbus View (Pat. Pend.)
+ *
+ * Portions licensed separately.
+ * See https://github.com/CesiumGS/cesium/blob/main/LICENSE.md for full licensing details.
+ */
+
+define(['./AttributeCompression-d0b97a83', './Transforms-f0a54c7b', './Matrix2-d35cf4b5', './defaultValue-81eec7ed', './TerrainEncoding-a8a1f120', './IndexDatatype-bed3935d', './RuntimeError-8952249c', './ComponentDatatype-9e86ac8f', './OrientedBoundingBox-0b41570b', './createTaskProcessorWorker', './_commonjsHelpers-3aae1032-26891ab7', './combine-3c023bda', './WebGLConstants-508b9636', './EllipsoidTangentPlane-2abe082d', './AxisAlignedBoundingBox-7b93960a', './IntersectionTests-a25e058d', './Plane-24f22488'], (function (AttributeCompression, Transforms, Matrix2, defaultValue, TerrainEncoding, IndexDatatype, RuntimeError, ComponentDatatype, OrientedBoundingBox, createTaskProcessorWorker, _commonjsHelpers3aae1032, combine, WebGLConstants, EllipsoidTangentPlane, AxisAlignedBoundingBox, IntersectionTests, Plane) { 'use strict';
+
+  /**
+   * Contains functions for operating on 2D triangles.
+   *
+   * @namespace Intersections2D
+   */
+  const Intersections2D = {};
+
+  /**
+   * Splits a 2D triangle at given axis-aligned threshold value and returns the resulting
+   * polygon on a given side of the threshold.  The resulting polygon may have 0, 1, 2,
+   * 3, or 4 vertices.
+   *
+   * @param {Number} threshold The threshold coordinate value at which to clip the triangle.
+   * @param {Boolean} keepAbove true to keep the portion of the triangle above the threshold, or false
+   *                            to keep the portion below.
+   * @param {Number} u0 The coordinate of the first vertex in the triangle, in counter-clockwise order.
+   * @param {Number} u1 The coordinate of the second vertex in the triangle, in counter-clockwise order.
+   * @param {Number} u2 The coordinate of the third vertex in the triangle, in counter-clockwise order.
+   * @param {Number[]} [result] The array into which to copy the result.  If this parameter is not supplied,
+   *                            a new array is constructed and returned.
+   * @returns {Number[]} The polygon that results after the clip, specified as a list of
+   *                     vertices.  The vertices are specified in counter-clockwise order.
+   *                     Each vertex is either an index from the existing list (identified as
+   *                     a 0, 1, or 2) or -1 indicating a new vertex not in the original triangle.
+   *                     For new vertices, the -1 is followed by three additional numbers: the
+   *                     index of each of the two original vertices forming the line segment that
+   *                     the new vertex lies on, and the fraction of the distance from the first
+   *                     vertex to the second one.
+   *
+   * @example
+   * const result = Cesium.Intersections2D.clipTriangleAtAxisAlignedThreshold(0.5, false, 0.2, 0.6, 0.4);
+   * // result === [2, 0, -1, 1, 0, 0.25, -1, 1, 2, 0.5]
+   */
+  Intersections2D.clipTriangleAtAxisAlignedThreshold = function (
+    threshold,
+    keepAbove,
+    u0,
+    u1,
+    u2,
+    result
+  ) {
+    //>>includeStart('debug', pragmas.debug);
+    if (!defaultValue.defined(threshold)) {
+      throw new RuntimeError.DeveloperError("threshold is required.");
+    }
+    if (!defaultValue.defined(keepAbove)) {
+      throw new RuntimeError.DeveloperError("keepAbove is required.");
+    }
+    if (!defaultValue.defined(u0)) {
+      throw new RuntimeError.DeveloperError("u0 is required.");
+    }
+    if (!defaultValue.defined(u1)) {
+      throw new RuntimeError.DeveloperError("u1 is required.");
+    }
+    if (!defaultValue.defined(u2)) {
+      throw new RuntimeError.DeveloperError("u2 is required.");
+    }
+    //>>includeEnd('debug');
+
+    if (!defaultValue.defined(result)) {
+      result = [];
+    } else {
+      result.length = 0;
+    }
+
+    let u0Behind;
+    let u1Behind;
+    let u2Behind;
+    if (keepAbove) {
+      u0Behind = u0 < threshold;
+      u1Behind = u1 < threshold;
+      u2Behind = u2 < threshold;
+    } else {
+      u0Behind = u0 > threshold;
+      u1Behind = u1 > threshold;
+      u2Behind = u2 > threshold;
+    }
+
+    const numBehind = u0Behind + u1Behind + u2Behind;
+
+    let u01Ratio;
+    let u02Ratio;
+    let u12Ratio;
+    let u10Ratio;
+    let u20Ratio;
+    let u21Ratio;
+
+    if (numBehind === 1) {
+      if (u0Behind) {
+        u01Ratio = (threshold - u0) / (u1 - u0);
+        u02Ratio = (threshold - u0) / (u2 - u0);
+
+        result.push(1);
+
+        result.push(2);
+
+        if (u02Ratio !== 1.0) {
+          result.push(-1);
+          result.push(0);
+          result.push(2);
+          result.push(u02Ratio);
+        }
+
+        if (u01Ratio !== 1.0) {
+          result.push(-1);
+          result.push(0);
+          result.push(1);
+          result.push(u01Ratio);
+        }
+      } else if (u1Behind) {
+        u12Ratio = (threshold - u1) / (u2 - u1);
+        u10Ratio = (threshold - u1) / (u0 - u1);
+
+        result.push(2);
+
+        result.push(0);
+
+        if (u10Ratio !== 1.0) {
+          result.push(-1);
+          result.push(1);
+          result.push(0);
+          result.push(u10Ratio);
+        }
+
+        if (u12Ratio !== 1.0) {
+          result.push(-1);
+          result.push(1);
+          result.push(2);
+          result.push(u12Ratio);
+        }
+      } else if (u2Behind) {
+        u20Ratio = (threshold - u2) / (u0 - u2);
+        u21Ratio = (threshold - u2) / (u1 - u2);
+
+        result.push(0);
+
+        result.push(1);
+
+        if (u21Ratio !== 1.0) {
+          result.push(-1);
+          result.push(2);
+          result.push(1);
+          result.push(u21Ratio);
+        }
+
+        if (u20Ratio !== 1.0) {
+          result.push(-1);
+          result.push(2);
+          result.push(0);
+          result.push(u20Ratio);
+        }
+      }
+    } else if (numBehind === 2) {
+      if (!u0Behind && u0 !== threshold) {
+        u10Ratio = (threshold - u1) / (u0 - u1);
+        u20Ratio = (threshold - u2) / (u0 - u2);
+
+        result.push(0);
+
+        result.push(-1);
+        result.push(1);
+        result.push(0);
+        result.push(u10Ratio);
+
+        result.push(-1);
+        result.push(2);
+        result.push(0);
+        result.push(u20Ratio);
+      } else if (!u1Behind && u1 !== threshold) {
+        u21Ratio = (threshold - u2) / (u1 - u2);
+        u01Ratio = (threshold - u0) / (u1 - u0);
+
+        result.push(1);
+
+        result.push(-1);
+        result.push(2);
+        result.push(1);
+        result.push(u21Ratio);
+
+        result.push(-1);
+        result.push(0);
+        result.push(1);
+        result.push(u01Ratio);
+      } else if (!u2Behind && u2 !== threshold) {
+        u02Ratio = (threshold - u0) / (u2 - u0);
+        u12Ratio = (threshold - u1) / (u2 - u1);
+
+        result.push(2);
+
+        result.push(-1);
+        result.push(0);
+        result.push(2);
+        result.push(u02Ratio);
+
+        result.push(-1);
+        result.push(1);
+        result.push(2);
+        result.push(u12Ratio);
+      }
+    } else if (numBehind !== 3) {
+      // Completely in front of threshold
+      result.push(0);
+      result.push(1);
+      result.push(2);
+    }
+    // else Completely behind threshold
+
+    return result;
+  };
+
+  /**
+   * Compute the barycentric coordinates of a 2D position within a 2D triangle.
+   *
+   * @param {Number} x The x coordinate of the position for which to find the barycentric coordinates.
+   * @param {Number} y The y coordinate of the position for which to find the barycentric coordinates.
+   * @param {Number} x1 The x coordinate of the triangle's first vertex.
+   * @param {Number} y1 The y coordinate of the triangle's first vertex.
+   * @param {Number} x2 The x coordinate of the triangle's second vertex.
+   * @param {Number} y2 The y coordinate of the triangle's second vertex.
+   * @param {Number} x3 The x coordinate of the triangle's third vertex.
+   * @param {Number} y3 The y coordinate of the triangle's third vertex.
+   * @param {Cartesian3} [result] The instance into to which to copy the result.  If this parameter
+   *                     is undefined, a new instance is created and returned.
+   * @returns {Cartesian3} The barycentric coordinates of the position within the triangle.
+   *
+   * @example
+   * const result = Cesium.Intersections2D.computeBarycentricCoordinates(0.0, 0.0, 0.0, 1.0, -1, -0.5, 1, -0.5);
+   * // result === new Cesium.Cartesian3(1.0 / 3.0, 1.0 / 3.0, 1.0 / 3.0);
+   */
+  Intersections2D.computeBarycentricCoordinates = function (
+    x,
+    y,
+    x1,
+    y1,
+    x2,
+    y2,
+    x3,
+    y3,
+    result
+  ) {
+    //>>includeStart('debug', pragmas.debug);
+    if (!defaultValue.defined(x)) {
+      throw new RuntimeError.DeveloperError("x is required.");
+    }
+    if (!defaultValue.defined(y)) {
+      throw new RuntimeError.DeveloperError("y is required.");
+    }
+    if (!defaultValue.defined(x1)) {
+      throw new RuntimeError.DeveloperError("x1 is required.");
+    }
+    if (!defaultValue.defined(y1)) {
+      throw new RuntimeError.DeveloperError("y1 is required.");
+    }
+    if (!defaultValue.defined(x2)) {
+      throw new RuntimeError.DeveloperError("x2 is required.");
+    }
+    if (!defaultValue.defined(y2)) {
+      throw new RuntimeError.DeveloperError("y2 is required.");
+    }
+    if (!defaultValue.defined(x3)) {
+      throw new RuntimeError.DeveloperError("x3 is required.");
+    }
+    if (!defaultValue.defined(y3)) {
+      throw new RuntimeError.DeveloperError("y3 is required.");
+    }
+    //>>includeEnd('debug');
+
+    const x1mx3 = x1 - x3;
+    const x3mx2 = x3 - x2;
+    const y2my3 = y2 - y3;
+    const y1my3 = y1 - y3;
+    const inverseDeterminant = 1.0 / (y2my3 * x1mx3 + x3mx2 * y1my3);
+    const ymy3 = y - y3;
+    const xmx3 = x - x3;
+    const l1 = (y2my3 * xmx3 + x3mx2 * ymy3) * inverseDeterminant;
+    const l2 = (-y1my3 * xmx3 + x1mx3 * ymy3) * inverseDeterminant;
+    const l3 = 1.0 - l1 - l2;
+
+    if (defaultValue.defined(result)) {
+      result.x = l1;
+      result.y = l2;
+      result.z = l3;
+      return result;
+    }
+    return new Matrix2.Cartesian3(l1, l2, l3);
+  };
+
+  /**
+   * Compute the intersection between 2 line segments
+   *
+   * @param {Number} x00 The x coordinate of the first line's first vertex.
+   * @param {Number} y00 The y coordinate of the first line's first vertex.
+   * @param {Number} x01 The x coordinate of the first line's second vertex.
+   * @param {Number} y01 The y coordinate of the first line's second vertex.
+   * @param {Number} x10 The x coordinate of the second line's first vertex.
+   * @param {Number} y10 The y coordinate of the second line's first vertex.
+   * @param {Number} x11 The x coordinate of the second line's second vertex.
+   * @param {Number} y11 The y coordinate of the second line's second vertex.
+   * @param {Cartesian2} [result] The instance into to which to copy the result. If this parameter
+   *                     is undefined, a new instance is created and returned.
+   * @returns {Cartesian2} The intersection point, undefined if there is no intersection point or lines are coincident.
+   *
+   * @example
+   * const result = Cesium.Intersections2D.computeLineSegmentLineSegmentIntersection(0.0, 0.0, 0.0, 2.0, -1, 1, 1, 1);
+   * // result === new Cesium.Cartesian2(0.0, 1.0);
+   */
+  Intersections2D.computeLineSegmentLineSegmentIntersection = function (
+    x00,
+    y00,
+    x01,
+    y01,
+    x10,
+    y10,
+    x11,
+    y11,
+    result
+  ) {
+    //>>includeStart('debug', pragmas.debug);
+    RuntimeError.Check.typeOf.number("x00", x00);
+    RuntimeError.Check.typeOf.number("y00", y00);
+    RuntimeError.Check.typeOf.number("x01", x01);
+    RuntimeError.Check.typeOf.number("y01", y01);
+    RuntimeError.Check.typeOf.number("x10", x10);
+    RuntimeError.Check.typeOf.number("y10", y10);
+    RuntimeError.Check.typeOf.number("x11", x11);
+    RuntimeError.Check.typeOf.number("y11", y11);
+    //>>includeEnd('debug');
+
+    const numerator1A = (x11 - x10) * (y00 - y10) - (y11 - y10) * (x00 - x10);
+    const numerator1B = (x01 - x00) * (y00 - y10) - (y01 - y00) * (x00 - x10);
+    const denominator1 = (y11 - y10) * (x01 - x00) - (x11 - x10) * (y01 - y00);
+
+    // If denominator = 0, then lines are parallel. If denominator = 0 and both numerators are 0, then coincident
+    if (denominator1 === 0) {
+      return;
+    }
+
+    const ua1 = numerator1A / denominator1;
+    const ub1 = numerator1B / denominator1;
+
+    if (ua1 >= 0 && ua1 <= 1 && ub1 >= 0 && ub1 <= 1) {
+      if (!defaultValue.defined(result)) {
+        result = new Matrix2.Cartesian2();
+      }
+
+      result.x = x00 + ua1 * (x01 - x00);
+      result.y = y00 + ua1 * (y01 - y00);
+
+      return result;
+    }
+  };
+
+  const maxShort = 32767;
+  const halfMaxShort = (maxShort / 2) | 0;
+
+  const clipScratch = [];
+  const clipScratch2 = [];
+  const verticesScratch = [];
+  const cartographicScratch = new Matrix2.Cartographic();
+  let cartesian3Scratch = new Matrix2.Cartesian3();
+  const uScratch = [];
+  const vScratch = [];
+  const heightScratch = [];
+  const indicesScratch = [];
+  const normalsScratch = [];
+  const horizonOcclusionPointScratch = new Matrix2.Cartesian3();
+  const boundingSphereScratch = new Transforms.BoundingSphere();
+  const orientedBoundingBoxScratch = new OrientedBoundingBox.OrientedBoundingBox();
+  const decodeTexCoordsScratch = new Matrix2.Cartesian2();
+  const octEncodedNormalScratch = new Matrix2.Cartesian3();
+
+  function upsampleQuantizedTerrainMesh(parameters, transferableObjects) {
+    const isEastChild = parameters.isEastChild;
+    const isNorthChild = parameters.isNorthChild;
+
+    const minU = isEastChild ? halfMaxShort : 0;
+    const maxU = isEastChild ? maxShort : halfMaxShort;
+    const minV = isNorthChild ? halfMaxShort : 0;
+    const maxV = isNorthChild ? maxShort : halfMaxShort;
+
+    const uBuffer = uScratch;
+    const vBuffer = vScratch;
+    const heightBuffer = heightScratch;
+    const normalBuffer = normalsScratch;
+
+    uBuffer.length = 0;
+    vBuffer.length = 0;
+    heightBuffer.length = 0;
+    normalBuffer.length = 0;
+
+    const indices = indicesScratch;
+    indices.length = 0;
+
+    const vertexMap = {};
+
+    const parentVertices = parameters.vertices;
+    let parentIndices = parameters.indices;
+    parentIndices = parentIndices.subarray(0, parameters.indexCountWithoutSkirts);
+
+    const encoding = TerrainEncoding.TerrainEncoding.clone(parameters.encoding);
+    const hasVertexNormals = encoding.hasVertexNormals;
+
+    let vertexCount = 0;
+    const quantizedVertexCount = parameters.vertexCountWithoutSkirts;
+
+    const parentMinimumHeight = parameters.minimumHeight;
+    const parentMaximumHeight = parameters.maximumHeight;
+
+    const parentUBuffer = new Array(quantizedVertexCount);
+    const parentVBuffer = new Array(quantizedVertexCount);
+    const parentHeightBuffer = new Array(quantizedVertexCount);
+    const parentNormalBuffer = hasVertexNormals
+      ? new Array(quantizedVertexCount * 2)
+      : undefined;
+
+    const threshold = 20;
+    let height;
+
+    let i, n;
+    let u, v;
+    for (i = 0, n = 0; i < quantizedVertexCount; ++i, n += 2) {
+      const texCoords = encoding.decodeTextureCoordinates(
+        parentVertices,
+        i,
+        decodeTexCoordsScratch
+      );
+      height = encoding.decodeHeight(parentVertices, i);
+
+      u = ComponentDatatype.CesiumMath.clamp((texCoords.x * maxShort) | 0, 0, maxShort);
+      v = ComponentDatatype.CesiumMath.clamp((texCoords.y * maxShort) | 0, 0, maxShort);
+      parentHeightBuffer[i] = ComponentDatatype.CesiumMath.clamp(
+        (((height - parentMinimumHeight) /
+          (parentMaximumHeight - parentMinimumHeight)) *
+          maxShort) |
+          0,
+        0,
+        maxShort
+      );
+
+      if (u < threshold) {
+        u = 0;
+      }
+
+      if (v < threshold) {
+        v = 0;
+      }
+
+      if (maxShort - u < threshold) {
+        u = maxShort;
+      }
+
+      if (maxShort - v < threshold) {
+        v = maxShort;
+      }
+
+      parentUBuffer[i] = u;
+      parentVBuffer[i] = v;
+
+      if (hasVertexNormals) {
+        const encodedNormal = encoding.getOctEncodedNormal(
+          parentVertices,
+          i,
+          octEncodedNormalScratch
+        );
+        parentNormalBuffer[n] = encodedNormal.x;
+        parentNormalBuffer[n + 1] = encodedNormal.y;
+      }
+
+      if (
+        ((isEastChild && u >= halfMaxShort) ||
+          (!isEastChild && u <= halfMaxShort)) &&
+        ((isNorthChild && v >= halfMaxShort) ||
+          (!isNorthChild && v <= halfMaxShort))
+      ) {
+        vertexMap[i] = vertexCount;
+        uBuffer.push(u);
+        vBuffer.push(v);
+        heightBuffer.push(parentHeightBuffer[i]);
+        if (hasVertexNormals) {
+          normalBuffer.push(parentNormalBuffer[n]);
+          normalBuffer.push(parentNormalBuffer[n + 1]);
+        }
+
+        ++vertexCount;
+      }
+    }
+
+    const triangleVertices = [];
+    triangleVertices.push(new Vertex());
+    triangleVertices.push(new Vertex());
+    triangleVertices.push(new Vertex());
+
+    const clippedTriangleVertices = [];
+    clippedTriangleVertices.push(new Vertex());
+    clippedTriangleVertices.push(new Vertex());
+    clippedTriangleVertices.push(new Vertex());
+
+    let clippedIndex;
+    let clipped2;
+
+    for (i = 0; i < parentIndices.length; i += 3) {
+      const i0 = parentIndices[i];
+      const i1 = parentIndices[i + 1];
+      const i2 = parentIndices[i + 2];
+
+      const u0 = parentUBuffer[i0];
+      const u1 = parentUBuffer[i1];
+      const u2 = parentUBuffer[i2];
+
+      triangleVertices[0].initializeIndexed(
+        parentUBuffer,
+        parentVBuffer,
+        parentHeightBuffer,
+        parentNormalBuffer,
+        i0
+      );
+      triangleVertices[1].initializeIndexed(
+        parentUBuffer,
+        parentVBuffer,
+        parentHeightBuffer,
+        parentNormalBuffer,
+        i1
+      );
+      triangleVertices[2].initializeIndexed(
+        parentUBuffer,
+        parentVBuffer,
+        parentHeightBuffer,
+        parentNormalBuffer,
+        i2
+      );
+
+      // Clip triangle on the east-west boundary.
+      const clipped = Intersections2D.clipTriangleAtAxisAlignedThreshold(
+        halfMaxShort,
+        isEastChild,
+        u0,
+        u1,
+        u2,
+        clipScratch
+      );
+
+      // Get the first clipped triangle, if any.
+      clippedIndex = 0;
+
+      if (clippedIndex >= clipped.length) {
+        continue;
+      }
+      clippedIndex = clippedTriangleVertices[0].initializeFromClipResult(
+        clipped,
+        clippedIndex,
+        triangleVertices
+      );
+
+      if (clippedIndex >= clipped.length) {
+        continue;
+      }
+      clippedIndex = clippedTriangleVertices[1].initializeFromClipResult(
+        clipped,
+        clippedIndex,
+        triangleVertices
+      );
+
+      if (clippedIndex >= clipped.length) {
+        continue;
+      }
+      clippedIndex = clippedTriangleVertices[2].initializeFromClipResult(
+        clipped,
+        clippedIndex,
+        triangleVertices
+      );
+
+      // Clip the triangle against the North-south boundary.
+      clipped2 = Intersections2D.clipTriangleAtAxisAlignedThreshold(
+        halfMaxShort,
+        isNorthChild,
+        clippedTriangleVertices[0].getV(),
+        clippedTriangleVertices[1].getV(),
+        clippedTriangleVertices[2].getV(),
+        clipScratch2
+      );
+      addClippedPolygon(
+        uBuffer,
+        vBuffer,
+        heightBuffer,
+        normalBuffer,
+        indices,
+        vertexMap,
+        clipped2,
+        clippedTriangleVertices,
+        hasVertexNormals
+      );
+
+      // If there's another vertex in the original clipped result,
+      // it forms a second triangle.  Clip it as well.
+      if (clippedIndex < clipped.length) {
+        clippedTriangleVertices[2].clone(clippedTriangleVertices[1]);
+        clippedTriangleVertices[2].initializeFromClipResult(
+          clipped,
+          clippedIndex,
+          triangleVertices
+        );
+
+        clipped2 = Intersections2D.clipTriangleAtAxisAlignedThreshold(
+          halfMaxShort,
+          isNorthChild,
+          clippedTriangleVertices[0].getV(),
+          clippedTriangleVertices[1].getV(),
+          clippedTriangleVertices[2].getV(),
+          clipScratch2
+        );
+        addClippedPolygon(
+          uBuffer,
+          vBuffer,
+          heightBuffer,
+          normalBuffer,
+          indices,
+          vertexMap,
+          clipped2,
+          clippedTriangleVertices,
+          hasVertexNormals
+        );
+      }
+    }
+
+    const uOffset = isEastChild ? -maxShort : 0;
+    const vOffset = isNorthChild ? -maxShort : 0;
+
+    const westIndices = [];
+    const southIndices = [];
+    const eastIndices = [];
+    const northIndices = [];
+
+    let minimumHeight = Number.MAX_VALUE;
+    let maximumHeight = -minimumHeight;
+
+    const cartesianVertices = verticesScratch;
+    cartesianVertices.length = 0;
+
+    const ellipsoid = Matrix2.Ellipsoid.clone(parameters.ellipsoid);
+    const rectangle = Matrix2.Rectangle.clone(parameters.childRectangle);
+
+    const north = rectangle.north;
+    const south = rectangle.south;
+    let east = rectangle.east;
+    const west = rectangle.west;
+
+    if (east < west) {
+      east += ComponentDatatype.CesiumMath.TWO_PI;
+    }
+
+    for (i = 0; i < uBuffer.length; ++i) {
+      u = Math.round(uBuffer[i]);
+      if (u <= minU) {
+        westIndices.push(i);
+        u = 0;
+      } else if (u >= maxU) {
+        eastIndices.push(i);
+        u = maxShort;
+      } else {
+        u = u * 2 + uOffset;
+      }
+
+      uBuffer[i] = u;
+
+      v = Math.round(vBuffer[i]);
+      if (v <= minV) {
+        southIndices.push(i);
+        v = 0;
+      } else if (v >= maxV) {
+        northIndices.push(i);
+        v = maxShort;
+      } else {
+        v = v * 2 + vOffset;
+      }
+
+      vBuffer[i] = v;
+
+      height = ComponentDatatype.CesiumMath.lerp(
+        parentMinimumHeight,
+        parentMaximumHeight,
+        heightBuffer[i] / maxShort
+      );
+      if (height < minimumHeight) {
+        minimumHeight = height;
+      }
+      if (height > maximumHeight) {
+        maximumHeight = height;
+      }
+
+      heightBuffer[i] = height;
+
+      cartographicScratch.longitude = ComponentDatatype.CesiumMath.lerp(west, east, u / maxShort);
+      cartographicScratch.latitude = ComponentDatatype.CesiumMath.lerp(south, north, v / maxShort);
+      cartographicScratch.height = height;
+
+      ellipsoid.cartographicToCartesian(cartographicScratch, cartesian3Scratch);
+
+      cartesianVertices.push(cartesian3Scratch.x);
+      cartesianVertices.push(cartesian3Scratch.y);
+      cartesianVertices.push(cartesian3Scratch.z);
+    }
+
+    const boundingSphere = Transforms.BoundingSphere.fromVertices(
+      cartesianVertices,
+      Matrix2.Cartesian3.ZERO,
+      3,
+      boundingSphereScratch
+    );
+    const orientedBoundingBox = OrientedBoundingBox.OrientedBoundingBox.fromRectangle(
+      rectangle,
+      minimumHeight,
+      maximumHeight,
+      ellipsoid,
+      orientedBoundingBoxScratch
+    );
+
+    const occluder = new TerrainEncoding.EllipsoidalOccluder(ellipsoid);
+    const horizonOcclusionPoint = occluder.computeHorizonCullingPointFromVerticesPossiblyUnderEllipsoid(
+      boundingSphere.center,
+      cartesianVertices,
+      3,
+      boundingSphere.center,
+      minimumHeight,
+      horizonOcclusionPointScratch
+    );
+
+    const heightRange = maximumHeight - minimumHeight;
+
+    const vertices = new Uint16Array(
+      uBuffer.length + vBuffer.length + heightBuffer.length
+    );
+
+    for (i = 0; i < uBuffer.length; ++i) {
+      vertices[i] = uBuffer[i];
+    }
+
+    let start = uBuffer.length;
+
+    for (i = 0; i < vBuffer.length; ++i) {
+      vertices[start + i] = vBuffer[i];
+    }
+
+    start += vBuffer.length;
+
+    for (i = 0; i < heightBuffer.length; ++i) {
+      vertices[start + i] =
+        (maxShort * (heightBuffer[i] - minimumHeight)) / heightRange;
+    }
+
+    const indicesTypedArray = IndexDatatype.IndexDatatype.createTypedArray(
+      uBuffer.length,
+      indices
+    );
+
+    let encodedNormals;
+    if (hasVertexNormals) {
+      const normalArray = new Uint8Array(normalBuffer);
+      transferableObjects.push(
+        vertices.buffer,
+        indicesTypedArray.buffer,
+        normalArray.buffer
+      );
+      encodedNormals = normalArray.buffer;
+    } else {
+      transferableObjects.push(vertices.buffer, indicesTypedArray.buffer);
+    }
+
+    return {
+      vertices: vertices.buffer,
+      encodedNormals: encodedNormals,
+      indices: indicesTypedArray.buffer,
+      minimumHeight: minimumHeight,
+      maximumHeight: maximumHeight,
+      westIndices: westIndices,
+      southIndices: southIndices,
+      eastIndices: eastIndices,
+      northIndices: northIndices,
+      boundingSphere: boundingSphere,
+      orientedBoundingBox: orientedBoundingBox,
+      horizonOcclusionPoint: horizonOcclusionPoint,
+    };
+  }
+
+  function Vertex() {
+    this.vertexBuffer = undefined;
+    this.index = undefined;
+    this.first = undefined;
+    this.second = undefined;
+    this.ratio = undefined;
+  }
+
+  Vertex.prototype.clone = function (result) {
+    if (!defaultValue.defined(result)) {
+      result = new Vertex();
+    }
+
+    result.uBuffer = this.uBuffer;
+    result.vBuffer = this.vBuffer;
+    result.heightBuffer = this.heightBuffer;
+    result.normalBuffer = this.normalBuffer;
+    result.index = this.index;
+    result.first = this.first;
+    result.second = this.second;
+    result.ratio = this.ratio;
+
+    return result;
+  };
+
+  Vertex.prototype.initializeIndexed = function (
+    uBuffer,
+    vBuffer,
+    heightBuffer,
+    normalBuffer,
+    index
+  ) {
+    this.uBuffer = uBuffer;
+    this.vBuffer = vBuffer;
+    this.heightBuffer = heightBuffer;
+    this.normalBuffer = normalBuffer;
+    this.index = index;
+    this.first = undefined;
+    this.second = undefined;
+    this.ratio = undefined;
+  };
+
+  Vertex.prototype.initializeFromClipResult = function (
+    clipResult,
+    index,
+    vertices
+  ) {
+    let nextIndex = index + 1;
+
+    if (clipResult[index] !== -1) {
+      vertices[clipResult[index]].clone(this);
+    } else {
+      this.vertexBuffer = undefined;
+      this.index = undefined;
+      this.first = vertices[clipResult[nextIndex]];
+      ++nextIndex;
+      this.second = vertices[clipResult[nextIndex]];
+      ++nextIndex;
+      this.ratio = clipResult[nextIndex];
+      ++nextIndex;
+    }
+
+    return nextIndex;
+  };
+
+  Vertex.prototype.getKey = function () {
+    if (this.isIndexed()) {
+      return this.index;
+    }
+    return JSON.stringify({
+      first: this.first.getKey(),
+      second: this.second.getKey(),
+      ratio: this.ratio,
+    });
+  };
+
+  Vertex.prototype.isIndexed = function () {
+    return defaultValue.defined(this.index);
+  };
+
+  Vertex.prototype.getH = function () {
+    if (defaultValue.defined(this.index)) {
+      return this.heightBuffer[this.index];
+    }
+    return ComponentDatatype.CesiumMath.lerp(this.first.getH(), this.second.getH(), this.ratio);
+  };
+
+  Vertex.prototype.getU = function () {
+    if (defaultValue.defined(this.index)) {
+      return this.uBuffer[this.index];
+    }
+    return ComponentDatatype.CesiumMath.lerp(this.first.getU(), this.second.getU(), this.ratio);
+  };
+
+  Vertex.prototype.getV = function () {
+    if (defaultValue.defined(this.index)) {
+      return this.vBuffer[this.index];
+    }
+    return ComponentDatatype.CesiumMath.lerp(this.first.getV(), this.second.getV(), this.ratio);
+  };
+
+  let encodedScratch = new Matrix2.Cartesian2();
+  // An upsampled triangle may be clipped twice before it is assigned an index
+  // In this case, we need a buffer to handle the recursion of getNormalX() and getNormalY().
+  let depth = -1;
+  const cartesianScratch1 = [new Matrix2.Cartesian3(), new Matrix2.Cartesian3()];
+  const cartesianScratch2 = [new Matrix2.Cartesian3(), new Matrix2.Cartesian3()];
+  function lerpOctEncodedNormal(vertex, result) {
+    ++depth;
+
+    let first = cartesianScratch1[depth];
+    let second = cartesianScratch2[depth];
+
+    first = AttributeCompression.AttributeCompression.octDecode(
+      vertex.first.getNormalX(),
+      vertex.first.getNormalY(),
+      first
+    );
+    second = AttributeCompression.AttributeCompression.octDecode(
+      vertex.second.getNormalX(),
+      vertex.second.getNormalY(),
+      second
+    );
+    cartesian3Scratch = Matrix2.Cartesian3.lerp(
+      first,
+      second,
+      vertex.ratio,
+      cartesian3Scratch
+    );
+    Matrix2.Cartesian3.normalize(cartesian3Scratch, cartesian3Scratch);
+
+    AttributeCompression.AttributeCompression.octEncode(cartesian3Scratch, result);
+
+    --depth;
+
+    return result;
+  }
+
+  Vertex.prototype.getNormalX = function () {
+    if (defaultValue.defined(this.index)) {
+      return this.normalBuffer[this.index * 2];
+    }
+
+    encodedScratch = lerpOctEncodedNormal(this, encodedScratch);
+    return encodedScratch.x;
+  };
+
+  Vertex.prototype.getNormalY = function () {
+    if (defaultValue.defined(this.index)) {
+      return this.normalBuffer[this.index * 2 + 1];
+    }
+
+    encodedScratch = lerpOctEncodedNormal(this, encodedScratch);
+    return encodedScratch.y;
+  };
+
+  const polygonVertices = [];
+  polygonVertices.push(new Vertex());
+  polygonVertices.push(new Vertex());
+  polygonVertices.push(new Vertex());
+  polygonVertices.push(new Vertex());
+
+  function addClippedPolygon(
+    uBuffer,
+    vBuffer,
+    heightBuffer,
+    normalBuffer,
+    indices,
+    vertexMap,
+    clipped,
+    triangleVertices,
+    hasVertexNormals
+  ) {
+    if (clipped.length === 0) {
+      return;
+    }
+
+    let numVertices = 0;
+    let clippedIndex = 0;
+    while (clippedIndex < clipped.length) {
+      clippedIndex = polygonVertices[numVertices++].initializeFromClipResult(
+        clipped,
+        clippedIndex,
+        triangleVertices
+      );
+    }
+
+    for (let i = 0; i < numVertices; ++i) {
+      const polygonVertex = polygonVertices[i];
+      if (!polygonVertex.isIndexed()) {
+        const key = polygonVertex.getKey();
+        if (defaultValue.defined(vertexMap[key])) {
+          polygonVertex.newIndex = vertexMap[key];
+        } else {
+          const newIndex = uBuffer.length;
+          uBuffer.push(polygonVertex.getU());
+          vBuffer.push(polygonVertex.getV());
+          heightBuffer.push(polygonVertex.getH());
+          if (hasVertexNormals) {
+            normalBuffer.push(polygonVertex.getNormalX());
+            normalBuffer.push(polygonVertex.getNormalY());
+          }
+          polygonVertex.newIndex = newIndex;
+          vertexMap[key] = newIndex;
+        }
+      } else {
+        polygonVertex.newIndex = vertexMap[polygonVertex.index];
+        polygonVertex.uBuffer = uBuffer;
+        polygonVertex.vBuffer = vBuffer;
+        polygonVertex.heightBuffer = heightBuffer;
+        if (hasVertexNormals) {
+          polygonVertex.normalBuffer = normalBuffer;
+        }
+      }
+    }
+
+    if (numVertices === 3) {
+      // A triangle.
+      indices.push(polygonVertices[0].newIndex);
+      indices.push(polygonVertices[1].newIndex);
+      indices.push(polygonVertices[2].newIndex);
+    } else if (numVertices === 4) {
+      // A quad - two triangles.
+      indices.push(polygonVertices[0].newIndex);
+      indices.push(polygonVertices[1].newIndex);
+      indices.push(polygonVertices[2].newIndex);
+
+      indices.push(polygonVertices[0].newIndex);
+      indices.push(polygonVertices[2].newIndex);
+      indices.push(polygonVertices[3].newIndex);
+    }
+  }
+  var upsampleQuantizedTerrainMesh$1 = createTaskProcessorWorker(upsampleQuantizedTerrainMesh);
+
+  return upsampleQuantizedTerrainMesh$1;
+
+}));
+//# sourceMappingURL=upsampleQuantizedTerrainMesh.js.map

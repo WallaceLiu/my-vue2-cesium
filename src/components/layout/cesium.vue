@@ -57,6 +57,9 @@ export default {
   },
   methods: {
     initCesium() {
+      // Cesium.Ion.defaultAccessToken =
+        // "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJqdGkiOiJhMGVkN2MyNi1jMDY1LTQ3OTctOTJkNC0yMjAxOGJlN2FlM2UiLCJpZCI6MTMzNzA0LCJpYXQiOjE2ODE0NTc2ODR9.dHXLu1RU1Eitzn6OfvDX77DQXd5HVRzZddeZqkJj7-Q";
+
       // 创建viewer实例
       viewer = new Cesium.Viewer("cesiumContainer", {
         timeline: false,
@@ -99,6 +102,7 @@ export default {
 
       // 去除版权信息
       viewer._cesiumWidget._creditContainer.style.display = "none";
+
       // 设置延迟时间以显示动画
       setTimeout(() => {
         viewer.camera.flyTo({

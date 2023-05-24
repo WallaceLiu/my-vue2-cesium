@@ -21,3 +21,8 @@ npm run serve
 ```
 npm run build
 ```
+
+
+### 问题
+- 报错Too Many Requests
+重新申请一个key，替换掉链接中的tk变量

@@ -1,1 +1,36 @@
-define(["./when-ad3237a0","./FrustumGeometry-b1766dc4","./Transforms-475655a6","./Cartesian2-08065eec","./Check-be2d5acb","./Math-5ca9b250","./combine-1510933d","./RuntimeError-767bd866","./ComponentDatatype-a867ddaa","./WebGLConstants-1c8239cc","./GeometryAttribute-9b226476","./GeometryAttributes-27dc652d","./Plane-e6ee56b8","./VertexFormat-fc4fc84a"],function(r,a,e,t,n,c,o,u,m,d,b,s,i,f){"use strict";return function(e,t){return r.defined(t)&&(e=a.FrustumGeometry.unpack(e,t)),a.FrustumGeometry.createGeometry(e)}});
+/**
+ * Cesium - https://github.com/CesiumGS/cesium
+ *
+ * Copyright 2011-2020 Cesium Contributors
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ *
+ * Columbus View (Pat. Pend.)
+ *
+ * Portions licensed separately.
+ * See https://github.com/CesiumGS/cesium/blob/main/LICENSE.md for full licensing details.
+ */
+
+define(['./defaultValue-81eec7ed', './FrustumGeometry-aa6726d2', './Transforms-f0a54c7b', './Matrix2-d35cf4b5', './RuntimeError-8952249c', './ComponentDatatype-9e86ac8f', './WebGLConstants-508b9636', './_commonjsHelpers-3aae1032-26891ab7', './combine-3c023bda', './GeometryAttribute-eeb38987', './GeometryAttributes-32b29525', './Plane-24f22488', './VertexFormat-7df34ea5'], (function (defaultValue, FrustumGeometry, Transforms, Matrix2, RuntimeError, ComponentDatatype, WebGLConstants, _commonjsHelpers3aae1032, combine, GeometryAttribute, GeometryAttributes, Plane, VertexFormat) { 'use strict';
+
+  function createFrustumGeometry(frustumGeometry, offset) {
+    if (defaultValue.defined(offset)) {
+      frustumGeometry = FrustumGeometry.FrustumGeometry.unpack(frustumGeometry, offset);
+    }
+    return FrustumGeometry.FrustumGeometry.createGeometry(frustumGeometry);
+  }
+
+  return createFrustumGeometry;
+
+}));
+//# sourceMappingURL=createFrustumGeometry.js.map

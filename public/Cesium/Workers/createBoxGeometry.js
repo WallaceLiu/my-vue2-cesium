@@ -1,1 +1,36 @@
-define(["./BoxGeometry-56ff3713","./when-ad3237a0","./GeometryOffsetAttribute-03006e80","./Check-be2d5acb","./Transforms-475655a6","./Cartesian2-08065eec","./Math-5ca9b250","./combine-1510933d","./RuntimeError-767bd866","./ComponentDatatype-a867ddaa","./WebGLConstants-1c8239cc","./GeometryAttribute-9b226476","./GeometryAttributes-27dc652d","./VertexFormat-fc4fc84a"],function(r,a,e,t,o,n,c,m,d,f,i,b,u,s){"use strict";return function(e,t){return a.defined(t)&&(e=r.BoxGeometry.unpack(e,t)),r.BoxGeometry.createGeometry(e)}});
+/**
+ * Cesium - https://github.com/CesiumGS/cesium
+ *
+ * Copyright 2011-2020 Cesium Contributors
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ *
+ * Columbus View (Pat. Pend.)
+ *
+ * Portions licensed separately.
+ * See https://github.com/CesiumGS/cesium/blob/main/LICENSE.md for full licensing details.
+ */
+
+define(['./BoxGeometry-24acde76', './defaultValue-81eec7ed', './GeometryOffsetAttribute-2bff0974', './RuntimeError-8952249c', './Transforms-f0a54c7b', './Matrix2-d35cf4b5', './ComponentDatatype-9e86ac8f', './WebGLConstants-508b9636', './_commonjsHelpers-3aae1032-26891ab7', './combine-3c023bda', './GeometryAttribute-eeb38987', './GeometryAttributes-32b29525', './VertexFormat-7df34ea5'], (function (BoxGeometry, defaultValue, GeometryOffsetAttribute, RuntimeError, Transforms, Matrix2, ComponentDatatype, WebGLConstants, _commonjsHelpers3aae1032, combine, GeometryAttribute, GeometryAttributes, VertexFormat) { 'use strict';
+
+  function createBoxGeometry(boxGeometry, offset) {
+    if (defaultValue.defined(offset)) {
+      boxGeometry = BoxGeometry.BoxGeometry.unpack(boxGeometry, offset);
+    }
+    return BoxGeometry.BoxGeometry.createGeometry(boxGeometry);
+  }
+
+  return createBoxGeometry;
+
+}));
+//# sourceMappingURL=createBoxGeometry.js.map

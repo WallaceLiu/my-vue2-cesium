@@ -1,1 +1,150 @@
-define(["./when-ad3237a0","./Cartesian2-08065eec","./Check-be2d5acb","./EllipsoidOutlineGeometry-a239c972","./Math-5ca9b250","./GeometryOffsetAttribute-03006e80","./Transforms-475655a6","./combine-1510933d","./RuntimeError-767bd866","./ComponentDatatype-a867ddaa","./WebGLConstants-1c8239cc","./GeometryAttribute-9b226476","./GeometryAttributes-27dc652d","./IndexDatatype-9504f550"],function(n,r,e,o,i,t,s,a,d,l,c,u,m,p){"use strict";function y(e){var i=n.defaultValue(e.radius,1),e={radii:new r.Cartesian3(i,i,i),stackPartitions:e.stackPartitions,slicePartitions:e.slicePartitions,subdivisions:e.subdivisions};this._ellipsoidGeometry=new o.EllipsoidOutlineGeometry(e),this._workerName="createSphereOutlineGeometry"}y.packedLength=o.EllipsoidOutlineGeometry.packedLength,y.pack=function(e,i,t){return o.EllipsoidOutlineGeometry.pack(e._ellipsoidGeometry,i,t)};var G=new o.EllipsoidOutlineGeometry,b={radius:void 0,radii:new r.Cartesian3,stackPartitions:void 0,slicePartitions:void 0,subdivisions:void 0};return y.unpack=function(e,i,t){i=o.EllipsoidOutlineGeometry.unpack(e,i,G);return b.stackPartitions=i._stackPartitions,b.slicePartitions=i._slicePartitions,b.subdivisions=i._subdivisions,n.defined(t)?(r.Cartesian3.clone(i._radii,b.radii),t._ellipsoidGeometry=new o.EllipsoidOutlineGeometry(b),t):(b.radius=i._radii.x,new y(b))},y.createGeometry=function(e){return o.EllipsoidOutlineGeometry.createGeometry(e._ellipsoidGeometry)},function(e,i){return n.defined(i)&&(e=y.unpack(e,i)),y.createGeometry(e)}});
+/**
+ * Cesium - https://github.com/CesiumGS/cesium
+ *
+ * Copyright 2011-2020 Cesium Contributors
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ *
+ * Columbus View (Pat. Pend.)
+ *
+ * Portions licensed separately.
+ * See https://github.com/CesiumGS/cesium/blob/main/LICENSE.md for full licensing details.
+ */
+
+define(['./defaultValue-81eec7ed', './Matrix2-d35cf4b5', './RuntimeError-8952249c', './EllipsoidOutlineGeometry-10ba1c5b', './ComponentDatatype-9e86ac8f', './WebGLConstants-508b9636', './GeometryOffsetAttribute-2bff0974', './Transforms-f0a54c7b', './_commonjsHelpers-3aae1032-26891ab7', './combine-3c023bda', './GeometryAttribute-eeb38987', './GeometryAttributes-32b29525', './IndexDatatype-bed3935d'], (function (defaultValue, Matrix2, RuntimeError, EllipsoidOutlineGeometry, ComponentDatatype, WebGLConstants, GeometryOffsetAttribute, Transforms, _commonjsHelpers3aae1032, combine, GeometryAttribute, GeometryAttributes, IndexDatatype) { 'use strict';
+
+  /**
+   * A description of the outline of a sphere.
+   *
+   * @alias SphereOutlineGeometry
+   * @constructor
+   *
+   * @param {Object} [options] Object with the following properties:
+   * @param {Number} [options.radius=1.0] The radius of the sphere.
+   * @param {Number} [options.stackPartitions=10] The count of stacks for the sphere (1 greater than the number of parallel lines).
+   * @param {Number} [options.slicePartitions=8] The count of slices for the sphere (Equal to the number of radial lines).
+   * @param {Number} [options.subdivisions=200] The number of points per line, determining the granularity of the curvature .
+   *
+   * @exception {DeveloperError} options.stackPartitions must be greater than or equal to one.
+   * @exception {DeveloperError} options.slicePartitions must be greater than or equal to zero.
+   * @exception {DeveloperError} options.subdivisions must be greater than or equal to zero.
+   *
+   * @example
+   * const sphere = new Cesium.SphereOutlineGeometry({
+   *   radius : 100.0,
+   *   stackPartitions : 6,
+   *   slicePartitions: 5
+   * });
+   * const geometry = Cesium.SphereOutlineGeometry.createGeometry(sphere);
+   */
+  function SphereOutlineGeometry(options) {
+    const radius = defaultValue.defaultValue(options.radius, 1.0);
+    const radii = new Matrix2.Cartesian3(radius, radius, radius);
+    const ellipsoidOptions = {
+      radii: radii,
+      stackPartitions: options.stackPartitions,
+      slicePartitions: options.slicePartitions,
+      subdivisions: options.subdivisions,
+    };
+
+    this._ellipsoidGeometry = new EllipsoidOutlineGeometry.EllipsoidOutlineGeometry(ellipsoidOptions);
+    this._workerName = "createSphereOutlineGeometry";
+  }
+
+  /**
+   * The number of elements used to pack the object into an array.
+   * @type {Number}
+   */
+  SphereOutlineGeometry.packedLength = EllipsoidOutlineGeometry.EllipsoidOutlineGeometry.packedLength;
+
+  /**
+   * Stores the provided instance into the provided array.
+   *
+   * @param {SphereOutlineGeometry} value The value to pack.
+   * @param {Number[]} array The array to pack into.
+   * @param {Number} [startingIndex=0] The index into the array at which to start packing the elements.
+   *
+   * @returns {Number[]} The array that was packed into
+   */
+  SphereOutlineGeometry.pack = function (value, array, startingIndex) {
+    //>>includeStart('debug', pragmas.debug);
+    RuntimeError.Check.typeOf.object("value", value);
+    //>>includeEnd('debug');
+
+    return EllipsoidOutlineGeometry.EllipsoidOutlineGeometry.pack(
+      value._ellipsoidGeometry,
+      array,
+      startingIndex
+    );
+  };
+
+  const scratchEllipsoidGeometry = new EllipsoidOutlineGeometry.EllipsoidOutlineGeometry();
+  const scratchOptions = {
+    radius: undefined,
+    radii: new Matrix2.Cartesian3(),
+    stackPartitions: undefined,
+    slicePartitions: undefined,
+    subdivisions: undefined,
+  };
+
+  /**
+   * Retrieves an instance from a packed array.
+   *
+   * @param {Number[]} array The packed array.
+   * @param {Number} [startingIndex=0] The starting index of the element to be unpacked.
+   * @param {SphereOutlineGeometry} [result] The object into which to store the result.
+   * @returns {SphereOutlineGeometry} The modified result parameter or a new SphereOutlineGeometry instance if one was not provided.
+   */
+  SphereOutlineGeometry.unpack = function (array, startingIndex, result) {
+    const ellipsoidGeometry = EllipsoidOutlineGeometry.EllipsoidOutlineGeometry.unpack(
+      array,
+      startingIndex,
+      scratchEllipsoidGeometry
+    );
+    scratchOptions.stackPartitions = ellipsoidGeometry._stackPartitions;
+    scratchOptions.slicePartitions = ellipsoidGeometry._slicePartitions;
+    scratchOptions.subdivisions = ellipsoidGeometry._subdivisions;
+
+    if (!defaultValue.defined(result)) {
+      scratchOptions.radius = ellipsoidGeometry._radii.x;
+      return new SphereOutlineGeometry(scratchOptions);
+    }
+
+    Matrix2.Cartesian3.clone(ellipsoidGeometry._radii, scratchOptions.radii);
+    result._ellipsoidGeometry = new EllipsoidOutlineGeometry.EllipsoidOutlineGeometry(scratchOptions);
+    return result;
+  };
+
+  /**
+   * Computes the geometric representation of an outline of a sphere, including its vertices, indices, and a bounding sphere.
+   *
+   * @param {SphereOutlineGeometry} sphereGeometry A description of the sphere outline.
+   * @returns {Geometry|undefined} The computed vertices and indices.
+   */
+  SphereOutlineGeometry.createGeometry = function (sphereGeometry) {
+    return EllipsoidOutlineGeometry.EllipsoidOutlineGeometry.createGeometry(
+      sphereGeometry._ellipsoidGeometry
+    );
+  };
+
+  function createSphereOutlineGeometry(sphereGeometry, offset) {
+    if (defaultValue.defined(offset)) {
+      sphereGeometry = SphereOutlineGeometry.unpack(sphereGeometry, offset);
+    }
+    return SphereOutlineGeometry.createGeometry(sphereGeometry);
+  }
+
+  return createSphereOutlineGeometry;
+
+}));
+//# sourceMappingURL=createSphereOutlineGeometry.js.map
