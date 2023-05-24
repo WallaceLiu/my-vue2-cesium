@@ -18,8 +18,6 @@
       @on-select-change="selectChange"
       class="tree-content"
     ></Tree>
-
-    <!-- :render="renderContent" -->
   </div>
 </template>
 <script>
@@ -126,7 +124,6 @@ export default {
     this.$nextTick((res) => {
       // this.initXglobeFolder();
       this.initChecked();
-      viewer.scene.camera.moveEnd.addEventListener(this.cameraEndEvent);
     });
     //maximumScreenSpaceError 越小越清晰
     Bus.$on("message1", (val) => {
@@ -237,27 +234,6 @@ export default {
         }
       }
     });
-    Bus.$on("hotpoint-addlayer", (res) => {
-      var nodes = this.$refs.tree.getCheckedNodes();
-      var renliu = false,
-        shipin = false;
-      for (var i = 0; i < nodes.length; i++) {
-        var node = nodes[i];
-        if (node.title == "人流热力图") renliu = true;
-
-        if (node.title == "视频监控点") shipin = true;
-      }
-      if (!renliu) {
-        // 勾选
-        this.$set(this.data[3], "checked", true);
-        this.addHeatmap(this.data[3]);
-      }
-      if (!shipin) {
-        // 勾选
-        this.$set(this.data[4], "checked", true);
-        this.addGeoJsonData(this.data[4]);
-      }
-    });
   },
   methods: {
     //
@@ -267,7 +243,6 @@ export default {
         var node = nodes[i];
         if (node.children == undefined || node.children.length == 0) {
           if (node.isLayer) this.addLayerData(node);
-          // else if (node.isPrimitives) this.addPrimitivesData(node);
         }
       }
     },
@@ -275,6 +250,7 @@ export default {
     async selectChange(tree, selectedItem) {
       selectedItem.selected = !selectedItem.selected;
     },
+    //
     async checkChange(tree, selectedItem) {
       var show = false;
       if (selectedItem.checked == true) {
@@ -345,69 +321,7 @@ export default {
       document.querySelector(".getTextWidth").remove();
       return width;
     },
-    
-    renderContent(h, { root, node, data }) {
-      if (
-        data.id != undefined &&
-        data.id.slice(0, 2) == "dz" &&
-        data.checked == true
-      ) {
-        return (
-          <div class="custom-tree-dz-node" id={data.id}>
-            <span
-              style={"background:" + data.color + ";width:30px;height:15px"}
-            ></span>
-            <span style={"margin-left:15px"}>{data.title}</span>
-          </div>
-        );
-      } else
-        return h(
-          "span",
-          {
-            style: {
-              display: "inline-block",
-              width: "auto",
-              cursor: "pointer",
-            },
-            attrs: {
-              id: data.id,
-            },
-          },
-          [
-            h(
-              "Tooltip",
-              {
-                props: {
-                  placement: "top-start",
-                  transfer: true,
-                  maxWidth: "200px",
-                },
-              },
-              [
-                data.title, //控制树形显示的内容
-                h(
-                  "span",
-                  {
-                    slot: "content",
-                    style: {
-                      whiteSpace: "normal",
-                    },
-                  },
-                  data.title //控制Tooltip显示的内容
-                ),
-              ]
-            ),
-            h("span", {
-              style: {
-                display: "inline-block",
-                float: "right",
-                marginRight: "32px",
-              },
-            }),
-          ]
-        );
-    },
-    // 
+    //
     addLayerData(data) {
       if (data.title == "全球行政区划") {
         //加载天地图全球行政区划数据
@@ -479,6 +393,7 @@ export default {
       }
       entitiesData[data.title] = [];
     },
+    //
     async addGeoJsonData(data) {
       if (data.title == "武汉市建筑") {
         var node = this.data[1].children;
@@ -634,7 +549,7 @@ export default {
         Bus.$emit("videoplayer-close", true);
       }
     },
-
+    //
     addB3DMData(data) {
       if (data.title == "火车站") {
         viewer.camera.flyTo({
@@ -1069,6 +984,7 @@ export default {
         viewer.scene.primitives.remove(tilesetArray[data.title + "2"]);
       }
     },
+    //
     altitudeToZoom(altitude) {
       var A = 40487.57;
       var B = 0.00007096758;
@@ -1077,6 +993,7 @@ export default {
 
       return Math.round(D + (A - D) / (1 + Math.pow(altitude / C, B)));
     },
+    //
     getExtent() {
       var canvas = viewer.scene.canvas;
       var ellipsoid = viewer.scene.globe.ellipsoid;
@@ -1101,6 +1018,7 @@ export default {
         extent = false;
       }
     },
+    //
     checkInExtent(p) {
       if (
         p.lon > extent.west &&
@@ -1111,57 +1029,6 @@ export default {
         return true;
       }
       return false;
-    },
-    cameraEndEvent() {
-      if (poiShow == true && primitiveData.hasOwnProperty("武汉市POI")) {
-        var height = Math.ceil(viewer.camera.positionCartographic.height);
-        var zoom = this.altitudeToZoom(height);
-        // 更新视野范围
-        this.getExtent();
-        if (extent.hasOwnProperty("west") && zoom > maxZoom) {
-          timestamp++;
-          var dataID = primitiveDataID["武汉市POI"];
-          for (var id in dataID) {
-            if (this.checkInExtent(dataID[id])) {
-              var obj = labelDataSource.entities.getById(id);
-              if (obj == undefined) {
-                // 如果对应id的不存在，则绘制label
-                this.addPOIlabel(id, dataID[id]);
-              } else {
-                // 如果对应id存在
-                obj.status = timestamp;
-              }
-            }
-          }
-          // 对于所有不是这批的
-          var entities = labelDataSource.entities.values;
-          for (var i = 0; i < entities.length; i++) {
-            var obj = entities[i];
-            if (obj.status != timestamp) {
-              labelDataSource.entities.remove(obj);
-            }
-          }
-        } else {
-          labelDataSource.entities.removeAll();
-        }
-      }
-    },
-    addPOIlabel(id, data) {
-      var text = data.name;
-      if (text.length >= 12) text = text.slice(0, 10) + "\n" + text.slice(10);
-      var entity = labelDataSource.entities.add({
-        id: id,
-        position: Cesium.Cartesian3.fromDegrees(data.lon, data.lat),
-        label: {
-          text: text,
-          style: Cesium.LabelStyle.FILL_AND_OUTLINE,
-          fillColor: Cesium.Color.WHITE,
-          outlineWidth: 3,
-          font: "26px sans-serif",
-          pixelOffset: new Cesium.Cartesian2(0.0, -14),
-          scale: 0.5,
-        },
-      });
     },
   },
   watch: {
