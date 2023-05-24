@@ -267,7 +267,7 @@ export default {
         var node = nodes[i];
         if (node.children == undefined || node.children.length == 0) {
           if (node.isLayer) this.addLayerData(node);
-          else if (node.isPrimitives) this.addPrimitivesData(node);
+          // else if (node.isPrimitives) this.addPrimitivesData(node);
         }
       }
     },
@@ -320,42 +320,11 @@ export default {
         } else {
           this.removeGeoJsonData(selectedItem);
         }
-      } else if (selectedItem.isTerrain == true) {
-        if (show) {
-          terrainProvider = new Cesium.CesiumTerrainProvider({
-            url: URL.tomcat + "/jiujiangterrain/",
-          });
-          viewer.scene.terrainProvider = terrainProvider;
-          viewer.scene.globe.depthTestAgainstTerrain = true;
-          // this.terrainShow(true);
-          // var positions = [
-          //   Cesium.Cartographic.fromDegrees(115.97163810583626, 29.540209646016265), //输入经纬度
-          // ];
-          // var promise = Cesium.sampleTerrain(terrainProvider, 1, positions); //获取14级地形高程
-          // Cesium.when(promise, function (updatedPositions) {
-          //   var terrainHeight = updatedPositions[0].height;
-          // });
-        } else {
-          var nullTerrainProvider = new Cesium.EllipsoidTerrainProvider({});
-          viewer.scene.terrainProvider = nullTerrainProvider;
-        }
       } else if (selectedItem.isB3DM == true) {
         if (show) {
           this.addB3DMData(selectedItem);
         } else {
           this.removeB3DMData(selectedItem);
-        }
-      } else if (selectedItem.isPrimitives == true) {
-        if (show) {
-          this.addPrimitivesData(selectedItem);
-        } else {
-          this.removePrimitivesData(selectedItem);
-        }
-      } else if (selectedItem.isHeatmap == true) {
-        if (show) {
-          this.addHeatmap(selectedItem);
-        } else {
-          this.removeHeatmap(selectedItem);
         }
       }
       if (viewer.terrainProvider instanceof Cesium.EllipsoidTerrainProvider) {
@@ -363,88 +332,9 @@ export default {
           var _entity = entities[j];
           _entity.polygon.extrudedHeight = _entity.properties._Height._value;
         }
-      } else {
-        if (selectedItem.isTerrain == true) {
-          let reslutArr = await Cesium.sampleTerrain(
-            viewer.terrainProvider,
-            11,
-            centerArr
-          );
-          console.log(reslutArr);
-          console.log(entityHeights.length);
-          entityHeights = reslutArr.map((item) => item.height);
-        }
-        for (var j = 0; j < entities.length; j++) {
-          var _entity = entities[j];
-          _entity.polygon.extrudedHeight =
-            entityHeights[j] + _entity.properties._Height._value;
-        }
       }
     },
-    //
-    addHeatmap(selectedItem) {
-      if (selectedItem.title == "人流热力图") {
-        axios.get("/data/hotpoint.json").then((res) => {
-          var features = res.data.features;
-          var data = [];
-          var min = 100000;
-          var max = 0;
-          for (var i = 0; i < features.length; i++) {
-            var value = features[i].properties["hot"];
-            data.push({
-              x: features[i].properties["X"],
-              y: features[i].properties["Y"],
-              value: value,
-            });
-            if (value > max) max = value;
-            if (value < min) min = value;
-          }
-          heatMapData = CesiumHeatmap.create(
-            viewer, // your cesium viewer
-            {
-              west: 115.939188,
-              east: 116.024043,
-              south: 29.657175,
-              north: 29.729587,
-            }, // bounds for heatmap layer
-            {
-              // heatmap.js options go here
-              backgroundColor: "rgba(0,0,0,0)",
-              radius: 100,
-              maxOpacity: 0.5,
-              minOpacity: 0,
-              blur: 0.75,
-            }
-          );
-          heatMapData.setWGS84Data(min, max, data);
-        });
-      }
-    },
-    removeHeatmap(selectedItem) {
-      if (selectedItem.title == "人流热力图") {
-        if (heatMapData != null) {
-          viewer.entities.remove(heatMapData._layer);
-          heatMapData = null;
-        }
-      }
-    },
-    terrainShow(show) {
-      if (show) {
-        // 打开了地形，需要获取点的高程值
-        var promise = Cesium.sampleTerrain(terrainProvider, 12, poiPositions);
-        Cesium.when(promise, function (updatedPositions) {
-          this.removePrimitivesData({
-            title: "武汉市POI",
-          });
-          this.addPrimitivesData(
-            {
-              title: "武汉市POI",
-            },
-            updatedPositions
-          );
-        });
-      }
-    },
+
     getTextWidth(str) {
       var width = 0;
       var html = document.createElement("span");
@@ -455,42 +345,7 @@ export default {
       document.querySelector(".getTextWidth").remove();
       return width;
     },
-    addLegend(data) {
-      if (data.title == "地震烈度图") {
-        var colors = {
-          V: "#C87C27",
-          VI: "#FC4E2A",
-          VII: "#E31A1C",
-          VIII: "#A81532",
-          IX: "#800026",
-        };
-        var arr = [];
-        var index = 1;
-        for (var item in colors) {
-          arr.push({
-            title: item,
-            color: colors[item],
-            id: "dz" + index,
-          });
-          index++;
-        }
-        // 地震是下标为1的节点
-        this.$set(this.data[1].children[1], "children", arr);
-        this.$set(this.data[1].children[1], "expand", true);
-        this.$nextTick(() => {
-          for (var k = 0; k < arr.length; k++) {
-            var obj = document.getElementById(arr[k].id);
-            var checkbox = obj.parentNode.parentNode.children[1];
-            checkbox.style.display = "none";
-          }
-        });
-      }
-    },
-    removeLegend(data) {
-      if (data.title == "地震烈度图") {
-        this.$set(this.data[1].children[1], "children", []);
-      }
-    },
+    
     renderContent(h, { root, node, data }) {
       if (
         data.id != undefined &&
@@ -552,6 +407,7 @@ export default {
           ]
         );
     },
+    // 
     addLayerData(data) {
       if (data.title == "全球行政区划") {
         //加载天地图全球行政区划数据
@@ -586,6 +442,7 @@ export default {
         this.removeLegend(data);
       }
     },
+    //
     addEntityData(data) {
       if (data.title == "视频监控点") {
         entitiesData[data.title] = [];
@@ -777,82 +634,7 @@ export default {
         Bus.$emit("videoplayer-close", true);
       }
     },
-    addPrimitivesData(data, heights) {
-      if (data.title == "武汉市POI") {
-        poiShow = true;
-        var node = this.data[1].children;
-        node.splice(4, 1, {
-          title: data.title,
-          checked: true,
-          loading: true,
-          expand: false,
-          isPrimitives: true,
-        });
-        // 定义label的datasource
-        labelDataSource = new Cesium.CustomDataSource("label");
-        viewer.dataSources.add(labelDataSource);
-        var _this = this;
-        axios
-          .get(
-            URL.geoserver +
-              "/jiujiang/ows?service=WFS&version=1.0.0&request=GetFeature&typeName=jiujiang:poi&outputFormat=application%2Fjson"
-          )
-          .then((res) => {
-            var geojson = res.data.features;
-            var pointPrimitives = viewer.scene.primitives.add(
-              new Cesium.PointPrimitiveCollection()
-            );
-            var ids = {};
-            for (var i = 0; i < geojson.length; i++) {
-              var lon = geojson[i].geometry.coordinates[0];
-              var lat = geojson[i].geometry.coordinates[1];
-              var jibie = parseInt(geojson[i].properties.jibie);
-              ids[geojson[i].id] = {
-                name: geojson[i].properties.name,
-                lon: lon,
-                lat: lat,
-                index: i,
-              };
-              pointPrimitives.add({
-                id: name,
-                pixelSize: 5,
-                color: colorListJIBIE[jibie - 1],
-                position: Cesium.Cartesian3.fromDegrees(
-                  lon,
-                  lat
-                  // heights?.[i] == undefined ? 0 : heights[i]
-                ),
-              });
-            }
-            primitiveData[data.title] = pointPrimitives;
-            primitiveDataID[data.title] = ids;
-            node.splice(4, 1, {
-              title: data.title,
-              checked: true,
-              expand: false,
-              isPrimitives: true,
-            });
-            _this.cameraEndEvent();
-            // 存储poiPositions用于获取点高程值
-            for (var id in ids) {
-              poiPositions.push(
-                Cesium.Cartographic.fromDegrees(ids[id].lon, ids[id].lat)
-              );
-            }
-          });
-      }
-    },
 
-    removePrimitivesData(data) {
-      if (primitiveData.hasOwnProperty(data.title)) {
-        var primitives = primitiveData[data.title];
-        viewer.scene.primitives.remove(primitives);
-      }
-      if (data.title == "武汉市POI") {
-        labelDataSource.entities.removeAll();
-        poiShow = false;
-      }
-    },
     addB3DMData(data) {
       if (data.title == "火车站") {
         viewer.camera.flyTo({
