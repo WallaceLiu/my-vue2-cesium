@@ -256,41 +256,23 @@ export default {
       if (selectedItem.checked == true) {
         show = true;
       }
-      // 是xglobe的
-      if (selectedItem.isX == true) {
-        for (var i = 0; i < this.alreadylist.length; i++) {
-          if (selectedItem.title == this.alreadylist[i]) {
-            LM.cesiumTMSHandle({
-              name: selectedItem.title,
-              url: URL.xglobe.tmsUrl + selectedItem.title,
-              show: show,
-            });
-            return;
-          }
-        }
-        this.handle(selectedItem.title);
-      }
-      // 是layer服务图层的
-      else if (selectedItem.isLayer == true) {
+
+      if (selectedItem.isLayer == true) {
+        // layer图层
         if (show) {
           this.addLayerData(selectedItem);
         } else {
           this.removeLayerData(selectedItem);
         }
-        if (selectedItem.id == "0_3") {
-          Bus.$emit("set-road-show", show);
-        }
-      }
-      // 是加载entity的
-      else if (selectedItem.isEntity == true) {
+      } else if (selectedItem.isEntity == true) {
+        // entity数据
         if (show) {
           this.addEntityData(selectedItem);
         } else {
           this.removeEntityData(selectedItem);
         }
-      }
-      // 是geojson数据
-      else if (selectedItem.isGeojson == true) {
+      } else if (selectedItem.isGeojson == true) {
+        // geojson数据
         if (show) {
           this.addGeoJsonData(selectedItem);
         } else {
@@ -309,17 +291,6 @@ export default {
           _entity.polygon.extrudedHeight = _entity.properties._Height._value;
         }
       }
-    },
-
-    getTextWidth(str) {
-      var width = 0;
-      var html = document.createElement("span");
-      html.innerText = str;
-      html.className = "getTextWidth";
-      document.querySelector("body").appendChild(html);
-      width = document.querySelector(".getTextWidth").offsetWidth;
-      document.querySelector(".getTextWidth").remove();
-      return width;
     },
     //
     addLayerData(data) {
@@ -983,52 +954,6 @@ export default {
         viewer.scene.primitives.remove(tilesetArray[data.title + "1"]);
         viewer.scene.primitives.remove(tilesetArray[data.title + "2"]);
       }
-    },
-    //
-    altitudeToZoom(altitude) {
-      var A = 40487.57;
-      var B = 0.00007096758;
-      var C = 91610.74;
-      var D = -40467.74;
-
-      return Math.round(D + (A - D) / (1 + Math.pow(altitude / C, B)));
-    },
-    //
-    getExtent() {
-      var canvas = viewer.scene.canvas;
-      var ellipsoid = viewer.scene.globe.ellipsoid;
-      var lt = viewer.camera.pickEllipsoid(
-        new Cesium.Cartesian2(0, 0),
-        ellipsoid
-      ); // canvas左上角
-      var rb = viewer.camera.pickEllipsoid(
-        new Cesium.Cartesian2(canvas.width, canvas.height),
-        ellipsoid
-      ); // canvas右下角
-      if (lt && rb) {
-        lt = viewer.scene.globe.ellipsoid.cartesianToCartographic(lt);
-        rb = viewer.scene.globe.ellipsoid.cartesianToCartographic(rb);
-        extent = {
-          west: (lt.longitude * 180) / Math.PI,
-          north: (lt.latitude * 180) / Math.PI,
-          east: (rb.longitude * 180) / Math.PI,
-          south: (rb.latitude * 180) / Math.PI,
-        };
-      } else {
-        extent = false;
-      }
-    },
-    //
-    checkInExtent(p) {
-      if (
-        p.lon > extent.west &&
-        p.lon < extent.east &&
-        p.lat > extent.south &&
-        p.lat < extent.north
-      ) {
-        return true;
-      }
-      return false;
     },
   },
   watch: {
